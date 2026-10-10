@@ -32,13 +32,13 @@ Run it when the weekly routine fires or Andy asks. It is a long task: follow the
    - Prevalence: count, and the window read.
    - Why it helps next time.
 5. Reviewer (Opus 5.5 high, read-only) opens every cited thread/file and marks each proposal supported or not. Cut the unsupported ones.
-6. Reply to Andy: the scoreboard line (step 8 numbers from last week vs this week), the count, the top proposals in one line each, link to proposals.md, and ask which numbers to apply. Apply only the numbers Andy names; no answer means nothing is applied. Deletions and project-instruction wording need his explicit yes on that item.
+6. Failure library: every proposal that comes from a real failure adds or updates an eval (evals/F-NNN.md, flywheel skill section 4) so the fix can be tested.
+7. Scoreboard: append this week's row to scoreboard.md (flywheel skill section 5).
+8. Reply to Andy: the scoreboard line (last week vs this week), the count, the top proposals in one line each, link to proposals.md, and ask which numbers to apply. Apply only the numbers Andy names; no answer means nothing is applied. Deletions and project-instruction wording need his explicit yes on that item.
 
-7. Failure library: every proposal that comes from a real failure adds or updates an eval (evals/F-NNN.md, flywheel skill section 4) so the fix can be tested.
-8. Scoreboard: append this week's row to scoreboard.md (corrections logged, repeats, lessons promoted, eval pass rate, first-pass approvals).
 
 ## Applying accepted changes
-- After applying, rerun the failure library (flywheel skill section 4) and write evals/runs/<date>.md. A previously passing eval that now fails is a regression: tell Andy in the same reply. Update each applied lesson row's status to promoted (where) and rejected numbers to rejected.
+- After applying, rerun the failure library (flywheel skill section 4) and write evals/runs/<date>.md. A previously passing eval that now fails is a regression: tell Andy in the same reply. Set the status column of each applied lesson row to promoted (where), and rejected ones to rejected (the one in-place edit lessons.md allows).
 - Memory writes follow the guardrails below. Project instructions: post the exact wording; Andy edits them himself in Project settings.
 - Log each applied change to the Slite KB Change Log for the month (Oct 2026: cWIhi0eYFdy1uA) via append-blocks, one paragraph: `YYYY-MM-DD · what changed · why (dreaming proposal N) · Andy's approval`.
 - Record accepted and rejected numbers in progress.md so the next run skips rejected ones.
