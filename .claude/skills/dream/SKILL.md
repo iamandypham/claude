@@ -16,6 +16,7 @@ Run it when the weekly routine fires or Andy asks. It is a long task: follow the
 - Transcripts: `list_thread_sessions` with `since_ts` = last run (or 7 days back), then `fetch_thread` for each active thread. Read Andy's messages and Claude's replies; use `list_events` (kinds user/assistant/result) on a session only when a thread shows a failure you need to see the tool calls for.
 - Project instructions (session context), threads index /mnt/project-files/.notes/threads-index.md.
 - Last run's folder: /mnt/project-files/meta/dreaming-<date>/ (skip proposals Andy already rejected unless new evidence).
+- Flywheel (from 10 Oct, see the flywheel skill): /mnt/project-files/meta/flywheel/lessons.md (corrections threads logged in the moment), evals/, scoreboard.md. Read lessons.md first: it is the cheap index of the week's corrections; transcript mining then looks for corrections the threads failed to log.
 
 ## Steps
 1. Folder /mnt/project-files/meta/dreaming-<YYYY-MM-DD>/ with checks.md and progress.md.
@@ -23,7 +24,7 @@ Run it when the weekly routine fires or Andy asks. It is a long task: follow the
    - Memory audit: duplicates; contradictions (an older file states a value a newer one supersedes without saying so); pointers to files, ids or workflows that no longer exist; files over 4KB; MEMORY.md lines with no topic file; index bloat (MEMORY.md is loaded into every session, so it should hold only what every thread needs).
    - Transcript mining (split threads between 1-2 helpers): Andy correcting Claude; Andy repeating an instruction or answer he gave before; the same tool or access failure in more than one thread; work redone because a fact wasn't in memory; facts or decisions Andy stated that no memory file holds.
    Each finding carries: quote or paraphrase, thread title + message id (cmsg_) or file path, date. Status-checklist edits are not messages: count only replies and Andy's messages.
-3. Orchestrate (you): merge findings, count prevalence (how many threads/files show it), keep only patterns with 2+ occurrences or one high-cost miss (money, a lead message, a live system). Drop anything already covered correctly by memory or project instructions.
+3. Orchestrate (you): merge findings with the lessons.md rows dated since the last run (a correction a thread missed logging is itself a finding: add the row, marked "logged by dreaming"), count prevalence (how many threads/files show it), keep only patterns with 2+ occurrences or one high-cost miss (money, a lead message, a live system). Drop anything already covered correctly by memory or project instructions.
 4. Write proposals.md: one numbered proposal per change, each with
    - Change: exact new text, or the file to merge/split/delete/mark superseded.
    - Where: memory file, MEMORY.md line, project instructions (Andy approves wording), a skill, or n8n.
@@ -31,9 +32,13 @@ Run it when the weekly routine fires or Andy asks. It is a long task: follow the
    - Prevalence: count, and the window read.
    - Why it helps next time.
 5. Reviewer (Opus 5.5 high, read-only) opens every cited thread/file and marks each proposal supported or not. Cut the unsupported ones.
-6. Reply to Andy: the count, the top proposals in one line each, link to proposals.md, and ask which numbers to apply. Apply only the numbers Andy names; no answer means nothing is applied. Deletions and project-instruction wording need his explicit yes on that item.
+6. Failure library: every proposal that comes from a real failure adds or updates an eval (evals/F-NNN.md, flywheel skill section 4) so the fix can be tested.
+7. Scoreboard: append this week's row to scoreboard.md (flywheel skill section 5).
+8. Reply to Andy: the scoreboard line (last week vs this week), the count, the top proposals in one line each, link to proposals.md, and ask which numbers to apply. Apply only the numbers Andy names; no answer means nothing is applied. Deletions and project-instruction wording need his explicit yes on that item.
+
 
 ## Applying accepted changes
+- After applying, rerun the failure library (flywheel skill section 4) and write evals/runs/<date>.md. A previously passing eval that now fails is a regression: tell Andy in the same reply. Set the status column of each applied lesson row to promoted (where), and rejected ones to rejected (the one in-place edit lessons.md allows).
 - Memory writes follow the guardrails below. Project instructions: post the exact wording; Andy edits them himself in Project settings.
 - Log each applied change to the Slite KB Change Log for the month (Oct 2026: cWIhi0eYFdy1uA) via append-blocks, one paragraph: `YYYY-MM-DD · what changed · why (dreaming proposal N) · Andy's approval`.
 - Record accepted and rejected numbers in progress.md so the next run skips rejected ones.
