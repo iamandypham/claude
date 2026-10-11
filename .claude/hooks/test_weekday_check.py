@@ -58,6 +58,21 @@ class WeekdayCheck(unittest.TestCase):
     def test_weekday_as_predicate(self):
         self.assertEqual(problems("26 Oct 2026 is a Monday, 27 Oct is a Tuesday; 12/19 Oct = Monday, 13 Oct = Tuesday", dt.date(2026, 10, 11)), [])
 
+    def test_no_false_positive_inside_words(self):
+        # Opus review 11 Oct: "showed", "followed", "Simon", "3 decisions" were read as weekdays/months
+        text = "Jahn showed 12 Oct. Kasen followed 19 Oct. Andy reviewed 13 Oct draft. we allowed 2 Nov. Simon 14 Oct. Friday 3 decisions."
+        self.assertEqual(problems(text, dt.date(2026, 10, 11)), [])
+
+    def test_predicate_needs_a_date_first(self):
+        self.assertEqual(len(problems("Next send is Mon 13 Oct", dt.date(2026, 10, 11))), 1)
+        self.assertEqual(problems("Oct 26 is a Monday and 2026-10-27 is a Tuesday", dt.date(2026, 10, 11)), [])
+
+    def test_italics_checked(self):
+        self.assertEqual(len(problems("_Mon 13 Oct_ and *Fri 17 Oct*", dt.date(2026, 10, 11))), 2)
+
+    def test_full_month_names(self):
+        self.assertEqual(problems("Monday 12 October, Tue June 2 2026, Wed 30 September 2026", dt.date(2026, 10, 11)), [])
+
     def test_no_dates(self):
         self.assertEqual(run({"text": "On it. Back by 10:45 AM ET."}, "2026-10-11")[0], 0)
 

@@ -28,14 +28,19 @@ MONTHS = {m: i + 1 for i, m in enumerate(
     ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"])}
 NAMES = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
-WD = r"(?P<wd>" + "|".join(sorted(DAYS, key=len, reverse=True)) + r")\b\.?,?"
-MON = r"(?P<mon>jan|feb|mar|apr|may|jun|jul|aug|sept?|oct|nov|dec)[a-z]*\.?"
+# Edges use letter/digit look-arounds, not \b, so "showed 12 Oct" and "Simon 14 Oct" don't match
+# and "_Mon 13 Oct_" (italics) still does.
+START = r"(?<![a-z0-9])"
+END = r"(?![a-z0-9])"
+WD = START + r"(?P<wd>" + "|".join(sorted(DAYS, key=len, reverse=True)) + r")" + END + r"\.?,?"
+MON = (r"(?P<mon>jan|feb|mar|apr|may|jun|jul|aug|sept?|oct|nov|dec)"
+       r"(?:uary|ruary|ch|il|e|y|ust|ember|tember|ober)?" + END + r"\.?")  # not "3 decisions"
 DAY = r"(?P<day>\d{1,2})(?:st|nd|rd|th)?"
 YEAR = r"(?:,?\s+(?P<year>20\d\d))?"
 PATTERNS = [
-    re.compile(WD + r"\s+" + DAY + r"\s+" + MON + YEAR + r"\b", re.I),          # Mon 13 Oct (2026)
-    re.compile(WD + r"\s+" + MON + r"\s+" + DAY + YEAR + r"\b", re.I),          # Monday, Oct 13(, 2026)
-    re.compile(WD + r"\s+(?P<iso>20\d\d-\d\d-\d\d)\b", re.I),                    # Sun 2026-10-11
+    re.compile(WD + r"\s+" + DAY + r"\s+" + MON + YEAR + END, re.I),          # Mon 13 Oct (2026)
+    re.compile(WD + r"\s+" + MON + r"\s+" + DAY + YEAR + END, re.I),          # Monday, Oct 13(, 2026)
+    re.compile(WD + r"\s+(?P<iso>20\d\d-\d\d-\d\d)" + END, re.I),                # Sun 2026-10-11
 ]
 SKIP = [
     re.compile(r"```.*?```", re.S),
@@ -44,6 +49,11 @@ SKIP = [
     re.compile(r"\"[^\"\n]*\"|“[^”\n]*”"),
     re.compile(r"^\s*>.*$", re.M),
 ]
+# "26 Oct is a Monday", "Oct 26 = Monday": the weekday names the date written just before it.
+# Only skipped when a date really comes first, so "Next send is Mon 13 Oct" is still checked.
+PREDICATE = re.compile(
+    r"(?:\d{1,2}(?:st|nd|rd|th)?\s+[a-z]{3,9}\.?|[a-z]{3,9}\.?\s+\d{1,2}(?:st|nd|rd|th)?|20\d\d-\d\d-\d\d)"
+    r"(?:,?\s+20\d\d)?\s*(?:is|are|was|will be|=)\s*(?:an?\s+)?$", re.I)
 
 
 def today():
@@ -98,9 +108,8 @@ def problems(text, ref):
                 continue
             if d is None:
                 continue
-            before = text[max(0, m.start() - 12):m.start()].lower()
-            if re.search(r"(=\s*|\b(is|are|was|be)\s+(an?\s+)?)$", before):
-                continue  # "26 Oct is a Monday, 27 Oct is a Tuesday": the weekday belongs to the earlier date
+            if PREDICATE.search(text[max(0, m.start() - 40):m.start()]):
+                continue
             said = DAYS[m.group("wd").lower().rstrip(".,")]
             if d.weekday() != said:
                 found.append(f'"{m.group(0).strip()}": {d.day} {d.strftime("%b %Y")} is a {NAMES[d.weekday()]}')
