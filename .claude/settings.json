@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "mcp__hearthbot__reply|mcp__hearthbot__update_message|mcp__hearthbot__ask_decision|mcp__hearthbot__update_status|mcp__hearthbot__post_widget|mcp__hearthbot__post_message",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/weekday_check.py\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}
