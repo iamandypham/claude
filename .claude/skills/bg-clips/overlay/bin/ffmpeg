@@ -1,0 +1,22 @@
+#!/usr/bin/env python3
+"""BG portability shim for the Vibe Editing kit.
+
+The kit hard-codes Apple's h264_videotoolbox encoder in about 10 scripts. On a machine without
+it (the cloud box, Linux, Windows), this shim sits first on PATH and swaps that encoder for
+libx264 at CRF 16, the quality bar our masters already use. Every other argument passes through
+unchanged to the real ffmpeg (BG_REAL_FFMPEG, default /usr/bin/ffmpeg).
+"""
+import os, sys
+real = os.environ.get("BG_REAL_FFMPEG", "/usr/bin/ffmpeg")
+a = sys.argv[1:]
+out, i = [], 0
+while i < len(a):
+    if a[i] in ("-c:v", "-vcodec", "-codec:v") and i + 1 < len(a) and a[i + 1] == "h264_videotoolbox":
+        out += [a[i], "libx264", "-preset", os.environ.get("BG_X264_PRESET", "medium"), "-crf", os.environ.get("BG_X264_CRF", "16")]
+        i += 2
+        # drop the bitrate VideoToolbox needed; CRF governs quality instead
+        if i + 1 < len(a) and a[i] in ("-b:v",):
+            i += 2
+        continue
+    out.append(a[i]); i += 1
+os.execv(real, [real] + out)
