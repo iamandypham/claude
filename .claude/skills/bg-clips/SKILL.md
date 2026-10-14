@@ -34,7 +34,7 @@ A clip goes to Andy for review only when sf-audit says SHIP, audit-audio/visual/
 - Kit is Mac-first: hard-coded VideoToolbox (shimmed), 39 scripts missing an import (patched), unpinned deps (pinned).
 - The kit's `spice_caption.py` demands a Groq key unless you pass `--words`.
 - Whisper splits numbers ("$2" ",880") and hears "Whop" as "WAP"; bg_words_fix handles both. Check the first word of each clip by ear.
-- Source recordings that repeat frames only allow picture-offset checks to about 2 frames; G5 measures audio drift, so also check lip sync by eye.
+- G5 needs `--video-map` (a region copied 1:1 from source to output, away from the acne box and captions) to prove A/V sync; without it, it only REPORTs. Face-track crops move, so on face-track clips also check lip sync by eye.
 - On close framing the kit's own visual audit flags face-track as over-zoomed (face ~32% of frame); that is the source framing, not a bug. Recording a little further back fixes it.
 - G4 (screen share untouched) fails on moving content even when untouched (re-encode plus repeated frames) and is untested on a real screen share.
 - Music, the KEYWORD end card and screen-share layout choice are documented, not enforced; follow the README, not the kit's /edit skill.
