@@ -1,0 +1,6 @@
+{
+  "_doc": "Named strengths for acne-clean.mjs. test1 = TikScale Discord v2 master (approved by Andy 2026-10-06 7:00 PM ET). default = ~20% gentler spot flattening and redness than test1, same texture retention (Andy 2026-10-06 7:02 PM ET).",
+  "default": { "mask": 200, "sigmaS": 10, "sigmaR": 0.072, "redMode": "global", "redPivot": 150, "redPull": 0.28, "texture": 0.9, "maskCr": [134, 172], "ellipse": [0.5, 0.5, 3] },
+  "test1":   { "mask": 235, "sigmaS": 12, "sigmaR": 0.09,  "redMode": "global", "redPivot": 150, "redPull": 0.35, "texture": 0.9, "maskCr": [134, 172], "ellipse": [0.5, 0.5, 3] },
+  "test2":   { "mask": 240, "sigmaS": 14, "sigmaR": 0.10,  "redMode": "local",  "redPivot": 2,   "redPull": 0.7,  "texture": 0.9, "maskCr": [134, 176], "ellipse": [0.58, 0.56, 2.2] }
+}

@@ -1,0 +1,8 @@
+# BG pins on top of the kit's unpinned requirements.txt (found 14 Oct 2026 on Python 3.13):
+# - faster-whisper 1.2.1 passes metadata_errors, removed in PyAV 15+  -> keep av below 15 (binary wheel)
+# - librosa 1.0 dropped the audioread fallback, so it can't read .mp4 audio -> 0.10.2.post1
+av>=12,<15
+librosa==0.10.2.post1
+audioread
+standard-aifc
+standard-sunau
