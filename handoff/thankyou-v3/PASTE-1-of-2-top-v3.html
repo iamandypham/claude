@@ -349,10 +349,13 @@
     if (!v) return;
     var el = $('bgty-v-' + v);
     if (!el || el.hidden) el = $('bgty-vsec');
+    function jump(){ try { el.scrollIntoView({behavior: 'auto', block: 'start'}); } catch (err) { el.scrollIntoView(); } }
     setTimeout(function(){
-      try { el.scrollIntoView({behavior: 'auto', block: 'start'}); } catch (err) { el.scrollIntoView(); }
+      jump();
       if (el.classList.contains('vc')) el.classList.add('hl');
     }, 250);
+    // GHL's page script resets the scroll to the top about 1.5 s after load; jump again unless the visitor has scrolled
+    [1800, 3200].forEach(function(ms){ setTimeout(function(){ if (window.scrollY < 40 && el.getBoundingClientRect().top > 60) jump(); }, ms); });
   }
 
   // ---- calendar help (same wording and behavior as the 30 Sep element) ----
