@@ -1,0 +1,467 @@
+<!-- BG /call-thankyou v3 PROPOSAL, PART 1 of 2 (top of page). 6 Oct 2026. NOT LIVE: goes live only on Andy's word.
+     GHL: its own Custom Code element at the top. It replaces the top of the v2 element AND the 30 Sep invite-help element
+     (same ids, so a leftover copy of that element does no harm). Part 2 (case-study cards) goes directly below.
+     Reads ?book=&email= (or Calendly's invitee_uuid=&invitee_email=) and asks the read-only call-details lookup (n8n 8Ukn94krPOJvHcgX); works without it.
+     Other params:
+       ?v=intro|build|fee|guarantee|time|fit   opens the page at that video (for SMS and email links)
+       ?h=Jay                                  names the closer when there is no booking ref (picks the intro video)
+       ?c=<GHL contact id>                     passed to the watch log only
+       ?for=partner&t=<ISO time>&h=<first name>  the clean page a lead shares with a partner: no email, Zoom or reschedule link
+     Videos load only when tapped. Google Analytics events only; no Meta, Whop or HYROS calls are added. -->
+
+<div id="bgty" data-v="3">
+<style>
+#bgty{--ink:#0E182C;--mut:#5B6475;--line:#E4E7EC;--bg:#F6F8FA;--ok:#12B76A;--okbg:#E8FBF1;--acc:#84FBAC;--btn:#0E182C;
+  font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);max-width:560px;margin:0 auto;padding:20px 16px 8px;line-height:1.5;-webkit-font-smoothing:antialiased}
+#bgty *{box-sizing:border-box}
+#bgty [hidden]{display:none!important}
+#bgty .badge{display:inline-flex;align-items:center;gap:8px;background:var(--okbg);color:#067647;font-weight:700;font-size:14px;padding:6px 12px;border-radius:999px}
+#bgty h1{font-size:28px;line-height:1.2;margin:14px 0 6px;font-weight:800;letter-spacing:-.01em}
+#bgty .sub{color:var(--mut);font-size:16px;margin:0 0 18px}
+#bgty .card{border:1px solid var(--line);border-radius:16px;padding:18px;background:#fff;box-shadow:0 1px 2px rgba(16,24,40,.05)}
+#bgty .when{font-size:20px;font-weight:800;margin:0}
+#bgty .tz{color:var(--mut);font-size:14px;margin:2px 0 14px}
+#bgty .host{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-bottom:14px}
+#bgty .host img,#bgty .host .ph{width:48px;height:48px;border-radius:50%;object-fit:cover;background:var(--bg);flex:none;display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--mut)}
+#bgty .host b{display:block;font-size:16px}
+#bgty .host span{color:var(--mut);font-size:14px}
+#bgty .btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:52px;border-radius:12px;font-weight:700;font-size:16px;text-decoration:none;border:0;cursor:pointer;margin:8px 0 0;font-family:inherit}
+#bgty .btn.pri{background:var(--btn);color:#fff}
+#bgty .btn.sec{background:#fff;color:var(--ink);border:1.5px solid var(--ink)}
+#bgty .btn:focus-visible,#bgty .vt:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+#bgty .lockin{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);margin:0 0 2px}
+#bgty .step{display:flex;gap:12px;align-items:flex-start;margin:10px 0 0;font-size:15px}
+#bgty .step .n{flex:none;width:26px;height:26px;border-radius:50%;background:var(--acc);color:var(--ink);font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center;margin-top:1px}
+#bgty .step p{margin:0}
+#bgty .step2{margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
+#bgty .bgty-inv{margin:12px 0 0;padding:12px 14px;border-radius:10px;background:rgba(127,127,127,.08);font-size:14px;line-height:1.5;text-align:left}
+#bgty .bgty-inv b{word-break:break-all}
+#bgty .bgty-inv a{color:inherit;font-weight:700;text-decoration:underline}
+#bgty .pnote{margin:4px 0 0;padding:12px 14px;border-radius:10px;background:var(--bg);font-size:15px}
+#bgty h2{font-size:20px;margin:32px 0 4px;font-weight:800;line-height:1.25;scroll-margin-top:12px}
+#bgty .lead{color:var(--mut);font-size:15px;margin:0 0 14px}
+#bgty .small{color:var(--mut);font-size:14px;margin:10px 0 0}
+#bgty .vids{display:grid;gap:12px}
+#bgty .vc{border:1px solid var(--line);border-radius:16px;background:#fff;overflow:hidden;scroll-margin-top:12px;transition:box-shadow .2s}
+#bgty .vc.hl{border-color:var(--ink);box-shadow:0 0 0 3px var(--acc)}
+#bgty .vt{position:relative;display:block;width:100%;aspect-ratio:16/9;border:0;margin:0;padding:0;cursor:pointer;color:#fff;text-align:left;font:inherit;overflow:hidden;
+  background:#0E182C radial-gradient(130% 100% at 90% 0%,#2A4170 0%,#0E182C 62%)}
+#bgty .vt .pl{position:absolute;width:52px;height:52px;border-radius:50%;background:var(--acc);right:16px;bottom:16px;box-shadow:0 6px 18px rgba(0,0,0,.35)}
+#bgty .vt .pl:after{content:"";position:absolute;left:21px;top:16px;border-left:15px solid var(--ink);border-top:10px solid transparent;border-bottom:10px solid transparent}
+#bgty .vt .du{position:absolute;top:12px;right:12px;font-size:12px;font-weight:700;background:rgba(255,255,255,.16);padding:2px 8px;border-radius:999px;white-space:nowrap}
+#bgty .vt .ti{position:absolute;left:16px;right:84px;bottom:16px;font-weight:800;font-size:21px;line-height:1.2}
+#bgty .vt .av{position:absolute;left:16px;top:14px;width:46px;height:46px;border-radius:50%;background:rgba(132,251,172,.16);border:2px solid var(--acc);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:19px;color:var(--acc)}
+#bgty .vh{padding:12px 16px 0}
+#bgty .vh h3{font-size:16px;line-height:1.3;margin:0;font-weight:800}
+#bgty .who{font-size:13px;color:var(--mut);margin:2px 0 0}
+#bgty .vu{padding:8px 16px 14px;font-size:15px}
+#bgty .vu p{margin:0}
+#bgty .vc.row{display:grid;grid-template-columns:116px 1fr;grid-template-areas:"t h" "u u"}
+#bgty .vc.row .vt{grid-area:t;margin:14px 0 0 14px;border-radius:10px;width:auto}
+#bgty .vc.row .vt .pl{width:38px;height:38px;right:auto;bottom:auto;left:50%;top:50%;transform:translate(-50%,-50%)}
+#bgty .vc.row .vt .pl:after{left:15px;top:11px;border-left-width:12px;border-top-width:8px;border-bottom-width:8px}
+#bgty .vc.row .vt .du{display:none}
+#bgty .vc.row .vh{grid-area:h;padding:14px 16px 0 12px;align-self:center}
+#bgty .vc.row .vu{grid-area:u;padding:10px 16px 14px}
+#bgty .vc.nov{display:block}
+#bgty .vc.nov .vt{display:none}
+#bgty .vc.nov .vh{padding:14px 16px 0}
+#bgty .vc .soon{display:none;color:var(--mut);font-size:13px;margin:6px 0 0}
+#bgty .vc.nov .soon{display:block}
+#bgty .vc.playing{display:block}
+#bgty .vc.playing .vt{display:none}
+#bgty .vc.playing .vh{padding:14px 16px 0}
+#bgty h2 + .faq{margin-top:12px}
+#bgty .vp{position:relative;width:100%;background:#000}
+#bgty .pvnote{padding:22px 16px;background:var(--ink);color:#fff;font-size:14px;text-align:center}
+#bgty .faq{display:grid;gap:10px}
+#bgty .faq div{background:var(--bg);border-radius:12px;padding:14px 16px}
+#bgty .faq b{display:block;font-size:16px;margin:0 0 4px}
+#bgty .faq p{margin:0;font-size:15px}
+#bgty .resched{text-align:center;margin:30px 0 8px;font-size:15px;color:var(--mut)}
+#bgty .resched a{color:var(--ink);font-weight:700}
+#bgty.bgty-preview [data-check]{background:#FFF1B8;border-radius:4px;box-shadow:0 0 0 2px #FFF1B8}
+#bgty .vu a{color:inherit;font-weight:600;text-decoration:underline}
+#bgty .prep{margin:14px 0 0;padding:16px 18px;border-radius:16px;background:var(--bg)}
+#bgty .prep h2{margin:0 0 8px;font-size:17px}
+#bgty .prep ul,#bgty .tl ul,#bgty .tl ol{margin:0;padding:0;list-style:none}
+#bgty .prep li{position:relative;padding:0 0 0 26px;margin:7px 0 0;font-size:15px}
+#bgty .prep li:before{content:"";position:absolute;left:2px;top:4px;width:14px;height:14px;border-radius:4px;border:2px solid var(--ink)}
+#bgty .tl{display:grid;gap:10px}
+#bgty .tl .st{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:#fff}
+#bgty .tl .st b{display:block;font-size:15px}
+#bgty .tl .st p,#bgty .tl .st li{margin:4px 0 0;font-size:15px}
+#bgty .tl .st li{position:relative;padding-left:14px}
+#bgty .tl .st li:before{content:"";position:absolute;left:0;top:10px;width:6px;height:6px;border-radius:50%;background:var(--ink)}
+#bgty .apc{display:grid;gap:10px}
+#bgty .apc div{background:var(--bg);border-radius:12px;padding:14px 16px}
+#bgty .apc b{display:block;font-size:16px;margin:0 0 4px}
+#bgty .apc p{margin:0;font-size:15px}
+@media (min-width:600px){#bgty .vc.row{grid-template-columns:150px 1fr}}
+</style>
+
+<span class="badge" id="bgty-badge">&#10003; You're booked</span>
+<h1 id="bgty-h1">Your call is confirmed.</h1>
+<p class="sub" id="bgty-sub">Your spot is locked in. Accept the calendar invite below and watch the short videos before the call. They take under ten minutes.</p>
+
+<div class="card" id="bgty-card">
+  <p class="when" id="bgty-when">Check your email for your calendar invite</p>
+  <p class="tz" id="bgty-tz">60-minute Zoom call</p>
+  <div class="host" id="bgty-host" hidden>
+    <div class="ph" id="bgty-ph"></div>
+    <div><b id="bgty-hname"></b><span id="bgty-hline">will be on the call with you</span></div>
+  </div>
+  <div id="bgty-lock">
+    <p class="lockin">Lock it in</p>
+    <div class="step"><span class="n">1</span><p>Tap <b>Accept</b> so the call lands on your calendar.</p></div>
+    <a class="btn pri" id="bgty-gcal" href="https://calendar.google.com/calendar/r/search?q=BusinessGrowR" target="_blank" rel="noopener">Accept in Google Calendar</a>
+    <a class="btn sec" id="bgty-ics" href="#" download="businessgrowr-call.ics" hidden>Add to Apple / Outlook calendar</a>
+    <a class="btn sec" id="bgty-zoom" href="#" target="_blank" rel="noopener" hidden>Save your Zoom link</a>
+    <div class="bgty-inv" id="bgty-inv">
+      <p id="bgty-inv-to" style="margin:0">If the button doesn&rsquo;t work, check your email for the invite. You should have received it already, but check Spam if you haven&rsquo;t. Open it and tap <b>Yes</b>.</p>
+      <p id="bgty-inv-add" style="margin:8px 0 0" hidden>Invite not showing up? <a id="bgty-gadd" href="#" target="_blank" rel="noopener">Add the call to your Google Calendar</a> instead.</p>
+    </div>
+    <div class="step step2"><span class="n">2</span><p>We just texted you. A quick <b>&ldquo;Yes&rdquo;</b> back is perfect, so <span class="bgty-hfirst">your closer</span> knows you&rsquo;ll be there.</p></div>
+  </div>
+  <p class="pnote" id="bgty-pnote" hidden>Ask the person who booked to forward you the calendar invite. It has the Zoom link.</p>
+</div>
+
+<section class="prep" id="bgty-prep">
+  <h2>Get the most out of the call (5 minutes)</h2>
+  <ul>
+    <li>Your rough monthly revenue and member count. A Whop dashboard screenshot is perfect.</li>
+    <li>What you sell today and the price.</li>
+    <li>Your main social account and roughly how many views a post gets.</li>
+    <li>Anyone who needs to be in the room when you decide. Bring them on the call.</li>
+    <li>45 quiet minutes at a laptop, not in the car.</li>
+  </ul>
+</section>
+
+<h2 id="bgty-vsec">Watch these before the call</h2>
+<p class="lead">They answer the questions everyone asks.</p>
+<div class="vids">
+  <article class="vc" id="bgty-v-intro" data-key="intro" hidden>
+    <button type="button" class="vt" aria-label="Play the intro video"><span class="av" id="bgty-vav">?</span><span class="du" data-du>about 1 min</span><span class="ti">Meet <span class="bgty-hfirst">your closer</span> before your call</span><span class="pl" aria-hidden="true"></span></button>
+    <div class="vh" data-novid-only hidden><h3>Your call with <span class="bgty-hfirst">your closer</span></h3></div>
+    <div class="vh"><p class="who"><span class="bgty-hfull">Your closer</span> &middot; on your call</p></div>
+    <div class="vu"><p>Your call with <span class="bgty-hfirst">your closer</span> is a working session, not a sales pitch. <span class="bgty-hfirst">Your closer</span> will look at your community, show you how the system works, and tell you honestly if it&rsquo;s a fit. Have your rough monthly numbers ready, and if someone else decides with you, bring them on the call. Either way, you&rsquo;ll leave knowing where your funnel is leaking and the first things we&rsquo;d fix.</p><p class="soon">Video coming soon.</p></div>
+  </article>
+
+  <article class="vc row" id="bgty-v-build" data-key="build">
+    <button type="button" class="vt" aria-label="Play: What BusinessGrowR actually builds for you"><span class="pl" aria-hidden="true"></span><span class="du" data-du>1&frac12; min</span></button>
+    <div class="vh"><h3>What BusinessGrowR actually builds for you</h3><p class="who">Andy Pham, founder &middot; 1&frac12; min</p></div>
+    <div class="vu"><p>We build your offer, the VSL page, lead magnets, DM automation, email sequences, checkout and trial flow, and a weekly numbers call. You keep trading and teaching. We handle everything between your content and your checkout.</p><p class="soon">Video coming soon.</p></div>
+  </article>
+
+  <article class="vc row" id="bgty-v-fee" data-key="fee">
+    <button type="button" class="vt" aria-label="Play: Or you don't pay, what that actually means"><span class="pl" aria-hidden="true"></span><span class="du" data-du>3&frac12; min</span></button>
+    <div class="vh"><h3>&ldquo;Or you don&rsquo;t pay&rdquo;: what that actually means</h3><p class="who">Andy Pham, founder &middot; 3&frac12; min</p></div>
+    <div class="vu"><p>It&rsquo;s a one-time fee, not a retainer, and below $200K a month we don&rsquo;t do rev share. Most of the work is the build, which is why it&rsquo;s paid up front. It&rsquo;s a five-figure fee for a six-month done-for-you build. <span class="bgty-hfirst bgty-cap">Your closer</span> gives you the exact number on the call, and if the full amount is a stretch, you can talk through the logistics then.</p><p class="soon">Video coming soon.</p></div>
+  </article>
+
+  <article class="vc row" id="bgty-v-guarantee" data-key="guarantee">
+    <button type="button" class="vt" aria-label="Play: What happens if it doesn't work"><span class="pl" aria-hidden="true"></span><span class="du" data-du>2 min</span></button>
+    <div class="vh"><h3>What happens if it doesn&rsquo;t work</h3><p class="who">Andy Pham, founder &middot; 2 min</p></div>
+    <div class="vu"><p>The contract has a written refund guarantee. If your monthly revenue hasn&rsquo;t grown by at least the figure written in your contract by the end of the six-month term, you get back the done-for-you fee you paid. There are conditions, like paying in full and posting content, and they&rsquo;re all in the contract. You&rsquo;ll read everything before you sign.</p><p class="soon">Video coming soon.</p></div>
+  </article>
+
+  <article class="vc row" id="bgty-v-time" data-key="time">
+    <button type="button" class="vt" aria-label="Play: How much time this actually takes"><span class="pl" aria-hidden="true"></span><span class="du" data-du>1&frac12; min</span></button>
+    <div class="vh"><h3>How much time this actually takes</h3><p class="who">Louis Band, head of sales and client success &middot; 1&frac12; min</p></div>
+    <div class="vu"><p>One reel a day and one YouTube video a week. About 2 to 4 hours a week, maybe 5 at the start. We coach your hooks, angles and content plan. We don&rsquo;t edit or script for you; that&rsquo;s a separate paid option if you want it. Most clients batch-record in one sitting.</p><p class="soon">Video coming soon.</p></div>
+  </article>
+
+  <article class="vc row" id="bgty-v-fit" data-key="fit">
+    <button type="button" class="vt" aria-label="Play: Who this is a fit for, and who it isn't"><span class="pl" aria-hidden="true"></span><span class="du" data-du>1&frac14; min</span></button>
+    <div class="vh"><h3>Who this is a fit for (and who it isn&rsquo;t)</h3><p class="who">Andy Pham, founder &middot; 1&frac14; min</p></div>
+    <div class="vu"><p>We work with trading community owners who trade or teach live and have a paid community or are ready to charge. If you have no audience, no community or no budget to invest yet, we&rsquo;ll tell you so honestly and point you to <a href="https://www.youtube.com/@BusinessGrowR" target="_blank" rel="noopener">our free YouTube videos</a> to start with.</p><p class="soon">Video coming soon.</p></div>
+  </article>
+</div>
+
+<section id="bgty-tl">
+  <h2>What the first months actually look like</h2>
+  <p class="lead">Every count runs from the day you join.</p>
+  <div class="tl">
+    <div class="st"><b>About day 10</b><p>Your funnel is built, checked by our team and delivered. That&rsquo;s the same for everyone.</p></div>
+    <div class="st"><b>Your first 1,000 leads</b><ul>
+      <li>Already have a business or steady traffic: usually day 25 to 55.</li>
+      <li>Posting and getting 1,000+ views a post, under $10K a month: usually day 40 to 55.</li>
+      <li>Starting from zero followers: usually day 80 to 110.</li>
+    </ul></div>
+    <div class="st"><b>Revenue up 25% or more</b><p>For owners with traffic already: usually day 85 to 115.</p></div>
+  </div>
+  <p class="small">The fast end is owners who post every day from week one. The slow end is almost always content: when posting stops, leads stop. That&rsquo;s why the guarantee asks you to post, and why we&rsquo;d rather tell you now.</p>
+</section>
+
+<section id="bgty-applied">
+  <h2>How the system looked for other communities</h2>
+  <div class="apc">
+    <div><b>An ICT trading Discord: one methodology, everywhere</b><p>He built every lead magnet around one trading methodology he named himself, and his comment hook pointed to it, so every new lead arrived already knowing what made him different.</p></div>
+    <div><b>An ICT trading Discord: from alerts to live trading</b><p>$50 a month for alerts became $100 a month for live trading, behind a 7-day trial. Live trading gave members a reason to stay.</p></div>
+    <div><b>A futures Discord: views traded for buyers</b><p>He moved from lifestyle posts to educational ones and, in his words, &ldquo;sacrificed views for conversions&rdquo;.</p></div>
+    <div><b>An options Discord: grew without growing socials</b><p>We rebuilt how new members were onboarded and kept, not how many people saw his posts. Monthly recurring revenue went from $31,290 to $95,138.</p></div>
+  </div>
+</section>
+
+<h2>Two more things people ask</h2>
+<div class="faq">
+  <div><b>After the six months, what do I keep?</b><p>Your offer, your content and your brand stay yours. You can keep using the pages, copy and automations we build for your business after the six months too. They run on our software, which is $197 a month, billed separately.</p></div>
+  <div><b>Is this paid ads or organic?</b><p>It&rsquo;s an organic funnel install. It runs on your own content, so you don&rsquo;t need an ad budget.</p></div>
+</div>
+
+<section id="bgty-dm">
+  <h2>Deciding with someone else?</h2>
+  <p class="lead">Send them this page so they can watch the videos and join the call.</p>
+  <button type="button" class="btn sec" id="bgty-share">Send this to your partner</button>
+  <p class="small" id="bgty-copied" role="status" hidden>Link copied. Paste it into a text or email.</p>
+  <p class="small">Or reply to our text with their name and email, and we&rsquo;ll add them to the call.</p>
+</section>
+
+<section id="bgty-q">
+  <h2>Got a question for the call?</h2>
+  <p class="lead" style="margin:0">Reply to our text with your #1 question, and <span class="bgty-hfirst">your closer</span> will come ready to answer it.</p>
+</section>
+
+<p class="resched" id="bgty-rs">Something came up? <a id="bgty-resched" href="#">Reschedule instead of missing it</a>.<br><span id="bgty-reschednote" hidden>Or just reply to our text and we&rsquo;ll find you a new time.</span></p>
+
+<script>
+(function(){
+  var LOOKUP = 'https://businessgrowr.app.n8n.cloud/webhook/bg-call-details'; // n8n 8Ukn94krPOJvHcgX (read-only Calendly), live since 25 Sep
+  // Vidalytics embed ids, filled in as each video is recorded. An empty id shows the card as text only ("Video coming soon").
+  var VID = {intro_jay:'u973WjeCxj86BvNU', intro_louis:'W2wTWENMpQVD2Vlf', intro_andy:'TdgcxcwBpV_VBpFv', build:'dn_7_5KVX9NPvJXQ', fee:'loUoFv7q4cLEP_nE', guarantee:'wqPEds84fOZZDz5u', time:'BnPINwnjUV61oMdG', fit:'P5y0zxQ1UUFSxyUD'};
+  var VACCT = '8fGwmrPr';          // Vidalytics account path (same as the 7-min video on v2)
+  var VPAD = {};                   // optional per-video padding-top from each Vidalytics embed code; default 56.25% (16:9)
+  var WATCH_LOG = '';              // n8n webhook that logs {booking ref, contact id, video}; empty until Andy approves building it
+  var VARIANT = 'v3';
+
+
+  var root = document.getElementById('bgty');
+  var $ = function(id){ return document.getElementById(id); };
+  var q = new URLSearchParams(location.search);
+  var book = q.get('book') || '', email = (q.get('email') || q.get('invitee_email') || '').trim();
+  // Since early Oct the Typeform sends leads to /dfy-calendar, so Calendly's own redirect brings them here with
+  // invitee_uuid + invitee_email instead of book=. 8Ukn accepts the bare invitee id as the booking ref (checked 9 Oct on a real booking).
+  var IU = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(q.get('invitee_uuid') || '') ? q.get('invitee_uuid') : '';
+  var MODE = q.get('for') === 'partner' ? 'partner' : ((book || IU) ? 'booked' : 'generic');
+  var P = window.__BGTY_PREVIEW || null;
+  if (P) root.classList.add('bgty-preview');
+  var state = {start: null, hostFirst: '', hostFull: ''};
+
+  function ga(name, params){ try { if (window.gtag) { params = params || {}; params.page_variant = VARIANT; gtag('event', name, params); } } catch (err) {} }
+  function esc(s){ var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+  function pad(n){ return (n < 10 ? '0' : '') + n; }
+  function icsDate(d){ return d.getUTCFullYear() + pad(d.getUTCMonth()+1) + pad(d.getUTCDate()) + 'T' + pad(d.getUTCHours()) + pad(d.getUTCMinutes()) + '00Z'; }
+  function cap(s){ return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
+  function fmtWhen(d, withTz){
+    var day = d.toLocaleString(undefined, {weekday:'long', month:'long', day:'numeric'});
+    var t = withTz ? d.toLocaleString(undefined, {hour:'numeric', minute:'2-digit', timeZoneName:'short'}) : d.toLocaleString(undefined, {hour:'numeric', minute:'2-digit'});
+    return day + ' at ' + t;
+  }
+  function tzLine(mins){
+    var tzName = '';
+    try { tzName = Intl.DateTimeFormat().resolvedOptions().timeZone.replace(/_/g, ' '); } catch (err) {}
+    return mins + '-minute Zoom call' + (tzName ? ' · your time (' + tzName + ')' : '');
+  }
+
+  // ---- closer name, used in the card, the copy and to pick the intro video ----
+  function setHost(full){
+    full = (full || '').trim();
+    if (!full) return;
+    var first = cap(full.split(' ')[0]);
+    state.hostFirst = first; state.hostFull = full;
+    var els = root.querySelectorAll('.bgty-hfirst');
+    for (var i = 0; i < els.length; i++) els[i].textContent = first;
+    var fulls = root.querySelectorAll('.bgty-hfull');
+    for (var j = 0; j < fulls.length; j++) fulls[j].textContent = full;
+    $('bgty-vav').textContent = first.charAt(0);
+    $('bgty-host').hidden = false;
+    $('bgty-hname').textContent = full;
+    if (!$('bgty-ph').querySelector('img') && $('bgty-ph').tagName !== 'IMG') $('bgty-ph').textContent = first.charAt(0);
+    var intro = $('bgty-v-intro');
+    intro.hidden = false;
+    intro.setAttribute('data-vid', VID['intro_' + first.toLowerCase()] || '');
+    intro.querySelector('.vt').setAttribute('aria-label', 'Play: Meet ' + first + ' before your call');
+    setupCard(intro);
+  }
+
+  // ---- videos: tap to load, text only while a video isn't recorded ----
+  function setupCard(card){
+    var key = card.getAttribute('data-key');
+    var id = key === 'intro' ? (card.getAttribute('data-vid') || '') : (VID[key] || '');
+    var showThumb = !!id || !!(P && P.showThumbs);
+    card.classList.toggle('nov', !showThumb);
+    var only = card.querySelectorAll('[data-novid-only]');
+    for (var i = 0; i < only.length; i++) only[i].hidden = showThumb;
+  }
+  function loadVidalytics(embedId, holder){
+    var box = document.createElement('div');
+    box.id = 'vidalytics_embed_' + embedId;
+    box.style.cssText = 'width:100%;position:relative;padding-top:' + (VPAD[embedId] || '56.25%') + ';';
+    holder.appendChild(box);
+    (function(v,i,d,a,l,y,t,c,s){y='_'+d.toLowerCase();c=d+'L';if(!v[d]){v[d]={};}if(!v[c]){v[c]={};}if(!v[y]){v[y]={};}var vl='Loader',vli=v[y][vl],vsl=v[c][vl+'Script'],vlf=v[c][vl+'Loaded'],ve='Embed';if(!vsl){vsl=function(u,cb){if(t){cb();return;}s=i.createElement("script");s.type="text/javascript";s.async=1;s.src=u;if(s.readyState){s.onreadystatechange=function(){if(s.readyState==="loaded"||s.readyState=="complete"){s.onreadystatechange=null;vlf=1;cb();}};}else{s.onload=function(){vlf=1;cb();};}i.getElementsByTagName("head")[0].appendChild(s);};}vsl(l+'loader.min.js',function(){if(!vli){var vlc=v[c][vl];vli=new vlc();}vli.loadScript(l+'player.min.js',function(){var vec=v[d][ve];t=new vec();t.run(a);});});})(window,document,'Vidalytics','vidalytics_embed_' + embedId,'https://fast.vidalytics.com/embeds/' + VACCT + '/' + embedId + '/');
+  }
+  // one video at a time: taking a player out of the page stops it, and its card shows the thumbnail again
+  function stopOthers(card){
+    var on = root.querySelectorAll('.vc.playing');
+    for (var i = 0; i < on.length; i++) {
+      if (on[i] === card) continue;
+      var vp = on[i].querySelector('.vp');
+      if (vp) vp.parentNode.removeChild(vp);
+      on[i].classList.remove('playing');
+    }
+  }
+  function play(card){
+    var key = card.getAttribute('data-key');
+    var id = key === 'intro' ? (card.getAttribute('data-vid') || '') : (VID[key] || '');
+    var vkey = key === 'intro' ? 'intro_' + (state.hostFirst || 'unknown').toLowerCase() : key;
+    ga('ty_video', {video_key: vkey, mode: MODE});
+    if (WATCH_LOG && navigator.sendBeacon) {
+      try { navigator.sendBeacon(WATCH_LOG, JSON.stringify({book: book, c: q.get('c') || '', v: vkey, mode: MODE, at: new Date().toISOString()})); } catch (err) {}
+    }
+    if (card.classList.contains('playing')) return;
+    stopOthers(card);
+    card.classList.add('playing');
+    var holder = document.createElement('div');
+    holder.className = 'vp';
+    card.insertBefore(holder, card.firstChild);
+    if (id) loadVidalytics(id, holder);
+    else holder.innerHTML = '<div class="pvnote">Preview only: this video isn’t recorded yet. Its script is in the proposal.</div>';
+  }
+  var cards = root.querySelectorAll('.vc');
+  for (var k = 0; k < cards.length; k++) {
+    (function(card){
+      if (card.getAttribute('data-key') !== 'intro') setupCard(card);
+      card.querySelector('.vt').addEventListener('click', function(){ play(card); });
+    })(cards[k]);
+  }
+
+  // ---- deep link: ?v=fee opens the page at that video ----
+  var deepDone = false;
+  function goDeep(){
+    if (deepDone) return; deepDone = true;
+    var v = (q.get('v') || '').toLowerCase().replace(/[^a-z]/g, '');
+    if (!v) return;
+    var el = $('bgty-v-' + v);
+    if (!el || el.hidden) el = $('bgty-vsec');
+    setTimeout(function(){
+      try { el.scrollIntoView({behavior: 'auto', block: 'start'}); } catch (err) { el.scrollIntoView(); }
+      if (el.classList.contains('vc')) el.classList.add('hl');
+    }, 250);
+  }
+
+  // ---- calendar help (same wording and behavior as the 30 Sep element) ----
+  function inviteHelp(){
+    $('bgty-inv-to').innerHTML = email
+      ? 'If the button doesn’t work, check your email (<b>' + esc(email) + '</b>) for the invite. You should have received it already, but check Spam if you haven’t. Open it and tap <b>Yes</b>.'
+      : 'If the button doesn’t work, check your email for the invite. You should have received it already, but check Spam if you haven’t. Open it and tap <b>Yes</b>.';
+  }
+
+  // ---- booking details ----
+  function render(x){
+    if (!x || !x.start_time) return;
+    var s = new Date(x.start_time), e = new Date(x.end_time || (s.getTime() + 3600000));
+    if (isNaN(s)) return;
+    state.start = s;
+    $('bgty-when').textContent = fmtWhen(s, false);
+    $('bgty-tz').textContent = tzLine(Math.round((e - s) / 60000));
+    if (x.invitee_first_name) $('bgty-h1').textContent = 'You’re all set, ' + cap(x.invitee_first_name) + '.';
+    if (x.host_avatar) { var img = document.createElement('img'); img.src = x.host_avatar; img.alt = x.host_name || ''; img.width = 48; img.height = 48; img.loading = 'lazy'; $('bgty-ph').replaceWith(img); img.id = 'bgty-ph'; }
+    if (x.host_name) setHost(x.host_name);
+    var first = state.hostFirst;
+    var title = 'BusinessGrowR call' + (first ? ' with ' + first : '');
+    var details = (x.join_url ? 'Join on Zoom: ' + x.join_url + '\n\n' : '') + 'Have your Discord open and your member count and monthly revenue handy.';
+    // Calendly puts the call on the closer's Google Calendar with the lead as a guest; that is the invite we want accepted.
+    // eid = base64("<event id> <guest email>") opens the lead's own copy of it, where they tap Yes. No copy is created.
+    var gid = x.google_event_id || '';
+    if (gid && email) {
+      try { $('bgty-gcal').href = 'https://calendar.google.com/calendar/event?eid=' + btoa(gid + ' ' + email.toLowerCase()).replace(/=+$/, '') + '&authuser=' + encodeURIComponent(email.toLowerCase()); } catch (err) {}
+    }
+    var ics = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//BusinessGrowR//Call//EN','BEGIN:VEVENT',
+      'UID:' + gid + '@google.com','DTSTAMP:' + icsDate(new Date()),
+      'DTSTART:' + icsDate(s),'DTEND:' + icsDate(e),'SUMMARY:' + title,
+      'DESCRIPTION:' + details.replace(/\n/g, '\\n'),(x.join_url ? 'LOCATION:' + x.join_url : ''),
+      'BEGIN:VALARM','TRIGGER:-PT1H','ACTION:DISPLAY','DESCRIPTION:' + title,'END:VALARM','END:VEVENT','END:VCALENDAR'].filter(Boolean).join('\r\n');
+    if (gid) { $('bgty-ics').href = 'data:text/calendar;charset=utf-8,' + encodeURIComponent(ics); $('bgty-ics').hidden = false; }
+    if (x.join_url) { $('bgty-zoom').href = x.join_url; $('bgty-zoom').hidden = false; }
+    if (x.reschedule_url) { var r = $('bgty-resched'); r.href = x.reschedule_url; r.target = '_blank'; r.rel = 'noopener'; }
+    // "Invite not showing up?": adds the call to their own Google Calendar from the same details.
+    var p = new URLSearchParams();
+    p.set('action', 'TEMPLATE'); p.set('text', title); p.set('dates', icsDate(s) + '/' + icsDate(e)); p.set('details', details);
+    if (x.join_url) p.set('location', x.join_url);
+    if (email) p.set('authuser', email.toLowerCase());
+    $('bgty-gadd').href = 'https://calendar.google.com/calendar/render?' + p.toString();
+    $('bgty-inv-add').hidden = false;
+  }
+
+  // ---- the clean page a lead shares with a partner ----
+  function partnerView(){
+    var t = q.get('t') ? new Date(q.get('t')) : null;
+    $('bgty-badge').textContent = 'Call details';
+    $('bgty-h1').textContent = 'You’ve been asked to join a call.';
+    $('bgty-sub').textContent = 'Someone you work with booked a call with BusinessGrowR about growing their trading community. These short videos explain what it’s about. They take under ten minutes.';
+    if (t && !isNaN(t)) { $('bgty-when').textContent = fmtWhen(t, false); $('bgty-tz').textContent = tzLine(60); }
+    else { $('bgty-when').textContent = 'Your call with BusinessGrowR'; $('bgty-tz').textContent = '60-minute Zoom call'; }
+    var lock = $('bgty-lock'); if (lock) lock.parentNode.removeChild(lock); // also stops a leftover 30 Sep invite-help element from attaching
+    $('bgty-pnote').hidden = false;
+    ['bgty-dm', 'bgty-q', 'bgty-rs', 'bgty-prep'].forEach(function(id){ var el = $(id); if (el) el.hidden = true; });
+    var h = (q.get('h') || '').replace(/[^A-Za-z' -]/g, '').slice(0, 30);
+    if (h) { setHost(h); $('bgty-hline').textContent = 'from BusinessGrowR will be on the call'; }
+  }
+
+  // ---- share with a partner ----
+  function shareUrl(){
+    var u = location.origin + location.pathname + '?for=partner';
+    if (state.start) u += '&t=' + encodeURIComponent(state.start.toISOString());
+    if (state.hostFirst) u += '&h=' + encodeURIComponent(state.hostFirst);
+    return u;
+  }
+  function shareText(){
+    return 'Hey, I just booked a call with BusinessGrowR about growing my trading community.' +
+      (state.start ? ' The call is ' + fmtWhen(state.start, true) + '.' : '') +
+      ' Here’s the page they sent me. Can you watch the short videos and join me on the call?';
+  }
+  $('bgty-share').addEventListener('click', function(){
+    var url = shareUrl(), text = shareText(), full = text + ' ' + url;
+    function copied(){ $('bgty-copied').hidden = false; ga('ty_share', {method: 'copy'}); }
+    function sms(){ ga('ty_share', {method: 'sms'}); location.href = 'sms:?&body=' + encodeURIComponent(full); }
+    if (navigator.share) {
+      navigator.share({title: 'BusinessGrowR call', text: text, url: url})
+        .then(function(){ ga('ty_share', {method: 'share'}); })
+        .catch(function(err){ if (!err || err.name !== 'AbortError') { if (navigator.clipboard) navigator.clipboard.writeText(full).then(copied, sms); else sms(); } });
+      return;
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(full).then(copied, sms);
+    else sms();
+  });
+
+  // ---- reschedule fallback and calendar-tap events ----
+  var resched = $('bgty-resched');
+  resched.addEventListener('click', function(e){ if (resched.getAttribute('href') === '#') { e.preventDefault(); $('bgty-reschednote').hidden = false; } });
+  ['bgty-gcal', 'bgty-ics', 'bgty-zoom'].forEach(function(id){ var el = $(id); if (el) el.addEventListener('click', function(){ ga('ty_' + id.replace('bgty-', '')); }); });
+  $('bgty-gadd').addEventListener('click', function(){ ga('ty_gcal_add'); });
+
+  // ---- start ----
+  if (MODE === 'partner') { partnerView(); goDeep(); return; }
+  inviteHelp();
+  if (email) { var g = $('bgty-gcal'); if (g.href.indexOf('authuser=') < 0 && g.href.indexOf('/event?eid=') > -1) g.href += '&authuser=' + encodeURIComponent(email.toLowerCase()); }
+  if (q.get('h')) setHost(q.get('h').replace(/[^A-Za-z' -]/g, '').slice(0, 30));
+  if (P) { render(P); goDeep(); return; }
+  // Calendly's own redirect (every booking from /dfy-calendar, and reschedules) sends the details in the URL instead of book=.
+  // Show those at once, then ask the lookup for the Zoom link and the real invite (Accept button) using the invitee id.
+  if (!book && q.get('event_start_time')) {
+    var iu = q.get('invitee_uuid') || '';
+    render({start_time: q.get('event_start_time'), end_time: q.get('event_end_time'), host_name: q.get('assigned_to') || '',
+      invitee_first_name: q.get('invitee_first_name') || '', reschedule_url: iu ? 'https://calendly.com/reschedulings/' + iu : ''});
+    if (!(IU && email && LOOKUP)) { goDeep(); return; }
+  }
+  if (!book) book = IU;
+  if (!book || !LOOKUP) { goDeep(); return; }
+  var ctl = ('AbortController' in window) ? new AbortController() : null;
+  if (ctl) setTimeout(function(){ ctl.abort(); }, 6000);
+  fetch(LOOKUP + '?book=' + encodeURIComponent(book) + '&email=' + encodeURIComponent(email), ctl ? {signal: ctl.signal} : {})
+    .then(function(r){ return r.ok ? r.json() : null; })
+    .then(function(x){ render(x); goDeep(); })
+    .catch(function(){ goDeep(); });
+})();
+</script>
+</div>
