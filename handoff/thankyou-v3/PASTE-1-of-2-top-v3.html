@@ -3,7 +3,7 @@
      (same ids, so a leftover copy of that element does no harm). Part 2 (case-study cards) goes directly below.
      Reads ?book=&email= (or Calendly's invitee_uuid=&invitee_email=) and asks the read-only call-details lookup (n8n 8Ukn94krPOJvHcgX); works without it.
      Other params:
-       ?v=intro|build|fee|guarantee|time|fit   opens the page at that video (for SMS and email links)
+       ?v=intro|build|fee|guarantee|time|onboarding|fit   opens the page at that video (for SMS and email links)
        ?h=Jay                                  names the closer when there is no booking ref (picks the intro video)
        ?c=<GHL contact id>                     passed to the watch log only
        ?for=partner&t=<ISO time>&h=<first name>  the clean page a lead shares with a partner: no email, Zoom or reschedule link
@@ -171,6 +171,12 @@
     <div class="vu"><p>One reel a day and one YouTube video a week. About 2 to 4 hours a week, maybe 5 at the start. We coach your hooks, angles and content plan. We don&rsquo;t edit or script for you; that&rsquo;s a separate paid option if you want it. Most clients batch-record in one sitting.</p><p class="soon">Video coming soon.</p></div>
   </article>
 
+  <article class="vc row" id="bgty-v-onboarding" data-key="onboarding">
+    <button type="button" class="vt" aria-label="Play: What happens the day you join"><span class="pl" aria-hidden="true"></span><span class="du" data-du>1 min</span></button>
+    <div class="vh"><h3>What happens the day you join</h3><p class="who">Louis Band, head of sales and client success &middot; 1 min</p></div>
+    <div class="vu"><p>Day one, you fill out the onboarding forms (about 20 to 30 minutes) so we can write and build your funnels, emails and content plan around how you trade. Then you go through our trainings on trading content, YouTube and reels while we build. Your funnels are live in about 7 to 10 days.</p><p class="soon">Video coming soon.</p></div>
+  </article>
+
   <article class="vc row" id="bgty-v-fit" data-key="fit">
     <button type="button" class="vt" aria-label="Play: Who this is a fit for, and who it isn't"><span class="pl" aria-hidden="true"></span><span class="du" data-du>1&frac14; min</span></button>
     <div class="vh"><h3>Who this is a fit for (and who it isn&rsquo;t)</h3><p class="who">Andy Pham, founder &middot; 1&frac14; min</p></div>
@@ -228,7 +234,7 @@
 (function(){
   var LOOKUP = 'https://businessgrowr.app.n8n.cloud/webhook/bg-call-details'; // n8n 8Ukn94krPOJvHcgX (read-only Calendly), live since 25 Sep
   // Vidalytics embed ids, filled in as each video is recorded. An empty id shows the card as text only ("Video coming soon").
-  var VID = {intro_jay:'u973WjeCxj86BvNU', intro_louis:'W2wTWENMpQVD2Vlf', intro_andy:'TdgcxcwBpV_VBpFv', build:'dn_7_5KVX9NPvJXQ', fee:'loUoFv7q4cLEP_nE', guarantee:'wqPEds84fOZZDz5u', time:'BnPINwnjUV61oMdG', fit:'P5y0zxQ1UUFSxyUD'};
+  var VID = {intro_jay:'u973WjeCxj86BvNU', intro_louis:'W2wTWENMpQVD2Vlf', intro_andy:'TdgcxcwBpV_VBpFv', build:'dn_7_5KVX9NPvJXQ', fee:'loUoFv7q4cLEP_nE', guarantee:'wqPEds84fOZZDz5u', time:'BnPINwnjUV61oMdG', onboarding:'ouh61iojcPasNPhe', fit:'P5y0zxQ1UUFSxyUD'};
   var VACCT = '8fGwmrPr';          // Vidalytics account path (same as the 7-min video on v2)
   var VPAD = {};                   // optional per-video padding-top from each Vidalytics embed code; default 56.25% (16:9)
   var WATCH_LOG = '';              // n8n webhook that logs {booking ref, contact id, video}; empty until Andy approves building it
