@@ -53,3 +53,7 @@ Written 16 Oct 2026 for OpenClaw. Andy asked for this in the Funnel Audit projec
 - Don't change the domain settings, the other funnels, the contact form or its consent wording, or anything on the VSL/ads funnels.
 - Don't make test purchases on the Stripe links.
 - Rollback: if anything looks broken after publishing, swap the backup clone's content back in, or unhide the old sections, and tell Andy.
+
+## Head code (live since 16 Oct 2026, 8:45 PM ET)
+
+`ghl-head-code.html` goes in Settings > Tracking Code > Header Tracking on both the Home step and the About step. It loads the Chivo font, squares the buttons, sets the motion (headline word rise, heading fade, savings bars, route lighting) and draws the account logo on any page whose header has no logo image. Replace the whole Header Tracking box with it; don't stack it on older header code.
