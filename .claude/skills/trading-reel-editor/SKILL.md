@@ -12,6 +12,14 @@ lessons, plus 4 written guides and 18 quizzes), the content course BusinessGrowR
 trading-education businesses it has helped grow to $20M+ in revenue. Everything runs locally:
 ffmpeg + Python, no API keys.
 
+Follower growth of BusinessGrowR clients running this content system (names withheld; these were
+full-service engagements, so the editing was one part of the result):
+- iFVG trader: 0 to 100K+ followers
+- live-trading community: 80K followers in 3 months
+- trading educator starting from zero: 0 to 20K+ followers in 90 days
+- trading Discord: 2.5K to 20K followers in 2 weeks
+- ICT trading Discord: Instagram followers 4x
+
 Read first:
 - `references/formats.md` - the five winning formats with exact specs (layout, hook, captions, motion,
   structure, CTA, length) and what separated top reels from bottom reels.
