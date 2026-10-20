@@ -15,13 +15,16 @@ Agent 4 of 4 (see reel-scripts for the map). In the video this ran through Treg 
 - Never post test reels to the live account. The preflight is the test.
 
 ## Publish
-n8n workflow "BG — IG trial reel publisher (agent 4, posts only on Andy go)". Its webhook `/webhook/bg-ig-trial-reel` takes `{video_url, caption, graduation: "MANUAL"|"SS_PERFORMANCE", reel_id, approval_msg_id}`. It refuses to run without the go message id, looks up the IG account from Page 217097514815999, creates a REELS container with `trial_params.graduation_strategy`, waits for FINISHED, publishes and reads back the permalink.
+Planned n8n workflow "BG — IG trial reel publisher (agent 4, posts only on Andy go)" (not built yet, see Status). Its webhook `/webhook/bg-ig-trial-reel` takes `{video_url, caption, graduation: "MANUAL"|"SS_PERFORMANCE", reel_id, approval_msg_id}`. It refuses to run without the go message id, looks up the IG account from Page 217097514815999, creates a REELS container with `trial_params.graduation_strategy`, waits for FINISHED, publishes and reads back the permalink.
 - `video_url` must be a public https link to the .mp4 that Meta can fetch. Use a Drive file shared "anyone with the link" via its direct-download URL, then unshare it once the read-back shows the reel.
 - Default `graduation: MANUAL`, so Andy decides what goes to followers.
 - Log each post (reel_id, media id, permalink, time ET) in the reel folder's `posted.md`.
 - Graduating a trial reel to followers is **not in the API** (third-party docs, unchecked against Meta's own pages). Andy does it in the IG app.
 
-Status 20 Oct 2026: first build `m4OIbxALzwYzRyl6` archived. Its read-only preflight (exec 283034) failed because the IG user id from memory (17841453917028277) did not load with the system user token. The rebuilt version looks the account up from the Page. Run its "Preflight (read-only)" branch and confirm `content_publishing_limit` answers before the first real post. If it answers with a permissions error, the token lacks `instagram_content_publish`, and Andy has to add that in Business Settings.
+**Status 20 Oct 2026: there is no working publisher yet.** The design above was built once as `m4OIbxALzwYzRyl6` and then archived. Its read-only preflight (exec 283034) couldn't load the hard-coded IG user id 17841453917028277 with the system user token. The rebuild, which looks the account up from the Page instead, was blocked in that session by the auto-mode permission check and never created. Before the first post:
+1. build it (from the design above, with the look-up),
+2. run its read-only "Preflight" branch and confirm `content_publishing_limit` answers. A permissions error means the token lacks `instagram_content_publish`, and Andy adds it in Business Settings.
+3. Only then ask Andy for the go.
 
 ## Comment-keyword DM
 Each idea has one KEYWORD (from `scripts.json`). The ManyChat "comment KEYWORD → DM the link" automation is built in ManyChat's UI. ManyChat has no API for this, so it goes to the Mac mini agent through Remote Control on Andy's go, because sending DMs to leads needs his approval. Until it's built, the CTA promises a DM that nobody sends, so don't post a reel before its keyword is wired.

@@ -16,7 +16,7 @@ One idea: a sheet row (Date + Link, or the row's "Script angle") or a topic Andy
 
 ## Before writing (every time)
 1. Read `/mnt/project-files/content/messaging-bank/andy-positions-and-lines-2026-10-04.md` sections 2, 3, 4 and 8. Use only `USE` and `SOURCED` items. Never `CHECK` or `HOLD`, and nothing in section 8. Keep the item code (F16, belief 7...) next to each line in the notes, not in the spoken words.
-2. Read `/mnt/project-files/content/vibe-editing-2026-10-14/hormozi-100/rubric.md`. Every version must pass its six hard gates and score 70+.
+2. Read `/mnt/project-files/content/vibe-editing-2026-10-14/hormozi-100/rubric.md`. Every version must pass its six hard gates and score 70+. Organic reels end on the CTA, so gate 5 ("ends on a principle or punchline") applies to the line right before the CTA.
 3. Open the source video link so the version is ours, not a copy of theirs. Andy wants the source link kept with the idea.
 
 ## What to write
@@ -24,7 +24,9 @@ One idea: a sheet row (Date + Link, or the row's "Script angle") or a topic Andy
 - **Hook in the first sentence**, claim or problem inside ~2 s. Then tension, a turn, one concrete example, a principle line, and the CTA.
 - **Length:** 110 to 190 spoken words (about 45 to 75 s at Andy's pace). The rubric median is 74 s.
 - **CTA:** the last line is `Comment "KEYWORD" and I'll send you <the thing>.` One keyword per idea, one plain word in caps (for example AUDIT), and the same across all 5 versions so one ManyChat trigger serves them all. Andy wires ManyChat, or the Mac agent does on his go.
-- **Voice:** Andy's spoken voice, short sentences, no em dashes, no aphorism endings, no "Re:"-style bait. Clients are anonymous and labelled by niche. No trading-performance claims. "$20M+ in revenue for trading education businesses" and "$6.4M+ in sales on our own Whop" are allowed. Any other number needs a SOURCED item, and **every on-screen number needs a proof asset**, so list it in editor notes.
+- **Specificity:** generic advice scores in the 60s. Lift a version with a SOURCED story or figure from bank section 6 (for example S12 options Discord, S13 futures Discord), anonymised as the bank says, and list its proof in `proof_needed`.
+- **No hardened claims:** never "most owners", "every time" or "almost never" unless the bank item says so. Use the bank's own hedges ("generally", "a lot of", "in our experience").
+- **Voice:** Andy's spoken voice, short sentences, no em dashes, no aphorism endings, no "Re:"-style bait. Don't say "Whop" out loud: captions are burned in, and captions never mention Whop. Clients are anonymous and labelled by niche. No trading-performance claims. "$20M+ in revenue for trading education businesses" and "$6.4M+ in sales on our own Whop" are allowed. Any other number needs a SOURCED item, and **every on-screen number needs a proof asset**, so list it in editor notes.
 - No Whop tag or mention in captions (Andy 16 Oct, for X; apply to IG too).
 
 ## Output (folder `/mnt/project-files/content/reels/<YYYY-MM-DD>-<slug>/`)
