@@ -5,7 +5,7 @@
   "focus_x": 0.5,
   "hook": {
     "text": "Your qualifier hook line",
-    "style": "bold",
+    "style": "plain",
     "y": 0.2,
     "end": 2.5,
     "size": 0.04

@@ -6,7 +6,8 @@ description: Edit a trading creator's raw recording into a vertical Instagram/Ti
 # Trading reel editor
 
 Turns a raw recording (webcam + chart screen recording, or a talking head) into a 1080x1920 reel,
-following what the top reels of 7 trading creators actually do (213 reels studied, Oct 2026) and the
+following what 1,000 reels from 7 trading creators actually do (every reel measured and coded by eye,
+Oct 2026) and the
 editing rules of BusinessGrowR's "Advanced Trading Content" course (about 2.5 hours of video across 22
 lessons, plus 4 written guides and 18 quizzes), the content course BusinessGrowR uses with the
 trading-education businesses it has helped grow to $20M+ in revenue. Everything runs locally:
@@ -21,6 +22,8 @@ full-service engagements, so the editing was one part of the result):
 - ICT trading Discord: Instagram followers 4x
 
 Read first:
+- `references/reel-study-1000.md` - which traits went with more views across the 1,000 reels
+  (proof in the first 3 s, question hooks, plain hook text) and which didn't.
 - `references/formats.md` - the five winning formats with exact specs (layout, hook, captions, motion,
   structure, CTA, length) and what separated top reels from bottom reels.
 - `references/rules.md` - script, cutting, visual and CTA rules from the course, with notes where the
@@ -49,9 +52,11 @@ first run downloads the speech model). A bold sans font (Inter, Montserrat or si
    removes pauses over about 0.5 s (0.35 s gap + padding) and filler words, snaps cuts to whole
    frames and remaps word times so captions stay in sync. It never speeds footage up. It only cuts
    the main file, so for a stack keep webcam and chart in one recording.
-6. **Write three hook lines** (4-10 words each): a command/"don't", a number claim, and a curiosity or
-   ironic line. Re-posts with a new hook varied 1.5-4x in the study (cause unproven), so render all
-   three and let the creator post or test them.
+6. **Write three hook lines** (4-10 words each, no emoji): one question, one plain statement or
+   number claim, and one that leads with the proof the creator can show. Avoid "stop/don't" command
+   hooks; they did worst in the 1,000-reel study. Score each with
+   `scripts/score.py plan.json --words tight.json [--proof-first-3s]`, render all three and let the
+   creator post or test them.
 7. **Write `plan.json`** (copy one from `examples/`) and render: `scripts/render.py plan.json out.mp4`.
    - Stack: set `stack.top.rect` to the webcam and `stack.bottom.rect` to the chart (source pixels,
      cropping browser bars away). Split 0.29-0.35.
@@ -59,7 +64,10 @@ first run downloads the speech model). A bold sans font (Inter, Montserrat or si
      white with a black outline (`accent: null`, no `pop`), as in the studied stack reels and the
      course; the face format may use one accent colour for numbers and keywords. Never copy another
      creator's look or hook lines.
-   - Hook text ends at about 3 s; captions start when it ends; CTA box in the last 3 s.
+   - Hook text: `style: "plain"` (white, soft shadow, no box) by default; boxed hooks did worse in
+     the study. Ends at about 3 s; captions start when it ends; CTA in the last 3 s.
+   - If the creator has a real result (P&L, broker screen, chart that hit target), put it on screen
+     in the first 3 s: the strongest signal in the study.
 8. **Check:** `scripts/qa.py out.mp4 --plan plan.json --format stack`. Fix every FAIL (usually: a
    static chart stretch over 5 s - re-record with live drawing, or cut the dead part; pauses - re-run
    tighten; length - trim). Then look at frames at 0.5 s, 3.5 s, the middle and the last 2 s: text
@@ -89,6 +97,7 @@ first run downloads the speech model). A bold sans font (Inter, Montserrat or si
 - `scripts/tighten.py` - cut pauses and fillers, remap words.
 - `scripts/render.py` - layout (full / stack / card), hook box, word captions with accent colours,
   CTA box, measured loudness to -14 LUFS.
+- `scripts/score.py` - scores a plan's hook and proof against the 1,000-reel study.
 - `scripts/qa.py` - gates: size, fps, length per format, letterbox, hook timing, pace, pauses,
   fillers, caption start, first visual change by 2 s, no static stretch over 5 s (chart panel only for
   stack), CTA timing, loudness.

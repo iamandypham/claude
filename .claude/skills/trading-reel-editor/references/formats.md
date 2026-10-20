@@ -1,4 +1,4 @@
-# Reel formats (from the 213-reel study)
+# Reel formats (from the reel study)
 
 Source: up to the top 40 reels by views from each of 7 trading creators on Instagram (213 reels; three
 accounts had fewer: 26, 18 and 9; Oct 2026):
@@ -13,8 +13,10 @@ Five formats cover almost every winning reel. Pick one per reel; don't mix two.
 Used as the main teaching format by 3 of the 7 creators and by a fourth for strategy reels (about 60 of the 213 reels).
 - Canvas: 1080x1920. Webcam on top, 29-35% of the height, face filling the width. Chart below, full
   width, browser bars cropped off. The webcam never cuts; the chart does all the moving.
-- Hook text: on the seam between webcam and chart (about 30-40% from the top). A short box: white text
-  on a black (or white) rounded box, 4-10 words, often a command or a "don't/stop/this is NOT" line, or
+- Hook text: on the seam between webcam and chart (about 30-40% from the top). Studied stack reels mostly used
+  a box (white text on a black or white rounded box), but across 1,000 reels plain unboxed hook text
+  did better, so the skill defaults to plain. 4-10 words; the studied reels often used a command
+  or a "don't/stop/this is NOT" line (which scored worst across 1,000 reels), or
   a number claim. Some add one emoji at the end. On screen from frame 0, gone at 2.4-6.5 s
   (median about 3 s). Two of the stack creators set the hook in a serif "book" face over sans
   captions (set `hook.font`), and the course's own example does the same.
@@ -75,6 +77,11 @@ One account's 32/40 top reels.
 - Length 37-60 s. This format did fine but never topped an account.
 
 ## What separated top reels from bottom reels (all formats)
+
+The 1,000-reel pass (`reel-study-1000.md`) supersedes this section where they differ: it found proof
+in the first 3 s, question hooks and plain (unboxed) hook text went with more views, command hooks
+and emoji with fewer, and length, cut rate and letterbox made no clear difference. The notes below
+are from the first 213 top-ranked reels.
 - Re-posts of the same footage with a new hook line differed by 1.5-4x in views, but identical
   re-posts with no change also got only 40-55% of the original, and some pairs were full re-edits.
   The cause is unproven. Writing 3 hook lines and testing them is cheap, so do it, but don't promise

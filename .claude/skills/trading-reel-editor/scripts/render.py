@@ -13,7 +13,7 @@ plan.json (see examples/plan-*.json):
             "top": {"src": "main", "rect": [x, y, w, h]},      # rect in source pixels, optional
             "bottom": {"src": "main" | "chart.mp4",  # a separate file is NOT tightened "rect": [x, y, w, h]}},
   "card": {"seconds": 8, "bg": "000000", "lines": ["..."], "header": "Name  @handle"},
-  "hook": {"text": "Your hook line here", "style": "box" | "bold", "y": 0.33,
+  "hook": {"text": "Your hook line here", "style": "plain" | "box" | "bold", "y": 0.33,
            "end": 3.0, "size": 0.03, "font": "Inter"},  # font defaults to the caption font
   "captions": {"mode": "word" | "phrase", "max_words": 3, "y": 0.33, "size": 0.035,
                "font": "Inter", "bold": true, "upper": true,
@@ -80,6 +80,7 @@ ScaledBorderAndShadow: yes
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
 Style: Cap,{font},{csize},{white},{white},{black},{ass_color('000000','80')},{bold},0,0,0,100,100,0,0,1,{max(3, csize // 12)},0,5,60,60,0,1
 Style: HookBox,{hfont},{hsize},{ass_color(hook.get('color', 'FFFFFF'))},{white},{ass_color(hook.get('box', '000000'))},{ass_color(hook.get('box', '000000'))},-1,0,0,0,100,100,0,0,3,{max(8, hsize // 4)},0,5,80,80,0,1
+Style: HookPlain,{hfont},{hsize},{ass_color(hook.get('color', 'FFFFFF'))},{white},{ass_color('000000','60')},{ass_color('000000','40')},-1,0,0,0,100,100,0,0,1,{max(2, hsize // 20)},{max(2, hsize // 18)},5,80,80,0,1
 Style: HookBold,{hfont},{hsize},{ass_color(hook.get('color', 'FFFFFF'))},{white},{black},{black},-1,0,0,0,100,100,0,0,1,{max(4, hsize // 9)},0,5,80,80,0,1
 
 [Events]
@@ -90,7 +91,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
     hook_end = 0.0
     if hook.get("text"):
         hook_end = min(float(hook.get("end", 3.0)), dur)
-        style = "HookBox" if hook.get("style", "box") == "box" else "HookBold"
+        style = {"box": "HookBox", "bold": "HookBold"}.get(hook.get("style", "plain"), "HookPlain")
         y = int(H * hook.get("y", 0.33))
         ev.append(f"Dialogue: 2,{ts(0)},{ts(hook_end)},{style},,0,0,0,,{{\\pos({x},{y})\\fad(0,120)}}{esc(hook['text'])}")
 
