@@ -11,13 +11,14 @@ plan.json (see examples/plan-*.json):
   "focus_x": 0.5,                   # full: horizontal crop centre 0-1
   "stack": {"split": 0.33,          # top panel height as share of 1920
             "top": {"src": "main", "rect": [x, y, w, h]},      # rect in source pixels, optional
-            "bottom": {"src": "chart.mp4" | "main", "rect": [x, y, w, h]}},
+            "bottom": {"src": "main" | "chart.mp4",  # a separate file is NOT tightened "rect": [x, y, w, h]}},
   "card": {"seconds": 8, "bg": "000000", "lines": ["..."], "header": "Name  @handle"},
-  "hook": {"text": "Stop marking THIS as liquidity", "style": "box" | "bold", "y": 0.33,
-           "end": 3.0, "size": 0.03},
+  "hook": {"text": "Your hook line here", "style": "box" | "bold", "y": 0.33,
+           "end": 3.0, "size": 0.03, "font": "Inter"},  # font defaults to the caption font
   "captions": {"mode": "word" | "phrase", "max_words": 3, "y": 0.33, "size": 0.035,
                "font": "Inter", "bold": true, "upper": true,
-               "color": "FFFFFF", "accent": "FFE14D", "negative": "FF4D4D",
+               "color": "FFFFFF", "accent": "FFE14D" | null, "negative": "FF4D4D",
+               "pop": false,                # small scale-in per caption (face format only)
                "keywords": ["liquidity"], "negative_words": ["loss", "lose"],
                "after_hook": true},
   "cta": {"text": "Comment \\"GUIDE\\"", "seconds": 3.0, "y": 0.42, "style": "box"},
@@ -54,7 +55,7 @@ def ts(t):
 
 
 def esc(text):
-    return text.replace("\\", "\\\\").replace("{", "(").replace("}", ")").replace("\n", "\\N")
+    return text.replace("\\", "/").replace("{", "(").replace("}", ")").replace("\n", "\\N")
 
 
 def build_ass(plan, dur):
@@ -64,6 +65,7 @@ def build_ass(plan, dur):
     font = cap.get("font", "Inter")
     csize = int(H * cap.get("size", 0.035))  # font size as a share of the 1920 height
     hsize = int(H * hook.get("size", 0.03))
+    hfont = hook.get("font", font)  # some stack creators use a serif hook title over sans captions
     bold = -1 if cap.get("bold", True) else 0
     white = ass_color(cap.get("color", "FFFFFF"))
     black = ass_color("000000")
@@ -77,8 +79,8 @@ ScaledBorderAndShadow: yes
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
 Style: Cap,{font},{csize},{white},{white},{black},{ass_color('000000','80')},{bold},0,0,0,100,100,0,0,1,{max(3, csize // 12)},0,5,60,60,0,1
-Style: HookBox,{font},{hsize},{ass_color(hook.get('color', 'FFFFFF'))},{white},{ass_color(hook.get('box', '000000'))},{ass_color(hook.get('box', '000000'))},-1,0,0,0,100,100,0,0,3,{max(8, hsize // 4)},0,5,80,80,0,1
-Style: HookBold,{font},{hsize},{ass_color(hook.get('color', 'FFFFFF'))},{white},{black},{black},-1,0,0,0,100,100,0,0,1,{max(4, hsize // 9)},0,5,80,80,0,1
+Style: HookBox,{hfont},{hsize},{ass_color(hook.get('color', 'FFFFFF'))},{white},{ass_color(hook.get('box', '000000'))},{ass_color(hook.get('box', '000000'))},-1,0,0,0,100,100,0,0,3,{max(8, hsize // 4)},0,5,80,80,0,1
+Style: HookBold,{hfont},{hsize},{ass_color(hook.get('color', 'FFFFFF'))},{white},{black},{black},-1,0,0,0,100,100,0,0,1,{max(4, hsize // 9)},0,5,80,80,0,1
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
@@ -104,7 +106,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
         start_at = hook_end if cap.get("after_hook", True) else 0.0
         kw = {k.lower() for k in cap.get("keywords", [])}
         neg = {k.lower() for k in cap.get("negative_words", [])}
-        acc = ass_color(cap.get("accent", "FFE14D"))
+        acc = ass_color(cap["accent"]) if cap.get("accent") else None  # null = white only
         red = ass_color(cap.get("negative", "FF4D4D"))
         n = 1 if cap.get("mode", "word") == "word" else int(cap.get("max_words", 3))
         y = int(H * cap.get("y", 0.33))
@@ -128,13 +130,15 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
                 t = re.sub(r"[,.!?;:]+$", "", t)
                 if cap.get("upper", True):
                     t = t.upper()
-                if bare in neg:
+                if acc is None:
+                    parts.append(esc(t))
+                elif bare in neg:
                     parts.append(f"{{\\c{red}}}{esc(t)}{{\\c{white}}}")
                 elif bare in kw or re.search(r"\d", bare):
                     parts.append(f"{{\\c{acc}}}{esc(t)}{{\\c{white}}}")
                 else:
                     parts.append(esc(t))
-            pop = "\\fscx92\\fscy92\\t(0,80,\\fscx100\\fscy100)"
+            pop = "\\fscx92\\fscy92\\t(0,80,\\fscx100\\fscy100)" if cap.get("pop", False) else ""
             ev.append(f"Dialogue: 1,{ts(s)},{ts(max(e, s + 0.12))},Cap,,0,0,0,,{{\\pos({x},{y}){pop}}}{' '.join(parts)}")
 
     card = plan.get("card") or {}

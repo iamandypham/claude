@@ -25,23 +25,29 @@ first run downloads the speech model). A bold sans font (Inter, Montserrat or si
    (`ffmpeg -i in.mp4 -vf fps=1/5,scale=640:-2 f_%02d.jpg`) and look: where is the webcam, where is
    the chart, is there speech, how long is it.
 2. **Pick the format** from `references/formats.md`: stack (teaching on a chart), face (talking head),
-   POV/joke, card (still text post) or explainer. One format per reel.
-3. **Transcribe:** `scripts/transcribe.py in.mp4 words.json`.
+   POV/joke or card (still text post). One format per reel. (The explainer format has no layout here
+   yet; see "Not automated yet".)
+3. **Transcribe:** `scripts/transcribe.py in.mp4 words.json`. Then proofread `words.json` for
+   trading terms the speech model mishears (FVG, BOS, ICT, ticker names, numbers) and fix them in
+   place. Studied reels shipped captions with ASR errors and even an unfilled "$XX,XXX" placeholder.
 4. **Find the reel inside the recording.** Read the transcript. Pick one idea that stands alone,
    20-60 s, starting on a strong first sentence (a promise, a number or a "don't"). Check it has the
    course shape (hook, proof, payoff shown on the chart, CTA). If the hook sentence is weak, say so to
    the creator rather than hiding it with edits.
 5. **Tighten:** `scripts/tighten.py in.mp4 words.json tight.mp4 tight.json --start S --end E`
-   removes pauses over 0.35 s and filler words, and remaps word times so captions stay in sync.
-   It never speeds footage up.
+   removes pauses over about 0.5 s (0.35 s gap + padding) and filler words, snaps cuts to whole
+   frames and remaps word times so captions stay in sync. It never speeds footage up. It only cuts
+   the main file, so for a stack keep webcam and chart in one recording.
 6. **Write three hook lines** (4-10 words each): a command/"don't", a number claim, and a curiosity or
-   ironic line. Same footage with a different hook moved views 1.5-3x in the study, so render all three
-   and let the creator post or test them.
+   ironic line. Re-posts with a new hook varied 1.5-4x in the study (cause unproven), so render all
+   three and let the creator post or test them.
 7. **Write `plan.json`** (copy one from `examples/`) and render: `scripts/render.py plan.json out.mp4`.
    - Stack: set `stack.top.rect` to the webcam and `stack.bottom.rect` to the chart (source pixels,
      cropping browser bars away). Split 0.29-0.35.
-   - Colours: the creator's own brand colours if they give them; otherwise white text, black box or
-     outline, one accent colour for numbers and keywords. Never copy another creator's look.
+   - Colours: the creator's own brand colours if they give them. Otherwise stack captions are plain
+     white with a black outline (`accent: null`, no `pop`), as in the studied stack reels and the
+     course; the face format may use one accent colour for numbers and keywords. Never copy another
+     creator's look or hook lines.
    - Hook text ends at about 3 s; captions start when it ends; CTA box in the last 3 s.
 8. **Check:** `scripts/qa.py out.mp4 --plan plan.json --format stack`. Fix every FAIL (usually: a
    static chart stretch over 5 s - re-record with live drawing, or cut the dead part; pauses - re-run
@@ -59,8 +65,10 @@ first run downloads the speech model). A bold sans font (Inter, Montserrat or si
 - Don't promise results in on-screen text that the footage doesn't show (trading claims need proof).
 
 ## Not automated yet
-- Live chart drawings: they have to be in the recording (draw while you talk). The QA gate catches a
-  static chart.
+- Live chart drawings: they have to be in the recording (draw while you talk). The QA gate checks
+  the chart panel below the caption seam and fails a static stretch over 5 s.
+- Explainer format (self-drawing chart, no face): no layout or example plan yet; build it in an
+  editor. QA can still check it with `--format explainer`.
 - The face/ad format's icon, counter and proof overlays every 0.5-1 s: add them in an editor, or
   render proof screenshots as a second input in a stack.
 - Face tracking: `full` layout crops at a fixed `focus_x`; keep the speaker centred when recording.

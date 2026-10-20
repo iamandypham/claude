@@ -4,11 +4,12 @@
 Usage: tighten.py <video> <words.json> <out_video> <out_words.json>
          [--max-gap 0.35] [--pad 0.08] [--fillers um,uh,erm,uhm] [--start S] [--end S]
 
-Keeps every word, removes pauses longer than --max-gap and the filler words listed,
+Keeps every word, removes pauses longer than about --max-gap + 2 x --pad (0.51 s by default) and the filler words listed,
 and writes a new words.json with times remapped to the tightened video, so captions
-line up. Never speeds anything up (the course says: cut, don't fast-forward).
+line up. Only the main video is cut: a separate chart recording used as stack.bottom.src
+will drift, so record webcam and chart into one file. Never speeds anything up (the course says: cut, don't fast-forward).
 """
-import argparse, json, re, subprocess
+import argparse, json, math, re, subprocess
 
 
 def keep_spans(words, max_gap, pad, fillers, t0, t1):
@@ -37,6 +38,13 @@ def remap(words, spans, fillers):
     return out, offset
 
 
+def probe_fps(path):
+    out = subprocess.run(["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries",
+                          "stream=r_frame_rate", "-of", "csv=p=0", path], capture_output=True, text=True).stdout
+    num, _, den = out.strip().partition("/")
+    return float(num) / float(den or 1)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("video"); ap.add_argument("words"); ap.add_argument("out"); ap.add_argument("out_words")
@@ -50,6 +58,9 @@ def main():
     fillers = set(a.fillers.split(",")) if a.fillers else set()
     t1 = a.end if a.end is not None else data["duration"]
     spans = keep_spans(data["words"], a.max_gap, a.pad, fillers, a.start, t1)
+    fps = probe_fps(a.video)
+    # Snap span edges to whole frames so the video and the remapped word times stay in step.
+    spans = [[math.floor(s * fps) / fps, math.ceil(e * fps) / fps] for s, e in spans]
     if not spans:
         raise SystemExit("no speech found in range")
     parts, labels = [], []

@@ -19,7 +19,10 @@ disagree, the note says which to follow. Numbers in [brackets] are course lesson
 ## Cutting
 - Cut every pause and filler ("um", "okay so now moving on to..."), hardest in the hook. [5, 6, 12]
 - Do not speed the whole video up. Trim instead; slow down only for the key point. [12]
-- Speak as fast as stays clear to nearly everyone; slower for a strong accent. [11]
+- Speak as fast as stays clear to nearly everyone; slower for a strong accent. Non-critical parts
+  can go faster. [11, 12]
+- Export at 60 fps or more. [1] (render.py outputs 30 fps, which matches the studied reels; set the
+  ffmpeg `fps=` value to 60 if the creator records at 60.)
 
 ## Visuals
 - First drawing on the chart within 2 s (ideally at once), then something changes at least every
@@ -51,4 +54,5 @@ disagree, the note says which to follow. Numbers in [brackets] are course lesson
 
 ## Cadence (for planning a batch)
 - At least one short a day; three a day is the recommendation. [2]
-- About 80% problem-aware topics, 10% solution-aware, 10% offer-aware; none aimed at total beginners. [13]
+- About 80% problem-aware topics and 10% solution-aware; the last 10% (product-aware and most-aware)
+  is handled by the creator's other systems, not by reels. None aimed at total beginners. [13]

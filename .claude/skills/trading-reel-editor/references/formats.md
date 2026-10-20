@@ -1,6 +1,7 @@
 # Reel formats (from the 213-reel study)
 
-Source: the top 40 reels by views from each of 7 trading creators on Instagram (213 reels; Oct 2026):
+Source: up to the top 40 reels by views from each of 7 trading creators on Instagram (213 reels; three
+accounts had fewer: 26, 18 and 9; Oct 2026):
 two options/ICT educators with a webcam-over-chart format, one futures educator mixing tutorials and jokes,
 one lifestyle/education creator, one options coach running ad-style talking heads, one large lifestyle
 trader, and one X-post/explainer account. Views are public counts. Top reels in some accounts are
@@ -14,12 +15,15 @@ Used as the main teaching format by 3 of the 7 creators and by a fourth for stra
   width, browser bars cropped off. The webcam never cuts; the chart does all the moving.
 - Hook text: on the seam between webcam and chart (about 30-40% from the top). A short box: white text
   on a black (or white) rounded box, 4-10 words, often a command or a "don't/stop/this is NOT" line, or
-  a number claim ("90% win rate"). Some add one emoji at the end. On screen from frame 0, gone at
-  2.4-5.5 s (median about 3 s).
-- Captions: start the moment the hook text goes. One word at a time (or 1-3), white heavy sans, black
-  outline, centred on the same seam. Small to medium (about 2-4% of the height).
-- Motion: a live drawing, zoom, scroll or chart swap about every 1 s in the first 10-15 s; a full chart
-  or diagram swap every 4-8 s. Proof (P&L, broker or payout screenshot, circled in red) on frame 0 in
+  a number claim. Some add one emoji at the end. On screen from frame 0, gone at 2.4-6.5 s
+  (median about 3 s). Two of the stack creators set the hook in a serif "book" face over sans
+  captions (set `hook.font`), and the course's own example does the same.
+- Captions: start the moment the hook text goes. One word at a time (or 1-3), plain white heavy sans,
+  black outline, no colour accents, no animation, centred on the same seam. Small to medium (about
+  2-4% of the height). One stack creator captioned only 3 of 40 reels, so captions are a choice here,
+  not a rule.
+- Motion: a live drawing, zoom, scroll or chart swap every 1-4 s in the first 10-15 s; a full chart
+  or diagram swap every 4-12 s. Proof (P&L, broker or payout screenshot, circled in red) on frame 0 in
   the best reels of one creator (9/9).
 - Structure (20-70 s): hook 0-3 s, proof or setup 3-8 s, the idea shown live on the chart, payoff (the
   trade playing out, R:R box), short re-hook, CTA in the last 2-4 s.
@@ -57,8 +61,9 @@ One account's 32/40 top reels.
 - Canvas: one still image held for 8 s (or 4 s), no audio, no motion. Either an X/Twitter-post look
   (black background, avatar + name + handle header, 1-10 lines of white regular sans at about 4% of the
   height, optional chart image) or a white infographic slide with a bold title.
-- Copy: one list, recipe, definition or opinion that people save ("I keep it simple:", "my whole
-  model in 1 photo"). Broad topics beat niche ones (top 5 mean 303k vs bottom 5 mean 69k views).
+- Copy: one list, recipe, definition or opinion that people save. In that account the top 5 reels
+  (mean 303k views) were broad topics and the bottom 5 (69k) niche ones, but the top 5 also included
+  a joke and an explainer, so this is a lean, not a cards-only result.
 - CTA: soft or none ("Send to a friend that needs this", "Answer in comments").
 - Reposting the same card got 40-55% of the original's views.
 
@@ -70,16 +75,21 @@ One account's 32/40 top reels.
 - Length 37-60 s. This format did fine but never topped an account.
 
 ## What separated top reels from bottom reels (all formats)
-- Hook wording alone moved views 1.5-3x: three creators re-posted the same footage with a different
-  hook line, and the versions differed by 1.5-3x. So always write 3 hook lines per reel and test them.
+- Re-posts of the same footage with a new hook line differed by 1.5-4x in views, but identical
+  re-posts with no change also got only 40-55% of the original, and some pairs were full re-edits.
+  The cause is unproven. Writing 3 hook lines and testing them is cheap, so do it, but don't promise
+  a lift.
 - Short beats long when the idea fits: top-5 reels averaged about 20 s in one account and 40 s in the
   bottom 5; 60-120 s single-take tutorials sat at the bottom in two accounts.
-- Full-bleed beats letterbox: letterboxed 16:9 reels in a 9:16 frame were in the bottom half
-  (4 of the bottom 5 in one account). Same footage re-cut with a big hook card and bigger captions
-  got 1.9x the views (1.20M vs 0.63M).
+- Full-bleed over letterbox: in one account 4 of the bottom 5 reels were letterboxed 16:9 clips in
+  a 9:16 frame (its other letterboxed reels sat mid-table), so letterbox is a risk, not a proven loss.
 - Something changes on screen in the first 1-2 s (a drawing, a cut, a proof screenshot). Reels whose
   first change came after 5 s, or that held one static chart for 10+ s, sat at the bottom.
 - Big, readable text beats tiny text (captions or hook at 7-10% of the width did better than 4%).
-- Proof on screen early (P&L, live trade, payout) appeared in most top reels of the teaching and
-  ad formats.
-- Speech pace in the top half: about 3.2 words/s (bottom half 2.9). Nobody sped footage up.
+  One face-only clip re-cut with a big hook card and bigger captions got 1.9x the views
+  (1.20M vs 0.63M).
+- Proof on screen early (P&L, live trade, payout) was common in one stack creator's top reels
+  (9/9) and in the ad format, but another stack creator showed money proof in none of 18, and one ad
+  account's proof came at 22-36 s. Use it when the creator has it.
+- Speech pace did not separate top from bottom (within each creator the halves were about 3.3 vs
+  3.2 words/s). Most spoken reels sat between 2.5 and 4 words/s.

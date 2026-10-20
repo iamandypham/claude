@@ -24,7 +24,7 @@
     }
   },
   "hook": {
-    "text": "Stop marking THIS as liquidity",
+    "text": "Your 4-10 word hook line",
     "style": "box",
     "y": 0.32,
     "end": 3.0,
@@ -37,19 +37,12 @@
     "font": "Inter",
     "upper": true,
     "color": "FFFFFF",
-    "accent": "FFE14D",
-    "keywords": [
-      "liquidity",
-      "sweep"
-    ],
-    "negative_words": [
-      "loss",
-      "stopped"
-    ],
-    "after_hook": true
+    "accent": null,
+    "after_hook": true,
+    "pop": false
   },
   "cta": {
-    "text": "Comment \"GUIDE\"",
+    "text": "Comment \"WORD\"",
     "seconds": 3.0,
     "y": 0.32,
     "style": "box"

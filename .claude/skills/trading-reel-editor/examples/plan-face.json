@@ -4,7 +4,7 @@
   "words": "tight.json",
   "focus_x": 0.5,
   "hook": {
-    "text": "If you trade options, watch this",
+    "text": "Your qualifier hook line",
     "style": "bold",
     "y": 0.2,
     "end": 2.5,
@@ -27,10 +27,11 @@
     "negative_words": [
       "lost",
       "losing"
-    ]
+    ],
+    "pop": true
   },
   "cta": {
-    "text": "DM me \"RESULTS\"",
+    "text": "DM me \"WORD\"",
     "seconds": 3.0,
     "y": 0.42,
     "style": "box"

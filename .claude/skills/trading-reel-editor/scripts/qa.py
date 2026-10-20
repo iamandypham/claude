@@ -6,7 +6,7 @@ Usage: qa.py <out.mp4> --plan plan.json [--words words.json] [--format stack|fac
 import argparse, json, os, re, subprocess, sys
 
 TARGET_LEN = {  # seconds, from the studied top reels per format (references/formats.md)
-    "stack": (20, 75), "face": (25, 60), "pov": (6, 30), "card": (4, 8), "explainer": (30, 60),
+    "stack": (20, 70), "face": (30, 60), "pov": (6, 30), "card": (4, 8), "explainer": (37, 60),
 }
 
 
@@ -25,7 +25,8 @@ def probe(path):
 
 def visual_change_times(path, thresh=0.004, top_share=0.0):
     # Low scene threshold: chart drawings and zooms count as visual changes, not only hard cuts.
-    # For stack layouts only the chart panel is checked, so a talking webcam doesn't count.
+    # For stack layouts only the chart panel is checked, starting a little below the seam, so a
+    # talking webcam and the hook/captions/CTA burned on the seam don't count as chart motion.
     crop = f"crop=iw:ih*{1 - top_share:.3f}:0:ih*{top_share:.3f}," if top_share else ""
     err = run(["ffmpeg", "-hide_banner", "-i", path, "-vf",
                f"fps=10,{crop}scale=270:-2,select='gt(scene,{thresh})',showinfo", "-an", "-f", "null", "-"]).stderr
@@ -67,7 +68,7 @@ def main():
     lo, hi = TARGET_LEN[a.format]
     add(f"length {lo}-{hi}s for {a.format}", lo - 0.5 <= dur <= hi + 0.5, f"{dur:.1f}s")
     if a.format != "card":
-        add("no letterbox bars", not letterboxed(a.video), "full-bleed 9:16 (letterboxed reels underperformed)")
+        add("no letterbox bars", not letterboxed(a.video), "full-bleed 9:16 (letterbox sat in the bottom of one account)")
 
     hook = plan.get("hook") or {}
     if a.format != "card":
@@ -90,6 +91,8 @@ def main():
         add("speech starts by 0.5s", words[0]["s"] <= 0.5, f"first word {words[0]['s']:.2f}s")
         fill = [x["w"] for x in words if re.sub(r'[^a-z]', '', x["w"].lower()) in {"um", "uh", "erm", "uhm", "umm"}]
         add("no filler words", not fill, ", ".join(fill[:5]) or "none")
+        ph = [x["w"] for x in words if re.search(r"X{2,}|\[|\]|TODO", x["w"])]
+        add("no placeholder text in captions", not ph, ", ".join(ph[:5]) or "none")
         if plan.get("captions"):
             he = float(hook.get("end", 0)) if hook.get("text") else 0
             first_cap = next((x["s"] for x in words if x["s"] >= he - 0.05), None)
@@ -98,7 +101,7 @@ def main():
 
     stack = plan.get("layout") == "stack"
     ch = visual_change_times(a.video, 0.004 if stack else 0.01,
-                             (plan.get("stack") or {}).get("split", 0.33) if stack else 0.0)
+                             min(0.9, (plan.get("stack") or {}).get("split", 0.33) + 0.08) if stack else 0.0)
     if a.format == "card":
         warn("static card", "cards are meant to be still; checked length and size only")
     else:

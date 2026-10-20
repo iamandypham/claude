@@ -6,14 +6,14 @@
     "y": 0.3,
     "header": "Your Name  @yourhandle",
     "lines": [
-      "I keep it simple:",
+      "One line that frames the list:",
       "",
-      "1. Mark the 4H range",
-      "2. Wait for the sweep",
-      "3. Enter on the 5m shift",
-      "4. Target the opposite side",
+      "1. First step",
+      "2. Second step",
+      "3. Third step",
+      "4. Fourth step",
       "",
-      "That's the whole model."
+      "One closing line."
     ],
     "size": 0.036
   },
