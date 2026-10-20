@@ -1,0 +1,40 @@
+{
+  "layout": "full",
+  "main": "tight.mp4",
+  "words": "tight.json",
+  "focus_x": 0.5,
+  "hook": {
+    "text": "Your qualifier hook line",
+    "style": "bold",
+    "y": 0.2,
+    "end": 2.5,
+    "size": 0.04
+  },
+  "captions": {
+    "mode": "phrase",
+    "max_words": 3,
+    "y": 0.62,
+    "size": 0.05,
+    "font": "Montserrat",
+    "upper": true,
+    "color": "FFFFFF",
+    "accent": "C6FF3D",
+    "negative": "FF4D4D",
+    "keywords": [
+      "profitable",
+      "consistent"
+    ],
+    "negative_words": [
+      "lost",
+      "losing"
+    ],
+    "pop": true
+  },
+  "cta": {
+    "text": "DM me \"WORD\"",
+    "seconds": 3.0,
+    "y": 0.42,
+    "style": "box"
+  },
+  "loudness_lufs": -14
+}

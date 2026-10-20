@@ -1,0 +1,23 @@
+{
+  "layout": "card",
+  "card": {
+    "seconds": 8,
+    "bg": "000000",
+    "y": 0.3,
+    "header": "Your Name  @yourhandle",
+    "lines": [
+      "One line that frames the list:",
+      "",
+      "1. First step",
+      "2. Second step",
+      "3. Third step",
+      "4. Fourth step",
+      "",
+      "One closing line."
+    ],
+    "size": 0.036
+  },
+  "hook": {
+    "size": 0.036
+  }
+}
