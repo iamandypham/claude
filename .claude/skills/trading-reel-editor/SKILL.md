@@ -23,7 +23,7 @@ full-service engagements, so the editing was one part of the result):
 
 Read first:
 - `references/reel-study-1000.md` - which traits went with more views across the 1,000 reels
-  (proof in the first 3 s, question hooks, plain hook text) and which didn't.
+  (proof in the first 3 s, question hooks, calmer pace) and which didn't.
 - `references/formats.md` - the five winning formats with exact specs (layout, hook, captions, motion,
   structure, CTA, length) and what separated top reels from bottom reels.
 - `references/rules.md` - script, cutting, visual and CTA rules from the course, with notes where the
@@ -54,7 +54,7 @@ first run downloads the speech model). A bold sans font (Inter, Montserrat or si
    the main file, so for a stack keep webcam and chart in one recording.
 6. **Write three hook lines** (4-10 words each, no emoji): one question, one plain statement or
    number claim, and one that leads with the proof the creator can show. Avoid "stop/don't" command
-   hooks; they did worst in the 1,000-reel study. Score each with
+   hooks; they leaned worst in the 1,000-reel study. Score each with
    `scripts/score.py plan.json --words tight.json [--proof-first-3s]`, render all three and let the
    creator post or test them.
 7. **Write `plan.json`** (copy one from `examples/`) and render: `scripts/render.py plan.json out.mp4`.
@@ -64,10 +64,11 @@ first run downloads the speech model). A bold sans font (Inter, Montserrat or si
      white with a black outline (`accent: null`, no `pop`), as in the studied stack reels and the
      course; the face format may use one accent colour for numbers and keywords. Never copy another
      creator's look or hook lines.
-   - Hook text: `style: "plain"` (white, soft shadow, no box) by default; boxed hooks did worse in
-     the study. Ends at about 3 s; captions start when it ends; CTA in the last 3 s.
+   - Hook text: `style` "box" (default), "bold" (outlined) or "plain" (outline and shadow, no box);
+     the study found no clear effect of styling, so match the creator. Ends at about 3 s; captions
+     start when it ends; CTA in the last 3 s.
    - If the creator has a real result (P&L, broker screen, chart that hit target), put it on screen
-     in the first 3 s: the strongest signal in the study.
+     in the first 3 s: the strongest lean in the study.
 8. **Check:** `scripts/qa.py out.mp4 --plan plan.json --format stack`. Fix every FAIL (usually: a
    static chart stretch over 5 s - re-record with live drawing, or cut the dead part; pauses - re-run
    tighten; length - trim). Then look at frames at 0.5 s, 3.5 s, the middle and the last 2 s: text

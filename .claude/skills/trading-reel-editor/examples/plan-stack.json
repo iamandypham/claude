@@ -25,7 +25,7 @@
   },
   "hook": {
     "text": "Your 4-10 word hook line",
-    "style": "plain",
+    "style": "box",
     "y": 0.32,
     "end": 3.0,
     "size": 0.03

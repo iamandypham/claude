@@ -4,27 +4,28 @@
 Usage: score.py plan.json [--words words.json] [--proof-first-3s] [--format stack|face|pov|card|explainer]
 
 Prints each signal, its weight and the study evidence, then a total. The signals are weak on their
-own (the whole score correlates about +0.17 with a reel's views rank inside its creator's account,
+own (the whole score correlates about +0.14 with a reel's views rank inside its creator's account,
 measured on the same reels it was built from). Use it to choose between hook lines and fix easy
 misses, not to predict views.
 """
 import argparse, json, os, re
 
-QUESTION = re.compile(r"\?\s*\S*$|^(why|how|what|when|which|who)\b", re.I)
-COMMAND = re.compile(r"^(stop|don'?t|never|always|quit|start|use|try|watch|do|avoid|learn|look)\b", re.I)
+QUESTION = re.compile(r"\?|^(why|what|which|who|when|wtf|is|are|does|can|should|would|will)\b", re.I)
+COMMAND = re.compile(r"(^|[.!:]\s+)(stop|don'?t|never|always|quit|start|use|try|watch|avoid|learn|look|keep|pay|set|"
+                     r"take|stay|forget|quit|do not)\b", re.I)
 EMOJI = re.compile("[\U0001F300-\U0001FAFF☀-➿]")
 
 
 def hook_signals(text):
     out = []
-    t = (text or "").strip()
+    t = (text or "").strip().replace("\u2019", "'")
     if not t:
         return out
-    if QUESTION.search(t):
-        out.append(("hook is a question", +1.0, "question hooks: median views rank 0.62-0.65 in two accounts"))
+    if QUESTION.search(t) and not re.match(r"how (to|i)\b", t, re.I):
+        out.append(("hook is a question", +1.0, "question hooks: median views rank 0.62 (n25) and 0.65 (n20); weaker in two small groups"))
     elif COMMAND.search(t):
         out.append(("hook is a command (stop/don't/use...)", -1.0,
-                    "command hooks: median views rank 0.25 (n19) and 0.44 (n23)"))
+                    "command hooks: median views rank 0.25 (n19) and 0.44 (n23); 0.71 in one small account (n4)"))
     if EMOJI.search(t):
         out.append(("emoji in hook", -0.5, "one stack account: 0.44 with emoji vs 0.58 without (n143)"))
     return out
@@ -44,10 +45,6 @@ def main():
     else:
         rows.append(("no proof in the first 3 s", 0.0, "add a P&L/result screenshot early if the creator has one"))
     rows += hook_signals(hook.get("text"))
-    style = hook.get("style", "plain")
-    if hook.get("text") and style in ("box", "bold"):
-        rows.append((f"hook text in a {style} style", -1.0,
-                     "boxed/outlined hooks: 0.18 (n24) in one account, 0.46 vs plain 0.65 in another"))
     fmt = a.format or ("stack" if plan.get("layout") == "stack" else None)
     if fmt == "pov":
         rows.append(("POV/joke format", +0.5, "POV reels: 0.71 and 0.61 in two accounts (reach, not leads)"))
@@ -55,11 +52,13 @@ def main():
         try:
             wpath = a.words or os.path.join(os.path.dirname(os.path.abspath(a.plan)), plan["words"])
             words = json.load(open(wpath))["words"]
-            span = max(1e-6, words[-1]["e"] - words[0]["s"])
-            wps = len(words) / span
-            if wps > 3.4:
+            span = words[-1]["e"] - words[0]["s"]
+            wps = len(words) / span if span >= 2 else None
+            if wps is None:
+                pass
+            elif wps > 3.4:
                 rows.append((f"speech {wps:.1f} words/s", -0.5,
-                             "top-quarter reels spoke slower: 2.6-2.8 vs 3.1-3.7 words/s in three accounts"))
+                             "top-quarter reels spoke slower: 2.7-3.1 vs 3.5-3.8 words/s in three accounts"))
             else:
                 rows.append((f"speech {wps:.1f} words/s", 0.0, "within the range of top reels"))
         except (OSError, KeyError, IndexError):
@@ -69,7 +68,7 @@ def main():
     for name, w, why in rows:
         print(f"{w:+.1f}  {name:<{width}}  {why}")
     band = "above typical" if total >= 1 else "below typical" if total <= -1 else "typical"
-    print(f"\nscore {total:+.1f} ({band}; study medians: >=+1 0.66, between 0.51, <=-1 0.39 views rank)")
+    print(f"\nscore {total:+.1f} ({band}; study medians: >=+1 0.60, between 0.49, <=-1 0.39 views rank)")
 
 
 if __name__ == "__main__":

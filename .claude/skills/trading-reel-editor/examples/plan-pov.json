@@ -3,7 +3,7 @@
   "main": "clip.mp4",
   "hook": {
     "text": "POV: your relatable trading moment",
-    "style": "box",
+    "style": "plain",
     "y": 0.3,
     "end": 30,
     "size": 0.03

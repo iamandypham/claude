@@ -13,9 +13,9 @@ Five formats cover almost every winning reel. Pick one per reel; don't mix two.
 Used as the main teaching format by 3 of the 7 creators and by a fourth for strategy reels (about 60 of the 213 reels).
 - Canvas: 1080x1920. Webcam on top, 29-35% of the height, face filling the width. Chart below, full
   width, browser bars cropped off. The webcam never cuts; the chart does all the moving.
-- Hook text: on the seam between webcam and chart (about 30-40% from the top). Studied stack reels mostly used
-  a box (white text on a black or white rounded box), but across 1,000 reels plain unboxed hook text
-  did better, so the skill defaults to plain. 4-10 words; the studied reels often used a command
+- Hook text: on the seam between webcam and chart (about 30-40% from the top). A short box: white text
+  on a black (or white) rounded box (the 1,000-reel pass found no clear effect of box vs plain).
+  4-10 words; the studied reels often used a command
   or a "don't/stop/this is NOT" line (which scored worst across 1,000 reels), or
   a number claim. Some add one emoji at the end. On screen from frame 0, gone at 2.4-6.5 s
   (median about 3 s). Two of the stack creators set the hook in a serif "book" face over sans
@@ -30,7 +30,7 @@ Used as the main teaching format by 3 of the 7 creators and by a fourth for stra
 - Structure (20-70 s): hook 0-3 s, proof or setup 3-8 s, the idea shown live on the chart, payoff (the
   trade playing out, R:R box), short re-hook, CTA in the last 2-4 s.
 - CTA: spoken "comment <WORD> and I'll send it to you" plus the on-screen line `Comment "WORD"` in the
-  last 2-4 s. 19/40 of one creator's reels and 8/9 of another's. Note: in that 40-reel set, the CTA
+  last 2-4 s (spoken; the on-screen line is rarer). 19/40 of one creator's reels and 8/9 of another's. Note: in that 40-reel set, the CTA
   reels did not out-view the no-CTA reels; use it for lead flow, not reach.
 - Audio: voice only. No music, no sound effects.
 
@@ -38,8 +38,7 @@ Used as the main teaching format by 3 of the 7 creators and by a fourth for stra
 Used as the main winning format by 2 creators (options coach; lifestyle educator's story reels).
 - Canvas: face full-bleed 9:16, centred, eye contact; one location with brand props visible
   (wall banner, branded clothing, income board). Optional second angle cut every 3-5 s.
-- Hook: spoken in the first sentence, a qualifier or a claim: "If you trade options but can't stay
-  consistently profitable...", "I got into trading nine years ago...". In the ad variant the follow or
+- Hook: spoken in the first sentence, a qualifier or a claim: "If you trade <market> but still <pain>...", "I got into trading <N> years ago...". In the ad variant the follow or
   DM ask is in the first 3-5 s and again at the end.
 - Captions: word-timed, 1-3 words, bold caps (Montserrat-ExtraBold look) at 57-66% from the top,
   white by default, numbers and keywords in an accent colour (lime/yellow), gains green, losses red.
@@ -53,8 +52,7 @@ Used as the main winning format by 2 creators (options coach; lifestyle educator
 ## 3. POV / joke (the reach format)
 The single highest-viewed reel in 3 of the 7 accounts was a POV or joke, not a lesson.
 - Canvas: raw phone footage, full-bleed 9:16 (never letterboxed).
-- Text: one label line ("POV: day trading in class", an ironic quote like "Trading is hard" plus an
-  emoji), on screen the whole reel or the first 3-5 s. No captions needed if there is no speech.
+- Text: one label line ("POV: <relatable trading moment>", or a short ironic quote plus an emoji), on screen the whole reel or the first 3-5 s. No captions needed if there is no speech.
 - Length: 6-30 s (median about 15 s). Hard cut every 0.5-2.5 s in montage versions.
 - CTA: none. These reels earn reach; don't spend it on a CTA.
 
@@ -66,7 +64,7 @@ One account's 32/40 top reels.
 - Copy: one list, recipe, definition or opinion that people save. In that account the top 5 reels
   (mean 303k views) were broad topics and the bottom 5 (69k) niche ones, but the top 5 also included
   a joke and an explainer, so this is a lean, not a cards-only result.
-- CTA: soft or none ("Send to a friend that needs this", "Answer in comments").
+- CTA: soft or none (a send-to-a-friend line, or a question for the comments).
 - Reposting the same card got 40-55% of the original's views.
 
 ## 5. Explainer: voice-over with a self-drawing chart
@@ -79,8 +77,8 @@ One account's 32/40 top reels.
 ## What separated top reels from bottom reels (all formats)
 
 The 1,000-reel pass (`reel-study-1000.md`) supersedes this section where they differ: it found proof
-in the first 3 s, question hooks and plain (unboxed) hook text went with more views, command hooks
-and emoji with fewer, and length, cut rate and letterbox made no clear difference. The notes below
+in the first 3 s, question hooks and a calmer pace went with more views, command hooks and emoji
+with fewer, and length, cut rate, hook box and letterbox made no clear difference. The notes below
 are from the first 213 top-ranked reels.
 - Re-posts of the same footage with a new hook line differed by 1.5-4x in views, but identical
   re-posts with no change also got only 40-55% of the original, and some pairs were full re-edits.
