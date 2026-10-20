@@ -7,7 +7,10 @@ description: Edit a trading creator's raw recording into a vertical Instagram/Ti
 
 Turns a raw recording (webcam + chart screen recording, or a talking head) into a 1080x1920 reel,
 following what the top reels of 7 trading creators actually do (213 reels studied, Oct 2026) and the
-editing rules of a trading-content course. Everything runs locally: ffmpeg + Python, no API keys.
+editing rules of BusinessGrowR's "Advanced Trading Content" course (about 2.5 hours of video across 22
+lessons, plus 4 written guides and 18 quizzes), the content course BusinessGrowR uses with the
+trading-education businesses it has helped grow to $20M+ in revenue. Everything runs locally:
+ffmpeg + Python, no API keys.
 
 Read first:
 - `references/formats.md` - the five winning formats with exact specs (layout, hook, captions, motion,

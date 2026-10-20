@@ -1,5 +1,9 @@
 # Editing rules (from the Advanced Trading Content course)
 
+Source: BusinessGrowR's "Advanced Trading Content" course: 22 video lessons (about 2.5 hours), 4
+written guides and 18 quizzes, covering short-form structure, hooks, visuals, pacing, awareness
+levels, CTAs, YouTube and X.
+
 These are the course's rules that an editor can apply or check. Where the course and the reel study
 disagree, the note says which to follow. Numbers in [brackets] are course lessons.
 
