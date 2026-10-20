@@ -1,0 +1,58 @@
+{
+  "layout": "stack",
+  "main": "tight.mp4",
+  "words": "tight.json",
+  "stack": {
+    "split": 0.32,
+    "top": {
+      "src": "main",
+      "rect": [
+        0,
+        380,
+        320,
+        340
+      ]
+    },
+    "bottom": {
+      "src": "main",
+      "rect": [
+        320,
+        60,
+        960,
+        660
+      ]
+    }
+  },
+  "hook": {
+    "text": "Stop marking THIS as liquidity",
+    "style": "box",
+    "y": 0.32,
+    "end": 3.0,
+    "size": 0.03
+  },
+  "captions": {
+    "mode": "word",
+    "y": 0.32,
+    "size": 0.036,
+    "font": "Inter",
+    "upper": true,
+    "color": "FFFFFF",
+    "accent": "FFE14D",
+    "keywords": [
+      "liquidity",
+      "sweep"
+    ],
+    "negative_words": [
+      "loss",
+      "stopped"
+    ],
+    "after_hook": true
+  },
+  "cta": {
+    "text": "Comment \"GUIDE\"",
+    "seconds": 3.0,
+    "y": 0.32,
+    "style": "box"
+  },
+  "loudness_lufs": -14
+}

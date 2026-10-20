@@ -1,0 +1,23 @@
+{
+  "layout": "card",
+  "card": {
+    "seconds": 8,
+    "bg": "000000",
+    "y": 0.3,
+    "header": "Your Name  @yourhandle",
+    "lines": [
+      "I keep it simple:",
+      "",
+      "1. Mark the 4H range",
+      "2. Wait for the sweep",
+      "3. Enter on the 5m shift",
+      "4. Target the opposite side",
+      "",
+      "That's the whole model."
+    ],
+    "size": 0.036
+  },
+  "hook": {
+    "size": 0.036
+  }
+}
