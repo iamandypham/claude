@@ -46,6 +46,7 @@ Andy's correction (20 Oct, TJR funnel thread): "Don't put my cues there because 
 
 ## Review before Andy sees it
 - Self-check each version against the rubric. Drop and rewrite anything under 70 or failing a gate. Put the scores in `scripts.json`, not in the teleprompter.
+- Run the humanizer skill (`.claude/skills/humanizer`, one of Brendan's five skills) on each version in embedded mode. Use Andy's verbatim lines in the bank as the voice sample. These are spoken scripts, so short fragments and the hook's own contrast stay. Cut staged run-ups ("here's the part..."), "not X but Y" filler, and closers that repeat the point. Never change a bank line's meaning, a figure or the CTA. Log what changed under `humanizer` in spec.json.
 - Grep all five against section 8 of the bank and the client-name list. Zero hits, or rewrite.
 - Send the 5 versions with the idea to Jeremy AI (send_message, then get_response) for a hook check. Apply what fits and note what you didn't take.
 - Then post them to Andy in the thread: the 5 hooks (first lines) only, plus the folder link. He approves by version number. Unapproved versions are never edited or posted.
