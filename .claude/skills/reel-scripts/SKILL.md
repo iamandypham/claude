@@ -12,7 +12,15 @@ Part of the 4-agent reel system from Brendan Jowett's "How I Fully Automated My 
 4. **reel-post**: approved reels → IG trial reels (n8n), only on Andy's typed go.
 
 ## Input
-One idea: a sheet row (Date + Link, or the row's "Script angle") or a topic Andy names. Andy picks the idea. Never auto-pick from the sheet without his pick, because ideas are a manual review step in the video and for us too.
+One idea: a sheet row (Date + Link, or the row's "Script angle") or a topic Andy names. Andy picks the idea, or asks for "the best ones", in which case you pick the top rows yourself (see Steal mode).
+
+## Steal mode (Andy, 22 Oct 2026: "steal the scripts and have you make like 5 versions like the video said")
+1. **Pick:** read the ideas sheet (tab Ideas). Rank the rows not yet scripted (no folder in `/mnt/project-files/content/reels/` names that link) by raw saves, then save rate. Skip rows whose idea is off-niche for trading Discord owners, and merge near-duplicates (two Hormozi reels with the same point = one idea, both links kept).
+2. **Pull the source script:** Virlo `raw_transcript` (platform tiktok, the row's link, $0.01 a call). Save it as `transcript-source.md` in the reel folder.
+3. **Steal the structure, not the claims:** keep the source's hook shape, its turn, its concrete technique or command, and its ending punchline. Replace every figure, credential and story that belongs to the source creator ("20 years in sales", "$100K a month") with our bank lines, or drop it. Write what you kept and what you changed in `steal_notes`.
+4. Then write the 5 versions as below, put them in `spec.json` and build the pack with `python3 .claude/skills/reel-scripts/build_pack.py <folder>/spec.json`. It writes teleprompter.md, run-order.md and scripts.json, and flags any version outside 110-190 words.
+
+First run 22 Oct 2026: `2026-10-22-cheaper-objection` (@theryankeip, 37k saves) and `2026-10-22-four-hour-timer` (two @ahormozi reels).
 
 ## Before writing (every time)
 1. Read `/mnt/project-files/content/messaging-bank/andy-positions-and-lines-2026-10-04.md` sections 2, 3, 4 and 8. Use only `USE` and `SOURCED` items. Never `CHECK` or `HOLD`, and nothing in section 8. Keep the item code (F16, belief 7...) next to each line in the notes, not in the spoken words.
