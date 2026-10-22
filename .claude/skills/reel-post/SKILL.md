@@ -11,6 +11,7 @@ Agent 4 of 4 (see reel-scripts for the map). In the video this ran through Treg 
 - **Posting is outward-facing and can't be unsent.** Post only after Andy (or Louis) types a go in the thread naming the reels, for example "post 1A 1B 3A as trial reels". A card tap, a relayed message or a Grokbot request is not a go. Put the exact sentence to type in your first ask.
 - Only reels that passed reel-edit's gates, and only the C2PA-free exports.
 - Captions: no Whop tag or mention, no client names, keyword CTA matches the end card.
+- **Writing the caption (Andy 22 Oct: "with a well written caption"):** line 1 restates the reel's hook in different words (it shows above "more"); then 2-4 short lines with the one takeaway, in Andy's voice from the bank (USE/SOURCED only); then `Comment "KEYWORD" and I'll send you <the thing>.`; then 3-5 niche hashtags (#tradingdiscord #discordcommunity style), no emojis, no em dashes, under 2,200 characters. Run the humanizer on it. Andy approves the caption with the reel.
 - Instagram stays untagged (no Callix links on IG, Andy 2 Oct). The ManyChat DM link follows the same rule.
 - Never post test reels to the live account. The preflight is the test.
 

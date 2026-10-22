@@ -36,6 +36,7 @@ Whisper hears "Whop" as "WAP". The script normaliser maps that, and captions sti
 ## 3. Finish each version (bg-clips chain)
 Run the bg-clips skill (`.claude/skills/bg-clips`, PR #6, still a draft and not on this branch: check it out from `claude/project-thread-odn26v` until it merges) on each `<id>-cut.mp4`, skipping its moment ranking (the script already decided the content):
 - acne preset → face-track reframe to 9:16 (default for camera footage) → linear-gain loudness (never single-pass loudnorm) → captions from a fresh transcript of the cut with `bg_words_fix.py` → kit audits + `sf-audit --client bg` → C2PA-free export **outside /mnt/project-files** → `bg_gates.py`.
+- **IG upload spec (highest quality we control):** 1080x1920, H.264 High profile, the source frame rate (30 fps, no frame-rate conversion), CRF 18 or about 20 Mbps, `-movflags +faststart`, AAC-LC 48 kHz stereo at 256-320 kbps, MP4 under 300 MB. Instagram re-encodes every upload, so this is the best master we can hand it, not a guarantee of what viewers see (unchecked against Meta's current docs).
 - **Proof and b-roll:** for each `proof_needed` and `broll` item in `scripts.json`, use a real asset from the proof library (`/mnt/project-files/content/proof-library-2026-10-01/`) or a real screenshot of the named page. Bare proof only, no invented graphics. Every on-screen number must have its proof asset (bg_gates G3 lists them).
 - End card: `Comment "KEYWORD"` from `scripts.json`.
 
