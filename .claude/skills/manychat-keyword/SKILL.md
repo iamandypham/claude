@@ -24,8 +24,9 @@ The reel folder's `manychat.json` (written by reel-scripts):
 3. Trigger: **Any Post or Reel** if the account is on Pro. If not, pick the specific posted reel(s) named in the reel folder's `posted.md`. Keyword: the exact `keyword`, "contains", and add the lowercase form too.
 4. Turn on "Reply to comments under the post" and replace the default replies with `comment_replies`.
 5. Turn **off** the opening DM (`opening_dm: false`). Its message text is `dm_text`, with a button whose label is `button_label` and URL is `link`.
-6. Name it `Reel keyword: <KEYWORD> (<reel folder>)`. Set it live.
-7. Screenshot the finished flow and the live toggle, and save both in the reel folder as `manychat-<KEYWORD>.png`.
+6. **Follow gate and no emojis (Andy 22 Oct 2026):** no emojis anywhere (comment replies, DMs, buttons; remove any the template adds). Before the link DM, add ManyChat's follow check (the "is following your account" condition or the template's "ask to follow" step). If they don't follow yet, send `follow_gate_text` with a `follow_gate_button` that re-runs the check. Only followers get `dm_text` and the link.
+7. Name it `Reel keyword: <KEYWORD> (<reel folder>)`. Set it live.
+8. Screenshot the finished flow and the live toggle, and save both in the reel folder as `manychat-<KEYWORD>.png`.
 
 ## Test
 - Only on a reel that's already live, and only after Andy's go. Comment the keyword from a second account Andy names (never a lead's account). Check that the public reply and the DM with a working button arrive, then delete the test comment.
