@@ -23,6 +23,7 @@ One idea: a sheet row (Date + Link, or the row's "Script angle") or a topic Andy
 First run 22 Oct 2026: `2026-10-22-cheaper-objection` (@theryankeip, 37k saves) and `2026-10-22-four-hour-timer` (two @ahormozi reels).
 
 ## Before writing (every time)
+0. **Match the YouTube messaging (Andy, 23 Oct 2026: "same messaging as our YT videos pretty much, we don't really talk about indicators").** Frame around the YT funnel: problem-aware educational content, unique mechanism, a one-page lead magnet that collects emails, emails collected in the past 30 days, free trial to paid, $99 low ticket, annual plans, high ticket on calls a few months in. No indicator talk, and no prop or affiliate cross-sells unless Andy asks. YT transcripts: Drive folder `1QRfs9a3ThZ0ibPTYdWkOeBb8P__0LNJ4`.
 1. Read `/mnt/project-files/content/messaging-bank/andy-positions-and-lines-2026-10-04.md` sections 2, 3, 4 and 8. Use only `USE` and `SOURCED` items. Never `CHECK` or `HOLD`, and nothing in section 8. Keep the item code (F16, belief 7...) next to each line in the notes, not in the spoken words.
 2. Read `/mnt/project-files/content/vibe-editing-2026-10-14/hormozi-100/rubric.md`. Every version must pass its six hard gates and score 70+. Organic reels end on the CTA, so gate 5 ("ends on a principle or punchline") applies to the line right before the CTA.
 3. Open the source video link so the version is ours, not a copy of theirs. Andy wants the source link kept with the idea.
