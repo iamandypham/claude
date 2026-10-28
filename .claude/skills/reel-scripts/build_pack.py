@@ -51,5 +51,10 @@ out["versions"] = versions
 json.dump(out, open(os.path.join(folder, "scripts.json"), "w"), indent=1, ensure_ascii=False)
 
 for v in versions:
-    flag = "" if 110 <= v["words"] <= 190 else "  <-- outside 110-190 words"
+    sw = s.get("source_words")
+    if sw:
+        body = v["words"] - len(cta.split())  # the source has no CTA, so compare without ours
+        flag = "" if abs(body - sw) <= 0.15 * sw else f"  <-- body {body} words, more than 15% off the source ({sw})"
+    else:
+        flag = "" if 110 <= v["words"] <= 190 else "  <-- outside 110-190 words"
     print(f'{v["id"]} {v["hook_type"]}: {v["words"]} words, score {v["score"]}{flag}')
