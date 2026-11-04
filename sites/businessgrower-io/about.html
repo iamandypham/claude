@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>About · BusinessGrower.io</title>
+<meta name="description" content="About BusinessGrower.io Software">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* BusinessGrower.io, draft redesign (16 Oct 2026).
+   Brand: navy #0E182C + green #3D725F (businessgrowr.com/bookcall), mint #8FD3B4, never gold. Inter.
+   Idea: a lead's path through one account, drawn as a transit map. */
+
+:root {
+  --paper: #F4F6F8;
+  --paper-2: #E8ECF1;
+  --white: #FFFFFF;
+  --ink: #0E182C;
+  --ink-2: #2A3550;
+  --muted: #56627C;
+  --navy: #0E182C;
+  --navy-2: #15243F;
+  --navy-line: #2C3E63;
+  --green: #3D725F;
+  --green-2: #366551;
+  --mint: #8FD3B4;
+  --mint-wash: #E3F3EB;
+  --grey-line: #A3ABBA;
+
+  --font: "Inter", Arial, sans-serif;
+  --step-body: clamp(1.0625rem, 1rem + 0.2vw, 1.1875rem);
+  --step-lead: clamp(1.1875rem, 1.05rem + 0.5vw, 1.4375rem);
+  --step-h2: clamp(2.25rem, 1.2rem + 3vw, 4rem);
+  --step-h1: clamp(2.6rem, 1.3rem + 3.2vw, 4.75rem);
+
+  --margin: clamp(1rem, 4vw, 4.5rem);
+  --gutter: clamp(1rem, 2.4vw, 2.5rem);
+  --radius: 6px;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; scrollbar-color: var(--green) var(--paper-2); accent-color: var(--green); caret-color: var(--green); scroll-behavior: smooth; }
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--font); font-size: var(--step-body); line-height: 1.5; -webkit-font-smoothing: antialiased; overflow-x: hidden; padding-bottom: 2.75rem; }
+h1, h2, h3, p, ul, ol, figure { margin: 0; }
+ul[class], ol[class] { list-style: none; padding: 0; }
+img, svg { display: block; max-width: 100%; }
+button, input { font: inherit; color: inherit; }
+button { background: none; border: 0; padding: 0; cursor: pointer; }
+a { color: inherit; }
+::selection { background: var(--mint); color: var(--ink); }
+:focus-visible { outline: 3px solid var(--green); outline-offset: 3px; }
+p { max-width: 62ch; text-wrap: pretty; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+h1, h2, h3 { font-weight: 800; letter-spacing: -0.035em; line-height: 1.02; text-wrap: balance; }
+h1 { font-size: var(--step-h1); }
+h2 { font-size: var(--step-h2); }
+h3 { font-size: clamp(1.25rem, 1.1rem + 0.5vw, 1.5rem); letter-spacing: -0.02em; line-height: 1.15; }
+.lead { font-size: var(--step-lead); line-height: 1.45; color: var(--ink-2); max-width: 46ch; }
+.on-navy .lead, .on-navy p { color: #C3CBDA; }
+.on-navy h2, .on-navy h3 { color: var(--white); }
+.mark { text-decoration: underline; text-decoration-color: var(--mint); text-decoration-thickness: 0.14em; text-underline-offset: 0.1em; text-decoration-skip-ink: none; }
+
+.wrap { padding-inline: var(--margin); }
+.section { padding-block: clamp(4.5rem, 9vw, 8rem); }
+.on-navy { background: var(--navy); color: var(--white); }
+.on-white { background: var(--white); }
+
+/* bar */
+.bar { position: sticky; top: 0; z-index: 30; display: flex; align-items: center; justify-content: space-between; gap: 1rem; min-height: 64px; padding: 0 var(--margin); background: var(--navy); color: var(--white); }
+.wordmark { display: inline-flex; align-items: center; gap: 0.6rem; font-weight: 800; font-size: 1.125rem; letter-spacing: -0.02em; text-decoration: none; }
+.wordmark svg { width: 34px; height: 14px; }
+.bar nav { display: flex; align-items: center; gap: clamp(1rem, 2.6vw, 2.4rem); font-weight: 600; font-size: 0.9375rem; }
+.bar nav a { text-decoration: none; padding: 0.4rem 0; border-bottom: 3px solid transparent; transition: border-color .15s ease; }
+.bar nav a[aria-current="page"] { border-bottom-color: var(--mint); }
+.bar nav a.cta { padding: 0.55rem 1rem; background: var(--white); color: var(--navy); border: 0; border-radius: var(--radius); transition: background-color .15s ease, color .15s ease; }
+@media (hover: hover) and (pointer: fine) {
+  .bar nav a:not(.cta):hover { border-bottom-color: var(--mint); }
+  .bar nav a.cta:hover { background: var(--mint); }
+}
+
+/* buttons */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; min-height: 3rem; padding: 0 1.3rem; border-radius: var(--radius); background: var(--green); color: var(--white); font-weight: 700; font-size: 1rem; text-decoration: none; white-space: nowrap; transition: background-color .15s ease, color .15s ease, transform .14s var(--ease-out); }
+.btn:active { transform: scale(0.97); }
+.btn.light { background: var(--white); color: var(--navy); }
+.btn.dark { background: var(--navy); color: var(--white); }
+.textlink { font-weight: 700; text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 0.22em; text-decoration-color: var(--green); transition: text-decoration-color .15s ease; }
+.on-navy .textlink { text-decoration-color: var(--mint); }
+@media (hover: hover) and (pointer: fine) {
+  .btn:hover { background: var(--green-2); }
+  .btn.light:hover { background: var(--mint); color: var(--navy); }
+  .btn.dark:hover { background: var(--navy-2); }
+  .textlink:hover { text-decoration-color: currentColor; }
+}
+
+/* hero */
+.hero { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 2.5rem var(--gutter); align-items: start; padding-top: clamp(2.5rem, 5vw, 4.5rem); padding-bottom: clamp(3rem, 6vw, 5rem); }
+.hero .copy { display: grid; gap: 1.4rem; }
+.hero .sub { font-size: var(--step-lead); color: var(--ink-2); max-width: 32ch; line-height: 1.4; }
+.panel { border-radius: var(--radius); padding: 1.25rem 1.35rem; }
+.panel.price { background: var(--green); color: var(--white); display: grid; gap: 1rem; }
+.panel.price .amts { display: flex; align-items: baseline; gap: 0.6rem 1rem; flex-wrap: wrap; }
+.panel.price .amt { font-size: clamp(1.5rem, 1.2rem + 0.9vw, 2rem); font-weight: 800; letter-spacing: -0.03em; }
+.panel.price .amt small { font-size: 0.9375rem; font-weight: 600; letter-spacing: 0; }
+.panel.price .or { font-weight: 700; color: var(--white); opacity: 1; }
+.panel.price .btns { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+.panel.board { background: var(--navy); color: var(--white); }
+.board-top { display: flex; justify-content: space-between; align-items: center; gap: 1rem; font-size: 0.875rem; font-weight: 600; color: #C3CBDA; }
+.board-top button { padding: 0.25rem 0.75rem; border-radius: 4px; background: var(--navy-2); color: var(--mint); font-size: 0.8125rem; font-weight: 700; transition: background-color .15s ease; }
+@media (hover: hover) and (pointer: fine) { .board-top button:hover { background: var(--navy-line); } }
+.board-main { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; margin-top: 0.6rem; }
+.board-stop, .board-time { font-size: clamp(1.4rem, 1.1rem + 1vw, 1.9rem); font-weight: 800; letter-spacing: -0.02em; }
+.board-stop { color: var(--mint); }
+.board-time { font-variant-numeric: tabular-nums; }
+.board-what { margin-top: 0.2rem; font-size: 0.9375rem; color: #C3CBDA; min-height: 1.5em; }
+.board-stops { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; margin-top: 1rem; }
+.board-stops i { height: 6px; border-radius: 2px; background: var(--navy-line); transition: background-color .25s ease; }
+.board-stops i.past { background: var(--white); }
+.board-stops i.on { background: var(--mint); }
+
+/* map */
+.map { width: 100%; height: auto; overflow: visible; }
+.map .lbl { font: 600 13px var(--font); fill: var(--muted); }
+.map .stop-lbl { font: 800 17px var(--font); fill: var(--ink); letter-spacing: -0.01em; }
+.map .tag rect { fill: var(--navy); }
+.map .tag text { font: 700 12px var(--font); fill: var(--white); }
+.map .stop { cursor: pointer; outline: none; }
+.map .stop .ring { transition: stroke .15s ease; }
+.map .stop:hover .ring, .map .stop:focus-visible .ring, .map .stop.active .ring { stroke: var(--green); }
+.map .pulse { fill: none; stroke: var(--green); stroke-width: 3; opacity: 0; transform-box: fill-box; transform-origin: center; }
+.map .stop.active .pulse { animation: pulse 1.6s var(--ease-out) infinite; }
+@keyframes pulse { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(2.4); opacity: 0; } }
+.legend { display: flex; flex-wrap: wrap; gap: 0.6rem 1.6rem; margin-top: 1rem; font-size: 0.875rem; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 0.5rem; }
+.legend i { display: inline-block; width: 28px; height: 6px; border-radius: 3px; }
+.legend .g i { background: var(--green); }
+.legend .x i { background: var(--grey-line); }
+
+/* route table */
+.route-head { display: grid; gap: 1rem; max-width: 52rem; margin-bottom: clamp(2rem, 4vw, 3rem); }
+.route { width: 100%; border-collapse: collapse; font-size: 1rem; }
+.route th { text-align: left; font-size: 0.875rem; font-weight: 700; color: var(--muted); padding: 0 1rem 0.8rem 0; border-bottom: 2px solid var(--ink); }
+.route td { padding: 1.1rem 1rem 1.1rem 0; border-bottom: 1px solid #C3CAD7; vertical-align: top; }
+.route tbody tr { transition: background-color .2s ease; cursor: pointer; }
+.route tbody tr.active { background: var(--mint-wash); }
+.route .spine { width: 48px; padding-right: 0; position: relative; }
+.route .spine span { position: relative; z-index: 1; display: block; width: 22px; height: 22px; margin: 1px auto 0; border-radius: 50%; background: var(--white); border: 4px solid var(--ink); transition: border-color .2s ease, transform .2s var(--ease-out); }
+.route tbody tr.active .spine span { border-color: var(--green); transform: scale(1.18); }
+.route .spine::before { content: ""; position: absolute; left: 50%; top: 0; bottom: 0; width: 8px; margin-left: -4px; background: var(--green); }
+.route tbody tr:first-child .spine::before { top: 1.6rem; }
+.route tbody tr:last-child .spine::before { bottom: calc(100% - 1.6rem); }
+.route .stopname { font-weight: 800; font-size: 1.0625rem; }
+.route .tool { color: var(--ink-2); font-weight: 600; }
+.route tfoot td { font-weight: 700; border-bottom: 0; padding-top: 1.2rem; }
+
+/* features on navy */
+.feat-head { display: grid; grid-template-columns: repeat(12, minmax(0,1fr)); gap: 1.5rem var(--gutter); margin-bottom: clamp(2.5rem, 5vw, 4rem); }
+.feat-head h2 { grid-column: 1 / 8; }
+.feat-head p { grid-column: 8 / 13; align-self: end; }
+.feats { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: var(--gutter); }
+.feat { display: flex; flex-direction: column; gap: 0.6rem; }
+.feat .bar-mark { width: 40px; height: 8px; border-radius: 2px; background: var(--mint); margin-bottom: 0.4rem; }
+.feat p { font-size: 1rem; }
+.ui { margin-top: auto; background: var(--navy-2); border-radius: var(--radius); padding: 1rem 1.1rem; font-size: 0.9375rem; color: #EEF1F6; }
+.ui .t { display: flex; justify-content: space-between; align-items: center; gap: 0.6rem; font-weight: 700; margin-bottom: 0.6rem; }
+.ui .pill { font-size: 0.8125rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 4px; background: rgba(143,211,180,0.16); color: var(--mint); }
+.ui .r { display: flex; justify-content: space-between; gap: 1rem; padding: 0.45rem 0; border-top: 1px solid var(--navy-line); }
+.ui .r span:first-child { color: #93A0B8; }
+.ui .msg { padding: 0.6rem 0.75rem; margin: 0.2rem 0 0.7rem; border-radius: 12px 12px 12px 4px; background: #EEF1F6; color: var(--ink); max-width: 30ch; transition: opacity .2s ease; }
+.seg { display: inline-grid; grid-template-columns: 1fr 1fr; gap: 3px; padding: 3px; border-radius: 8px; background: var(--navy); }
+.seg button { padding: 0.3rem 0.8rem; border-radius: 6px; font-size: 0.8125rem; font-weight: 700; color: #93A0B8; transition: background-color .15s ease, color .15s ease; }
+.seg button[aria-pressed="true"] { background: var(--mint); color: var(--navy); }
+.more { display: grid; grid-template-columns: repeat(12, minmax(0,1fr)); gap: 1.5rem var(--gutter); margin-top: clamp(3rem, 6vw, 5rem); }
+.more h3 { grid-column: 1 / 5; font-size: var(--step-h2); letter-spacing: -0.035em; line-height: 1.02; }
+.more ul { grid-column: 5 / 13; display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 1.5rem var(--gutter); }
+.more li { font-size: var(--step-lead); font-weight: 600; line-height: 1.3; color: var(--white); padding-top: 1rem; border-top: 6px solid var(--green); }
+
+/* pricing */
+.pricing { display: grid; grid-template-columns: repeat(12, minmax(0,1fr)); gap: 2rem var(--gutter); align-items: center; }
+.pricing .l { grid-column: 1 / 6; display: grid; gap: 1.2rem; }
+.pricing .r { grid-column: 7 / 13; display: grid; gap: 6px; }
+.plan { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; padding: 1.6rem; border-radius: var(--radius); }
+.plan.a { background: var(--green); color: var(--white); }
+.plan.b { background: var(--navy); color: var(--white); }
+.plan .amt { font-size: clamp(2.6rem, 1.6rem + 2.6vw, 4.25rem); font-weight: 800; letter-spacing: -0.04em; line-height: 1; font-variant-numeric: tabular-nums; }
+.plan .amt small { font-size: 1.0625rem; font-weight: 600; letter-spacing: 0; }
+.plan .note { font-weight: 600; color: var(--mint); margin-top: 0.35rem; }
+.incl { display: grid; gap: 0.6rem; }
+.incl li { display: grid; grid-template-columns: 1.6rem 1fr; align-items: center; font-size: 1.0625rem; font-weight: 600; }
+.incl li::before { content: ""; width: 14px; height: 14px; border-radius: 50%; border: 4px solid var(--green); background: var(--white); }
+
+/* contact */
+.contact { display: grid; grid-template-columns: repeat(12, minmax(0,1fr)); gap: 2rem var(--gutter); align-items: start; }
+.contact .l { grid-column: 1 / 6; display: grid; gap: 1.2rem; }
+.contact .r { grid-column: 7 / 13; }
+.formframe { width: 100%; min-height: 780px; border: 0; border-radius: var(--radius); background: var(--white); display: block; }
+.formfall { margin-top: 0.8rem; font-size: 0.9375rem; }
+
+/* about */
+.about-hero { display: grid; gap: 1.6rem; padding-top: clamp(3rem, 7vw, 6rem); padding-bottom: clamp(3rem, 6vw, 5rem); max-width: 62rem; }
+.split { display: grid; grid-template-columns: repeat(12, minmax(0,1fr)); gap: 2rem var(--gutter); }
+.split .l { grid-column: 1 / 6; }
+.split .r { grid-column: 7 / 13; display: grid; gap: 1.2rem; align-content: start; }
+.list-lines li { display: grid; grid-template-columns: 2.2rem 1fr; align-items: center; padding: 1rem 0; border-bottom: 1px solid #C3CAD7; font-size: var(--step-lead); font-weight: 600; }
+.list-lines li::before { content: ""; width: 14px; height: 14px; border-radius: 50%; border: 4px solid var(--green); background: var(--white); }
+
+/* footer */
+.footer { background: var(--navy); color: var(--white); padding: clamp(3.5rem, 7vw, 6rem) var(--margin) 2rem; }
+.footer .grid { display: grid; grid-template-columns: repeat(12, minmax(0,1fr)); gap: 2rem var(--gutter); }
+.footer .who { grid-column: 1 / 7; }
+.footer .name { font-size: clamp(2rem, 1.2rem + 2.6vw, 3.5rem); font-weight: 800; letter-spacing: -0.04em; line-height: 1; }
+.footer .who p { margin-top: 1rem; color: #C3CBDA; }
+.footer .links { grid-column: 8 / 13; display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 1rem; }
+.footer .links ul { display: grid; gap: 0.6rem; align-content: start; }
+.footer .links a { text-decoration: none; font-weight: 600; }
+.footer .legal { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-top: clamp(3rem, 6vw, 5rem); padding-top: 1.4rem; border-top: 1px solid var(--navy-line); font-size: 0.875rem; color: #C3CBDA; }
+.footer .legal a { color: var(--white); }
+@media (hover: hover) and (pointer: fine) { .footer a:hover { text-decoration: underline; text-underline-offset: 0.22em; text-decoration-color: var(--mint); } }
+
+/* draft markers for Andy (the review bar toggles them) */
+.flag { position: relative; }
+.review .flag { outline: 2px dashed #E2A468; outline-offset: 3px; }
+.review .flag::after { content: attr(data-flag); position: absolute; left: 0; top: 100%; z-index: 40; display: none; width: max-content; max-width: 22rem; padding: 0.5rem 0.7rem; margin-top: 8px; background: #FFF6EC; color: #7A4A14; font: 600 0.8125rem/1.4 var(--font); letter-spacing: 0; text-align: left; white-space: normal; border-radius: 4px; }
+.review .flag:hover::after, .review .flag:focus::after { display: block; }
+.reviewbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; display: flex; align-items: center; justify-content: space-between; gap: 1rem; min-height: 2.75rem; padding: 0.4rem var(--margin); background: #FFF6EC; color: #7A4A14; font-size: 0.875rem; font-weight: 600; }
+.reviewbar a, .reviewbar button { color: #7A4A14; text-decoration: underline; font-weight: 700; }
+
+/* entrances: content stays visible without script */
+@media (prefers-reduced-motion: no-preference) {
+  .js .rise { opacity: 0; transform: translateY(22px); transition: opacity 700ms var(--ease-out), transform 700ms var(--ease-out); transition-delay: calc(var(--i, 0) * 80ms); }
+  .js .rise.is-in { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .map .stop.active .pulse { animation: none; }
+}
+
+/* responsive */
+@media (max-width: 63.99em) {
+  .hero { grid-template-columns: 1fr; }
+  .feats { grid-template-columns: 1fr; }
+  .more h3, .more ul { grid-column: 1 / -1; }
+}
+@media (max-width: 47.99em) {
+  .bar nav a:not(.cta):not([aria-current]) { display: none; }
+  .hero .sub { max-width: none; }
+  .route thead { display: none; }
+  .route tbody tr { display: grid; grid-template-columns: 48px 1fr; border-bottom: 1px solid #C3CAD7; padding: 0.7rem 0; }
+  .route td { border-bottom: 0; padding: 0.2rem 0.8rem 0.2rem 0; }
+  .route td.spine { grid-row: span 3; }
+  .route tfoot tr { display: block; }
+  .route tfoot td { display: block; }
+  .feat-head h2, .feat-head p, .pricing .l, .pricing .r, .contact .l, .contact .r, .split .l, .split .r, .footer .who, .footer .links { grid-column: 1 / -1; }
+  .contact .l { position: static; }
+  .more ul { grid-template-columns: 1fr; }
+  .reviewbar { font-size: 0.8125rem; }
+}
+/* round 2 */
+@media (min-width: 64em) { .hero { grid-template-columns: minmax(0, 6fr) minmax(0, 6fr); } }
+h1 { font-size: clamp(2.4rem, 1.2rem + 2.8vw, 4rem); }
+.plan.a .note { color: var(--white); }
+
+@media (max-width: 47.99em) { .pricing { row-gap: 3rem; }  }
+body { padding-bottom: 3rem; }
+.map .stop:focus-visible .ring { stroke: var(--green); stroke-width: 7; }
+.map .stop:focus-visible .stop-lbl { text-decoration: underline; }
+.route tbody tr:focus-visible { outline: 3px solid var(--green); outline-offset: -3px; }
+.ui .t .pill { margin-left: auto; margin-right: 0.5rem; }
+
+/* full feature list */
+.allfeats { margin-top: clamp(3rem, 6vw, 5rem); display: grid; gap: 1.5rem; }
+.allfeats h3 { font-size: var(--step-h2); letter-spacing: -0.035em; line-height: 1.02; }
+.fgrid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 1.4rem var(--gutter); }
+.fgrid li { display: grid; gap: 0.25rem; padding-top: 0.9rem; border-top: 4px solid var(--green); }
+.fgrid strong { font-size: 1.0625rem; color: var(--white); }
+.fgrid span { color: #C9D2DF; font-size: 0.9375rem; line-height: 1.4; }
+.fine { font-size: 0.875rem; line-height: 1.45; color: var(--muted); max-width: 70ch; }
+.on-navy .fine { color: #C9D2DF; }
+
+/* savings table */
+.save-head { display: grid; gap: 1rem; max-width: 46rem; margin-bottom: 2rem; }
+.replace { width: 100%; border-collapse: collapse; font-size: 1rem; margin-bottom: 1rem; }
+.replace th { text-align: left; font-size: 0.875rem; font-weight: 600; color: var(--muted); padding: 0 0.75rem 0.6rem; }
+.replace td { padding: 0.85rem 0.75rem; border-top: 1px solid #DDE2E9; }
+.replace td:first-child { font-weight: 700; }
+.replace .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.replace tfoot td { font-weight: 800; font-size: 1.125rem; border-top: 3px solid var(--navy); }
+.replace tfoot .ours td { background: var(--mint-wash); color: var(--green); border-top: 1px solid #fff; }
+@media (max-width: 63.99em) { .fgrid { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+@media (max-width: 47.99em) {
+  .fgrid { grid-template-columns: 1fr; }
+  .replace { font-size: 0.875rem; }
+  .replace td, .replace th { padding-left: 0.4rem; padding-right: 0.4rem; }
+  .replace tfoot td { font-size: 1rem; }
+}
+.incl li { align-items: start; font-weight: 400; line-height: 1.45; }
+.incl li::before { margin-top: 0.3rem; }
+.incl li strong { font-weight: 700; }
+.panel.price .pnote { font-size: 0.875rem; color: #E3F3EB; margin: 0; }
+.pricing .r .fine { margin-top: 0.4rem; }
+
+</style>
+</head>
+<body id="top">
+<header class="bar">
+  <a class="wordmark" href="/"><svg viewBox="0 0 34 14" aria-hidden="true"><path d="M2 7H32" stroke="#8FD3B4" stroke-width="4" stroke-linecap="round"/><circle cx="17" cy="7" r="5" fill="#0E182C" stroke="#fff" stroke-width="3"/></svg>BusinessGrower.io</a>
+  <nav aria-label="Main"><a href="/">Home</a><a href="/about" aria-current="page">About</a><a class="cta" href="https://api.leadconnectorhq.com/widget/form/OJz1gQh1YDNAuiaYz1gw" target="_blank" rel="noreferrer noopener">Contact</a></nav>
+</header>
+<main>
+<section class="wrap about-hero" aria-labelledby="h1" data-stagger>
+  <h1 id="h1" class="rise">About <span class="mark">BusinessGrower.io</span></h1>
+  <p class="lead rise">BusinessGrower.io is white-labeled GoHighLevel software, already branded for your business. It's the same software we build our Done-For-You funnels in. It's for trading Discord owners and trading educators who want one account for their lead magnets, email, SMS, booked calls and pipeline, instead of stitching together dozens of tools.</p>
+</section>
+<section class="section wrap on-white" aria-labelledby="wh-h">
+  <div class="split">
+    <div class="l" data-stagger>
+      <h2 id="wh-h" class="rise">Who it's for</h2>
+      <p class="lead rise" style="margin-top:1.2rem">If you run a trading Discord or sell trading education, your back end runs off platform: somewhere to collect leads, follow up with them and book calls before the sale. This software lets you:</p>
+    </div>
+    <div class="r">
+      <ul class="list-lines">
+        <li>Build lead magnet pages and sales funnels, so people get a checklist, a PDF or a free Discord invite in exchange for an email</li>
+        <li>Send email sequences that move new leads through your YouTube videos in order, plus text follow-ups</li>
+        <li>Book high-ticket calls straight from the funnel</li>
+        <li>Track every lead in a visual pipeline: who opted in, who booked and who paid</li>
+        <li>Keep it all in one account and one dashboard, instead of a page tool, an email app, a texting app and a spreadsheet that don't talk to each other</li>
+      </ul>
+      <p class="fine" style="margin-top:1.5rem">Every trading Discord funnel comes down to traffic, conversion and LTV. This software handles the capture and follow-up: it collects the lead off platform, follows up, books the call and keeps a record of who bought. It doesn't drive traffic for you.</p>
+    </div>
+  </div>
+</section>
+<section class="section wrap on-navy" aria-labelledby="pp-h">
+  <div class="split">
+    <div class="l" data-stagger><h2 id="pp-h" class="rise">Plug and play</h2></div>
+    <div class="r" data-stagger>
+      <p class="lead rise">It comes white-labeled, already branded for your business and fully customizable, set up around how trading Discords and educators run: a lead magnet, email and Discord follow-up, then a booked call or a Whop offer.</p>
+      <p class="lead rise">Whether you run a Discord server, host live sessions, sell a course or offer mentorship, the aim is a back end that just works, so you spend your time educating and getting more people in. Anybody can get a funnel built on Fiverr or Upwork. The hard part is knowing what actually gets trading communities to perform.</p>
+      <p class="rise">The software is $197 a month or $1,200 a year. Texts, emails sent and calls are billed by usage.</p>
+      <p class="rise"><a class="btn light" href="https://api.leadconnectorhq.com/widget/form/OJz1gQh1YDNAuiaYz1gw" target="_blank" rel="noreferrer noopener">Contact</a></p>
+    </div>
+  </div>
+</section>
+</main>
+<footer class="footer">
+  <div class="grid">
+    <div class="who">
+      <p class="name">BusinessGrower.io</p>
+      <p>Software for trading Discord owners and educators. Funnels, email, SMS and bookings in one login.</p>
+    </div>
+    <div class="links">
+      <ul><li><a href="/">Home</a></li><li><a href="/about">About</a></li><li><a href="https://api.leadconnectorhq.com/widget/form/OJz1gQh1YDNAuiaYz1gw" target="_blank" rel="noreferrer noopener">Contact</a></li></ul>
+      <ul><li><a href="/#pricing">Pricing</a></li><li><a href="https://api.leadconnectorhq.com/widget/form/OJz1gQh1YDNAuiaYz1gw" target="_blank" rel="noreferrer noopener">Contact Us</a></li></ul>
+    </div>
+  </div>
+  <div class="legal">
+    <span>BusinessGrowR LLC | 30 N Gould St Ste R, Sheridan, WY 82801</span>
+    <a href="https://drive.google.com/drive/folders/1xbu1NeAGNsx2sAyhUwZ7jGqtzIa6PHlN?usp=share_link" target="_blank" rel="noopener noreferrer nofollow">Privacy Policy | Terms of Service</a>
+  </div>
+</footer>
+
+<script>
+/* BusinessGrower.io draft. The page reads fine without this file; it adds the route map, the replay board and motion. */
+(function () {
+  document.documentElement.classList.add('js');
+  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* draft markers: on by default in the preview, remembered per browser */
+  var body = document.body, stored = null;
+  try { stored = localStorage.getItem('bgio-review'); } catch (e) {}
+  if (stored !== 'off') body.classList.add('review');
+  var tbtn = document.querySelector('[data-review-toggle]');
+  var sync = function () { if (tbtn) tbtn.textContent = body.classList.contains('review') ? 'Hide draft markers' : 'Show draft markers'; };
+  if (tbtn) tbtn.addEventListener('click', function () {
+    body.classList.toggle('review');
+    try { localStorage.setItem('bgio-review', body.classList.contains('review') ? 'on' : 'off'); } catch (e) {}
+    sync();
+  });
+  sync();
+
+  /* entrances */
+  document.querySelectorAll('[data-stagger]').forEach(function (g) {
+    g.querySelectorAll('.rise').forEach(function (el, i) { el.style.setProperty('--i', Math.min(i, 6)); });
+  });
+  var risers = document.querySelectorAll('.rise');
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); } });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.05 });
+    risers.forEach(function (r) { io.observe(r); });
+  } else { risers.forEach(function (r) { r.classList.add('is-in'); }); }
+
+  /* channel switch in the automation panel */
+  document.querySelectorAll('[data-channel]').forEach(function (box) {
+    var msg = box.querySelector('.msg'), when = box.querySelector('[data-when]'), title = box.querySelector('[data-title]');
+    var modes = {
+      email: { title: 'Day 2 email', msg: 'Subject: Watch this before your next trade', when: 'Day 2 of the sequence' },
+      sms: { title: 'Call reminder', msg: 'Reminder: your call is tomorrow at 2pm. Reply here to move it, or STOP to opt out.', when: '1 day before the call' }
+    };
+    box.querySelectorAll('.seg button').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var m = modes[b.getAttribute('data-mode')];
+        box.querySelectorAll('.seg button').forEach(function (o) { o.setAttribute('aria-pressed', o === b ? 'true' : 'false'); });
+        msg.style.opacity = 0;
+        setTimeout(function () { msg.textContent = m.msg; title.textContent = m.title; when.textContent = m.when; msg.style.opacity = 1; }, reduce ? 0 : 180);
+      });
+    });
+  });
+
+  /* the route map */
+  var svg = document.getElementById('map');
+  if (!svg) return;
+  var NS = 'http://www.w3.org/2000/svg';
+  var el = function (tag, attrs, parent) {
+    var n = document.createElementNS(NS, tag);
+    for (var k in attrs) n.setAttribute(k, attrs[k]);
+    (parent || svg).appendChild(n);
+    return n;
+  };
+
+  // grey network: the separate tools a setup gets stitched from (illustrative)
+  var lines = [
+    'M40 60 H300 L420 180 H760',
+    'M560 40 V300 L640 380 V660',
+    'M40 300 H200 L300 400 H520',
+    'M120 660 H420 L520 560 H760',
+    'M700 120 V480 H760',
+    'M200 140 V300'
+  ];
+  var tools = [
+    ['page tool', 120, 60, 0, -16, 'middle'], ['form app', 220, 60, 0, -16, 'middle'], ['link-in-bio', 480, 180, 0, -16, 'middle'],
+    ['email app', 640, 180, 0, -16, 'middle', 1], ['newsletter', 760, 180, -4, 26, 'end'],
+    ['texting app', 560, 100, 12, 5, 'start'], ['phone line', 560, 260, 12, 5, 'start'], ['spreadsheet', 640, 500, 12, 5, 'start'], ['CRM', 640, 620, 12, 5, 'start'],
+    ['scheduler', 80, 300, 0, -15, 'middle'], ['calendar', 200, 300, -12, 5, 'end', 1], ['connector', 380, 400, 0, -15, 'middle'], ['invoices', 520, 400, 12, 5, 'start'],
+    ['reminders', 200, 660, 0, 24, 'middle'], ['chat inbox', 320, 660, 0, 24, 'middle'], ['reports', 640, 560, 0, -15, 'middle', 1], ['surveys', 760, 560, -4, -15, 'end'],
+    ['autoresponder', 700, 300, -12, 5, 'end'], ['web forms', 200, 220, -12, 5, 'end']
+  ];
+  var stops = [
+    { name: 'Lead magnet', tool: 'Web page builder', what: 'They trade their email for a checklist, a short PDF or a free Discord invite. Now you own the contact.', t: '0:00', x: 80, y: 180, lx: 80, ly: 145, a: 'middle' },
+    { name: 'E-mail', tool: 'E-mail automation builder', what: 'A sequence sends them through your YouTube videos in order, each one breaking a belief before the offer.', t: '+2 min', x: 300, y: 180, lx: 300, ly: 145, a: 'middle' },
+    { name: 'SMS', tool: 'SMS automation builder', what: 'Texts follow up alongside your emails and remind them about their booked call.', t: '+1 day', x: 420, y: 300, lx: 444, ly: 296, a: 'start' },
+    { name: 'Book a call', tool: 'Calendar', what: 'Leads who fit your high ticket offer book a call from the same funnel.', t: '+2 days', x: 420, y: 480, lx: 396, ly: 486, a: 'end' },
+    { name: 'Pipeline', tool: 'Visual pipeline', what: 'Opted in, booked, showed, paid. You see where leads drop off.', t: '+3 days', x: 600, y: 480, lx: 600, ly: 520, a: 'middle' }
+  ];
+  var routeD = 'M80 180 H300 L420 300 V480 H600';
+
+  var gNet = el('g', { fill: 'none', stroke: '#A3ABBA', 'stroke-width': 6, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' });
+  lines.forEach(function (d) { el('path', { d: d }, gNet); });
+  el('path', { d: routeD, fill: 'none', stroke: '#0E182C', 'stroke-width': 18, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' });
+  var route = el('path', { d: routeD, fill: 'none', stroke: '#3D725F', 'stroke-width': 10, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' });
+
+  var gTools = el('g', {});
+  tools.forEach(function (s) {
+    el('circle', { cx: s[1], cy: s[2], r: s[6] ? 7 : 5, fill: '#fff', stroke: s[6] ? '#56627C' : '#A3ABBA', 'stroke-width': s[6] ? 3 : 2.5 }, gTools);
+    var t = el('text', { x: s[1] + s[3], y: s[2] + s[4], 'text-anchor': s[5], class: 'lbl' }, gTools);
+    t.textContent = s[0];
+  });
+
+  var rows = Array.prototype.slice.call(document.querySelectorAll('[data-route] tbody tr'));
+  var nodes = stops.map(function (s, i) {
+    var g = el('g', { class: 'stop', tabindex: 0, role: 'button', 'aria-label': s.name + ': ' + s.what });
+    el('circle', { class: 'pulse', cx: s.x, cy: s.y, r: 14 }, g);
+    el('circle', { class: 'ring', cx: s.x, cy: s.y, r: 13, fill: '#fff', stroke: '#0E182C', 'stroke-width': 5 }, g);
+    var lbl = el('text', { x: s.lx, y: s.ly, 'text-anchor': s.a, class: 'stop-lbl' }, g);
+    lbl.textContent = s.name;
+    var tag = el('g', { class: 'tag' }, g);
+    var w = s.t.length * 7.5 + 14;
+    var tx = s.a === 'start' ? s.lx : (s.a === 'end' ? s.lx - w : s.lx - w / 2);
+    el('rect', { x: tx, y: s.ly + 7, width: w, height: 20, rx: 3 }, tag);
+    var tt = el('text', { x: tx + w / 2, y: s.ly + 21, 'text-anchor': 'middle' }, tag);
+    tt.textContent = s.t;
+    g.addEventListener('click', function () { stopPlay(); go(i); });
+    g.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); stopPlay(); go(i); } });
+    return g;
+  });
+
+  // draw the route in once the map is on screen
+  var len = route.getTotalLength();
+  if (!reduce) {
+    route.style.strokeDasharray = len;
+    route.style.strokeDashoffset = len;
+    route.getBoundingClientRect();
+    route.style.transition = 'stroke-dashoffset 1.8s cubic-bezier(0.22, 1, 0.36, 1)';
+  }
+
+  // replay board
+  var board = document.querySelector('[data-board]');
+  var bStop = board && board.querySelector('.board-stop');
+  var bTime = board && board.querySelector('.board-time');
+  var bWhat = board && board.querySelector('.board-what');
+  var bBars = board ? board.querySelectorAll('.board-stops i') : [];
+  var bBtn = board && board.querySelector('button');
+  var cur = -1, timer = null;
+
+  function go(i) {
+    cur = i;
+    nodes.forEach(function (n, k) { n.classList.toggle('active', k === i); });
+    rows.forEach(function (r, k) { r.classList.toggle('active', k === i); });
+    Array.prototype.forEach.call(bBars, function (b, k) { b.className = k < i ? 'past' : (k === i ? 'on' : ''); });
+    if (bStop) { bStop.textContent = stops[i].name; bTime.textContent = stops[i].t; bWhat.textContent = stops[i].what; }
+  }
+  function play() {
+    if (timer) return;
+    if (bBtn) bBtn.textContent = 'Pause';
+    timer = setInterval(function () { go((cur + 1) % stops.length); }, 1800);
+  }
+  function stopPlay() {
+    clearInterval(timer); timer = null;
+    if (bBtn) bBtn.textContent = 'Replay';
+  }
+  if (bBtn) bBtn.addEventListener('click', function () { if (timer) stopPlay(); else { go((cur + 1) % stops.length); play(); } });
+  rows.forEach(function (r, i) {
+    r.addEventListener('mouseenter', function () { stopPlay(); go(i); });
+    r.addEventListener('click', function () { stopPlay(); go(i); });
+    r.tabIndex = 0;
+    r.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); stopPlay(); go(i); } });
+  });
+
+  var started = false;
+  function start() {
+    if (started) return; started = true;
+    if (!reduce) route.style.strokeDashoffset = 0;
+    setTimeout(function () { go(0); if (!reduce) play(); }, reduce ? 0 : 1200);
+  }
+  if ('IntersectionObserver' in window) {
+    var mo = new IntersectionObserver(function (es) { if (es[0].isIntersecting) { start(); mo.disconnect(); } }, { threshold: 0.25 });
+    mo.observe(svg);
+  } else start();
+  document.addEventListener('visibilitychange', function () { if (document.hidden) stopPlay(); });
+})();
+
+</script>
+</body>
+</html>
