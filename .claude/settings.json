@@ -10,6 +10,16 @@
             "timeout": 10
           }
         ]
+      },
+      {
+        "matcher": "mcp__hearthbot__update_progress_checklist",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "f=\"$CLAUDE_PROJECT_DIR/.claude/hooks/eta_check.py\"; [ -f \"$f\" ] || exit 0; python3 \"$f\"",
+            "timeout": 10
+          }
+        ]
       }
     ]
   }
