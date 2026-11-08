@@ -446,7 +446,7 @@ a{color:var(--emerald);text-underline-offset:3px}
               </div>
             </div>
             <div class="rp-bars" id="rp-bars"></div>
-            <div class="rp-foot"><span>6 parts scored</span><span><b>Copy emailed</b> to you</span></div>
+            <div class="rp-foot"><span>6 parts scored</span><span><b>Biggest leak</b> named</span></div>
           </figure>
         </div>
       </div>
@@ -774,9 +774,9 @@ var Q = [
 
 var CONTACT = [
   {id:"email", title:function(a){ return "What’s the best email for your scorecard, " + a.name + "?"; },
-    sub:"We’ll email you a copy of your full scorecard.",
+    sub:"Your score shows in a moment.",
     field:{id:"f-email", label:"Email", type:"email", autocomplete:"email", placeholder:"you@example.com", inputmode:"email"}, cta:"Continue"},
-  {id:"phone", title:function(){ return "And where should we text your results?"; },
+  {id:"phone", title:function(){ return "And what’s the best number to reach you?"; },
     sub:"Your score shows on the next screen.",
     field:{id:"f-phone", label:"Mobile number", type:"tel", autocomplete:"tel", placeholder:"+1 555 123 4567", inputmode:"tel"}, cta:"See my score",
     consent:"By tapping See my score, you agree that BusinessGrowR can call and text you at this number about your results and our services, including with automated tools. This isn’t a condition of buying anything. Message and data rates may apply. Reply STOP to opt out.", consentLinks:' See our <a href="https://businessgrowr.com/privacy" target="_blank" rel="noopener">Privacy Policy</a> and <a href="https://businessgrowr.com/terms" target="_blank" rel="noopener">Terms</a>.'}
@@ -896,6 +896,7 @@ function calendlyURL(a){
   if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(a.email || "")) parts.push("email=" + encodeURIComponent(a.email));
   if (digits.length >= 8 && digits.length <= 15) parts.push("a1=" + encodeURIComponent("+" + digits));
   ["utm_source","utm_medium","utm_campaign","utm_content","utm_term"].forEach(function(k){ if (ATTR[k]) parts.push(k + "=" + encodeURIComponent(ATTR[k])); });
+  if (!ATTR.utm_source) parts.push("utm_source=scorecard"); /* organic quiz bookings still show the quiz in Calendly */
   var su = (ATTR.ad_id || ATTR.adset_id || FBCLID) ? ["bg1", ATTR.ad_id, ATTR.adset_id, FBCLID].join(".") : "";
   if (su) parts.push("salesforce_uuid=" + encodeURIComponent(su));
   return "https://calendly.com/d/dvtq-vgz-stw/dfy-guarantee-demo-meeting-bg-aaf?" + parts.join("&");
@@ -917,8 +918,16 @@ function mountCalendly(root){
 window.addEventListener("message", function(e){
   if (String(e.origin || "").indexOf("calendly.com") === -1) return;
   var d = e.data; if (!d || d.event !== "calendly.event_scheduled") return;
-  if (state.view === "result" && state.step && state.step.kind === "result") showBooked($("#v-result"));
+  if (state.view === "result" && state.step && state.step.kind === "result") { postBooked(); showBooked($("#v-result")); }
 });
+/* Tells n8n (IDKYFseRcKwimCjW) this person booked from the quiz page: it tags their GHL contact scorecard-booked. No contact is created and nothing is sent. */
+var BOOKED_WEBHOOK = "https://businessgrowr.app.n8n.cloud/webhook/bg-scorecard-booked", bookedSent = false;
+function postBooked(){
+  if (bookedSent) return; bookedSent = true;
+  var body = JSON.stringify({email:(state.a && state.a.email) || "", lead_id:LEAD_ID, route:routeOf(state.a || {}), page_url:location.href});
+  try { fetch(BOOKED_WEBHOOK, {method:"POST", mode:"cors", keepalive:true, headers:{"Content-Type":"text/plain;charset=UTF-8"}, body:body}).catch(function(){}); }
+  catch(e) { try { navigator.sendBeacon && navigator.sendBeacon(BOOKED_WEBHOOK, body); } catch(e2){} }
+}
 
 /* ---------- views ---------- */
 function show(view){
@@ -1162,8 +1171,8 @@ function nurtureHTML(a, early){
   var lf = ''; /* Leak Finder card hidden until it has a product link and price */
   return '<div class="panel">' + eyebrowHTML("Your next step", "") +
     (early
-      ? '<h2>Start with the free trainings</h2><p class="lead">This scorecard is built for running a trading business. While you’re still learning to trade, the free trainings are the best place to start. Your scorecard is on its way to <b>' + esc(a.email || "your inbox") + '</b>.</p>'
-      : '<h2>Your full scorecard is on its way</h2><p class="lead">We’ve sent a copy to <b>' + esc(a.email || "your inbox") + '</b>. Here’s where to go from here.</p>') +
+      ? '<h2>Start with the free trainings</h2><p class="lead">This scorecard is built for running a trading business. While you’re still learning to trade, the free trainings are the best place to start.</p>'
+      : '<h2>Here’s where to go from here</h2><p class="lead">Your scores for all six parts are above.</p>') +
     (vh ? '<h3 class="vid-h">Start with the part on your ' + (lever ? 'next lever' : 'biggest leak') + '</h3>' + vh : '') +
     '<div class="next-list">' + yt + (early ? '' : lf) + '</div>' + (early ? '' : moreVideosHTML()) +
     '</div>';
