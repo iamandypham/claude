@@ -92,7 +92,9 @@ async function run(route, width) {
   const posts = []; await page.route('**/*', r => { const u = r.request().url(); if (u.startsWith('file:')) return r.continue(); if (u.includes('webhook')) posts.push(u); return r.fulfill({ status: 204, body: '' }); });
   await page.goto(file); await page.click('[data-action="begin"]'); await page.fill('#f-name', 'Vee'); await page.press('#f-name', 'Enter'); await page.waitForTimeout(400);
   await (await page.$$('#q-card .opt'))[4].click(); await page.waitForTimeout(500);
-  ok('vendor exit shown, nothing sent', await page.isVisible('#v-vendor') && posts.length === 0);
+  // Rule change 8 Nov 2026 (Andy): no vendor question-skip. A vendor goes on to the revenue question.
+  const q2 = await page.textContent('#q-card');
+  ok('vendor goes on to the next question (no skip), nothing sent', !(await page.isVisible('#v-vendor')) && /bring in a month/.test(q2) && posts.length === 0, q2.slice(0, 80));
   await browser.close();
   const fails = results.filter(r => !r.pass);
   results.forEach(r => console.log((r.pass ? 'PASS ' : 'FAIL ') + r.name + (r.pass ? '' : '  ' + (r.info || ''))));
