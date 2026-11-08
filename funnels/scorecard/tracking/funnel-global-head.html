@@ -1,0 +1,156 @@
+<!-- BG funnel Head Tracking — optimized 2026-09-16
+     2026-10-17 EARLY: book-a-call-vsl + application now load Meta / Whop / Callix from a
+     top-of-page Custom Code element ("BG EARLY TRACKING"). Each block below is skipped when
+     window.__bgEarly says it already ran, so other funnel steps behave exactly as before.
+     REMOVED: unused AI-traffic tracker (and its live API key)
+     KEEP eager: Meta 3 pixels + PageView, Schedule lock, both GTMs, gtag (AW+2 GA4), Hyros, Whop page
+     Soft ICP off. Do not delay Meta / Schedule CAPI path. -->
+
+<!-- Meta Pixel Code -->
+<script>
+if (!location.pathname.includes('call-thankyou') && !(window.__bgEarly && window.__bgEarly.fb)) {
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '490084437287644');
+fbq('init', '2977280325808767');
+fbq('init', '1788072172408406');
+fbq('set', 'autoConfig', false, '3039470253072337');
+fbq('init', '3039470253072337');
+fbq('track', 'PageView');
+}
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=490084437287644&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Meta Pixel Code -->
+
+<!-- BG Schedule lock — AFTER Meta Pixel. Keep PageView + all 3 pixel inits. Do not delete pixels. -->
+<script>
+if (!(window.__bgEarly && window.__bgEarly.fb)) { fbq('set', 'autoConfig', false, '2977280325808767'); }
+</script>
+<script>
+(function(){
+  if (window.__bgNoSchedule) return;
+  window.__bgNoSchedule = 1;
+  var BLOCK = {Schedule:1};
+  function drop(args){
+    var c=String(args[0]||''), e=String(args[1]||''), e2=String(args[2]||'');
+    if (c==='track' || c==='trackCustom') return !!BLOCK[e];
+    if (c==='trackSingle' || c==='trackSingleCustom') return !!BLOCK[e] || !!BLOCK[e2];
+    return false;
+  }
+  function wrap(){
+    var f=window.fbq;
+    if (!f || f.__bgNoScheduleWrap) return;
+    var orig=f;
+    function w(){ if (drop(arguments)) return; return orig.apply(this, arguments); }
+    for (var k in orig) if (Object.prototype.hasOwnProperty.call(orig,k)) w[k]=orig[k];
+    w.callMethod=function(){ return w.apply(this, arguments); };
+    w.__bgNoScheduleWrap=1;
+    w.queue=orig.queue; w.push=w; w.loaded=orig.loaded; w.version=orig.version;
+    if (orig.queue && orig.queue.filter) {
+      orig.queue = orig.queue.filter(function(a){ return !drop(a); });
+      w.queue = orig.queue;
+    }
+    window.fbq=w;
+    if (window._fbq===orig) window._fbq=w;
+  }
+  wrap();
+  var n=0, i=setInterval(function(){ wrap(); if (++n>240) clearInterval(i); }, 50);
+})();
+</script>
+<link rel="preconnect" href="https://embed.typeform.com" crossorigin>
+<link rel="preconnect" href="https://form.typeform.com" crossorigin>
+<link rel="preconnect" href="https://renderer-assets.typeform.com" crossorigin>
+<link rel="dns-prefetch" href="https://embed.typeform.com">
+<link rel="dns-prefetch" href="https://form.typeform.com">
+<link rel="dns-prefetch" href="https://renderer-assets.typeform.com">
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NQ5Z2KSV');</script>
+<!-- End Google Tag Manager -->
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-PB5H362N');</script>
+<!-- End Google Tag Manager -->
+
+<!-- Google Tag Manager (noscript) — both containers -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NQ5Z2KSV"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PB5H362N"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-16865073504"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'AW-16865073504');
+  gtag('config', 'G-698109CGMP');
+  gtag('config', 'G-D0DQR49EQR');
+</script>
+
+<!-- HYROS BG universal (207413) — installed 2026-09-19 -->
+<script>
+var hyrosHead = document.head;
+var hyrosScript = document.createElement('script');
+hyrosScript.type = 'text/javascript';
+hyrosScript.src = "https://207413.t.hyros.com/v1/lst/universal-script?ph=b8b4ec315edaab7bff2d5271e543c905f59978e77cb80d24d1f9766f4d5252a7&tag=!clicked&ref_url=" + encodeURIComponent(document.URL);
+hyrosHead.appendChild(hyrosScript);
+</script>
+<!-- Whop pixel -->
+<script>if (!(window.__bgEarly && window.__bgEarly.whop)) {!function(w,d,s,u,n,a,b){if(w[n])return;a=w[n]={q:[],t:+new Date,s:[],o:u,track:function(){a.q.push([+new Date].concat([].slice.call(arguments)))},setScope:function(){a.s=[].slice.call(arguments).filter(function(x){return typeof x==="string"});a.q.push([+new Date,"setScope"].concat(a.s))},scope:function(){var c=[].slice.call(arguments);return{track:function(){a.q.push([+new Date].concat([].slice.call(arguments)).concat([{__scope:c}]))}}}};b=d.createElement(s);b.async=1;b.src=u+"/s.js";d.getElementsByTagName(s)[0].parentNode.insertBefore(b,d.getElementsByTagName(s)[0])}(window,document,"script","https://t.whop.tw","whop");whop.setScope("biz_0PFOl9w41XrCmJ");whop.track("page");}</script>
+
+<script>
+if (!(window.__bgEarly && window.__bgEarly.callix)) {
+  var bgCx = document.createElement('script');
+  bgCx.src = 'https://app.callix.io/pixel/v1/track.js';
+  bgCx.setAttribute('data-callix-id', 'j5701wpbczv6df5kmjz78v1mg98fe3c3');
+  bgCx.async = true;
+  (document.head || document.documentElement).appendChild(bgCx);
+}
+</script>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18504298620"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'AW-18504298620');
+</script>
+<!-- TikTok Pixel Code Start -->
+<script>
+!function (w, d, t) {
+  w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie","holdConsent","revokeConsent","grantConsent"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(
+var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var r="https://analytics.tiktok.com/i18n/pixel/events.js",o=n&&n.partner;ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=r,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};n=document.createElement("script")
+;n.type="text/javascript",n.async=!0,n.src=r+"?sdkid="+e+"&lib="+t;e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(n,e)};
+
+  ttq.load('DB4NF4RC77U4O1M3UF10');
+  ttq.page();
+}(window, document, 'ttq');
+</script>
+<!-- TikTok Pixel Code End -->
+<!-- X conversion tracking base code -->
+<script>
+!function(e,t,n,s,u,a){e.twq||(s=e.twq=function(){s.exe?s.exe.apply(s,arguments):s.queue.push(arguments);
+},s.version='1.1',s.queue=[],u=t.createElement(n),u.async=!0,u.src='https://static.ads-twitter.com/uwt.js',
+a=t.getElementsByTagName(n)[0],a.parentNode.insertBefore(u,a))}(window,document,'script');
+twq('config','rgvfv');
+</script>
+<!-- End X conversion tracking base code -->
