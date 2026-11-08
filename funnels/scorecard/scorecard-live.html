@@ -1229,7 +1229,7 @@ function showResult(){
 function bookedHTML(a){
   return '<div class="panel">' + eyebrowHTML("Your next step", "") +
     '<h2 id="booked-h" tabindex="-1">You’re booked' + (a.name ? ', ' + esc(a.name) : '') + '</h2>' +
-    '<p class="lead">Accept the calendar invite when it lands, and check spam if you don’t see it.</p>' +
+    '<p class="lead">Your exact time is in the confirmation email on its way. Accept the calendar invite when it lands, and check spam if you don’t see it.</p>' +
     (a.partners === "yes" ? '<p class="note">Add your partner to the invite so they can join the call.</p>' : '') +
     '<h3 class="vid-h">Before your call, watch this</h3>' + videoCardHTML(a, false) + '</div>';
 }
