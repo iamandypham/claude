@@ -102,11 +102,34 @@ const addTag = node({
   },
 });
 
+// Added 9 Nov 2026 (scorecard email, approved by Andy 8 Nov 9:16 PM ET): a booked lead's scorecard email says
+// "You're booked" instead of the calendar link, so nobody books twice. Writes contact fields only.
+const bookedEnding = node({
+  type: 'n8n-nodes-base.httpRequest',
+  version: 4.2,
+  config: {
+    name: 'GHL Booked Email Ending',
+    parameters: {
+      method: 'PUT',
+      url: expr("{{ 'https://services.leadconnectorhq.com/contacts/' + $('Scorecard contact?').first().json.contactId }}"),
+      authentication: 'genericCredentialType',
+      genericAuthType: 'httpBearerAuth',
+      sendHeaders: true,
+      headerParameters: GHL_HEADERS,
+      sendBody: true,
+      specifyBody: 'json',
+      jsonBody: expr("{{ JSON.stringify({ customFields: [ { id: 'ixfP2vh6EEQdJ7tLcctJ', field_value: 'You\u2019re booked for your call. Check your inbox for the exact time.' }, { id: 'bqel65y4cgo4Q41pLVHf', field_value: '' }, { id: 'RNb03yfLygAuISzLDH0V', field_value: '' }, { id: 'y3NVFN72lrUJJXcFi4Ed', field_value: '' } ] }) }}"),
+      options: {},
+    },
+    credentials: GHL_CRED,
+  },
+});
+
 const stop = node({ type: 'n8n-nodes-base.noOp', version: 1, config: { name: 'No valid email' } });
 
 export default workflow('bg-scorecard-booked', 'BG — Scorecard booked → GHL tag')
   .add(hook)
   .to(mapNode)
   .to(okEmail
-    .onTrue(search.to(pick).to(addTag))
+    .onTrue(search.to(pick).to(addTag).to(bookedEnding))
     .onFalse(stop));
