@@ -34,8 +34,30 @@ HS={
 fn,fs,pc,oc,bc,sx,sy,sp,bs,ol,sh=HS[look]
 HOOK_STYLE=f"Style: Hook,{fn},{cfg.get('hook_size',fs)},{pc},{pc},{oc},{bc},-1,0,0,0,{sx},{sy},{sp},0,{bs},{ol},{sh},8,70,70,{hm},1"
 import re as _re
-hook=_re.sub(r"\*([^*]+)\*",r"{\\c&H0000D4FF&}\1{\\c}",hook)
-if cfg.get("hook_sub"): hook+="\\N{\\fs"+str(int(fs*0.62))+"}"+cfg["hook_sub"]
+# Caption looks. default = BG caps (Montserrat ExtraBold 78, outline). "ref" = styles/reference-iman.md:
+# small sentence-case sans, no outline, soft shadow, 2 words, centred at cap_center_pct of frame height
+# (cap_margin_v is ignored in this mode).
+REF=cfg.get("cap_style")=="ref"
+if REF:
+    csz=cfg.get("cap_size",88); cap_y=int(1920*cfg.get("cap_center_pct",54)/100-csz*0.6)
+    CAP_STYLE=f"Style: Cap,Inter SemiBold,{csz},&H00FFFFFF,&H00FFFFFF,&H00000000,&H78000000,0,0,0,0,100,100,0,0,1,0,2,8,60,60,{cap_y},1"
+else:
+    CAP_STYLE=f"Style: Cap,Montserrat ExtraBold,{cfg.get('cap_size',78)},&H00FFFFFF,&H00FFFFFF,&H00000000,&H96000000,0,0,0,0,100,100,1,0,1,6,3,8,60,60,{cap_y},1"
+EMPH={w.lower() for w in cfg.get("emph",[])}; ACC=cfg.get("accent","&H0000D4FF&")  # ASS colour is BGR; default = BG yellow
+EGAP=cfg.get("emph_gap",4.0); _last=[-99.0]; _newsent=[True]
+def _cap_text(g):
+    if not REF: return " ".join(x["w"] for x in g).upper()
+    o=[]
+    for x in g:
+        w=x["w"]
+        if _newsent[0] and w[:1].islower(): w=w[:1].upper()+w[1:]   # sentence case after . ? !
+        _newsent[0]=w.rstrip()[-1:] in ".?!"
+        m=_re.match(r"^(\W*)(.*?)(\W*)$",w)
+        if m and m.group(2).lower() in EMPH and x["s"]-_last[0]>=EGAP:   # one emphasis per EGAP seconds
+            _last[0]=x["s"]
+            w=m.group(1)+"{\\fnLiberation Serif\\i1\\b1\\fs"+str(int(csz*1.7))+"\\c"+ACC+"}"+m.group(2)+"{\\r}"+m.group(3)
+        o.append(w)
+    return " ".join(o)
 ass=f"""[Script Info]
 ScriptType: v4.00+
 PlayResX: 1080
@@ -44,7 +66,7 @@ WrapStyle: 2
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: Cap,Montserrat ExtraBold,{cfg.get('cap_size',78)},&H00FFFFFF,&H00FFFFFF,&H00000000,&H96000000,0,0,0,0,100,100,1,0,1,6,3,8,60,60,{cap_y},1
+{CAP_STYLE}
 {HOOK_STYLE}
 
 [Events]
@@ -52,18 +74,26 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 """
 he=cfg.get("hook_end","full")  # "full" = whole video (single-shot take); else seconds, e.g. the first cut away
 ass+=f"Dialogue: 1,{ts(0)},{ts(total if he=='full' else he)},Hook,,0,0,0,,{hook}\n"
-n=cfg.get("group",3)
+n=cfg.get("group",2 if REF else 3)
 groups=[];g=[]
 for x in out:
     if g and x["seg"]!=g[-1]["seg"]: groups.append(g); g=[]
     g.append(x)
     if len(g)==n or x["w"].rstrip()[-1:] in ".?!": groups.append(g); g=[]
 if g: groups.append(g)
+if REF:  # no one-word orphan at the end of a shot: fold it into the caption before it
+    k=1
+    while k<len(groups):
+        a,b=groups[k-1],groups[k]
+        last=k+1==len(groups) or groups[k+1][0]["seg"]!=b[0]["seg"]
+        if len(b)==1 and last and a[0]["seg"]==b[0]["seg"] and a[-1]["w"].rstrip()[-1:] not in ".?!" and len(a)<=n: a.extend(b); del groups[k]
+        else: k+=1
 for i,g in enumerate(groups):
     st=g[0]["s"]; en=groups[i+1][0]["s"] if i+1<len(groups) else total
     if en-g[-1]["e"]>0.6: en=g[-1]["e"]+0.3
-    txt=" ".join(x["w"] for x in g).upper()
-    ass+=f"Dialogue: 0,{ts(st)},{ts(en)},Cap,,0,0,0,,{txt}\n"
+    txt=_cap_text(g)
+    mv=max(cap_y-int(csz*0.56),1) if REF and "\\fs" in txt else 0   # bigger emphasis word pushes the line down; lift it back
+    ass+=f"Dialogue: 0,{ts(st)},{ts(en)},Cap,,0,0,{mv},,{txt}\n"
 open(f"{W}/caps.ass","w").write(ass)
 json.dump(out,open(f"{W}/cut_words.json","w"),indent=0)
 fd=0.03
@@ -81,5 +111,5 @@ ln=f"loudnorm=I=-14:TP=-1.5:LRA=11:measured_I={m['input_i']}:measured_TP={m['inp
 fc[-1]=fc[-1].replace("LOUDNORM",ln)
 subprocess.run(["ffmpeg","-loglevel","error","-y","-i",cfg["src"],"-filter_complex",";".join(fc),"-map","[vo]","-map","[ao]",
   "-c:v","libx264","-profile:v","high","-crf","10","-preset","medium","-r","30","-c:a","aac","-b:a","192k","-movflags","+faststart",f"{W}/{cfg['name']}_master.mp4"],check=True)
-subprocess.run(["ffmpeg","-loglevel","error","-y","-i",f"{W}/{cfg['name']}_master.mp4","-vf","scale=720:-2","-c:v","libx264","-crf","28","-preset","fast","-c:a","aac","-b:a","128k","-movflags","+faststart",f"{W}/{cfg['name']}_preview.mp4"],check=True)
+subprocess.run(["ffmpeg","-loglevel","error","-y","-i",f"{W}/{cfg['name']}_master.mp4","-vf","scale=720:-2","-c:v","libx264","-crf","28","-preset","fast","-c:a","copy","-movflags","+faststart",f"{W}/{cfg['name']}_preview.mp4"],check=True)
 print("total",round(total,2))
