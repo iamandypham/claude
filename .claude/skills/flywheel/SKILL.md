@@ -14,7 +14,10 @@ Files: /mnt/project-files/meta/flywheel/ (README.md, lessons.md, evals/, evals/r
 ## 1. In the moment: Andy corrects you
 Fix the output first. In the same turn, append one row to lessons.md (re-read it just before appending; append new rows only, the one in-place edit is a row's status/eval columns; read back after ~10 s):
 
-`| date (ET) | thread | what was wrong | Andy's words / cmsg id | cause | class | smallest change | status | eval |`
+`| date (ET) | thread | what was wrong | Andy's words / cmsg id | cause | class | smallest change | status | eval | area |`
+
+- area (since 10 Nov 2026): content-ads, content-statics, content-reels, content-video, content-copy, content-script, content-hooks, content-x, content-research, book, ops. Older rows are tagged in lessons-areas.md.
+- Content rows (any `content-*` area): in the same turn, also add the rule as one line on its Content Systems page in Slite (statics 3gcOFoF_3tJpTC, reels/editing pNd6jkZP4XtKih, copy skkUIA9BH3oPQ0, organic HbLb8pTqL9EMqX; index 40ZNnwYJDfZCCg) with the date and row reference, add a row to lessons-areas.md with that page, and one KB Change Log row. If the rule is checkable in code (a number, a word, a missing field), propose adding it to /mnt/project-files/content/preflight/content_preflight.py instead of only writing it down. (Andy 10 Nov 2026, content self-improvement C2.)
 
 - cause: missing-instruction, missing-context, stale-memory, weak-skill, missing-test, bad-tool-contract, permission, insufficient-evidence, ambiguous-task.
 - class (a correction true only for this task, like "use this file for this ad", goes in the task's progress.md, not lessons.md):
