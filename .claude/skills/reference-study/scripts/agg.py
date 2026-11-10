@@ -6,7 +6,12 @@ for d in sorted(glob.glob(sys.argv[1]+"/*/breakdown.json")):
     shots=b["shots"]; L=[s.get("t1",s.get("end",0))-s.get("t0",s.get("start",0)) for s in shots]
     t=json.load(open(os.path.dirname(d)+"/packaging/timeline.json"))
     txt=t["text"]; 
-    cap=[c for c in txt if (c["t1"]-c["t0"])<3.0 and 0.25<(c["bbox"][1]+c["bbox"][3]/2)<0.95 and not c.get("part_of_picture")]
+    # captions = short-lived cues with letters, not counters, within +-0.03 of the clip's caption line.
+    # Valid for short-form. On long-form most cues are UI or graphic text: do not use the cap_* fields there.
+    import re as _re
+    cand=[c for c in txt if (c["t1"]-c["t0"])<3.0 and c.get("kind")!="counter" and _re.search(r"[A-Za-z]{2}",c["text"]) and 0.25<(c["bbox"][1]+c["bbox"][3]/2)<0.95 and not c.get("part_of_picture")]
+    ymed=st.median([c["bbox"][1]+c["bbox"][3]/2 for c in cand]) if cand else 0
+    cap=[c for c in cand if abs(c["bbox"][1]+c["bbox"][3]/2-ymed)<=0.03]
     words=[len(c["text"].split()) for c in cap]; cd=[c["t1"]-c["t0"] for c in cap]
     yc=[c["bbox"][1]+c["bbox"][3]/2 for c in cap]; hh=[c["bbox"][3] for c in cap]; ww=[c["bbox"][2] for c in cap]
     fills=collections.Counter(c["style"].get("fill_name") for c in cap)

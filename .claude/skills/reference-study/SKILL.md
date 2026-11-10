@@ -37,8 +37,8 @@ scripts/sheet.sh clip.mp4 sheet.jpg 2                    # frames every 0.5 s, t
 ## 4. What to trust (checked on 15 Iman Gadzhi clips, 10 Nov)
 | Output | Trust | Note |
 |---|---|---|
-| Shot boundaries, cuts per minute, shot length | High | Finds cuts plain ffmpeg scene detection misses on letterboxed clips |
-| Caption timeline (packaging/timeline.json): words per cue, on-screen time, position, height, colour | High for short-form | On long-form the OCR also picks up text inside graphics and screen recordings; filter by position and read the frames |
+| Shot boundaries, cuts per minute, shot length | Medium, verify on the frame sheet | Finds cuts plain ffmpeg scene detection misses on letterboxed clips, but the two disagreed on 3 of 8 shorts and by about 2x on long-form in the Iman study. Say which detector a number came from |
+| Caption timeline (packaging/timeline.json): words per cue, on-screen time, position, height, colour | High for short-form | On-screen time is quantised to the 0.5 s OCR grid, so derive it from captions per minute. On long-form the OCR also picks up text inside graphics and screen recordings: do not use the cap_* fields there, read the frames |
 | Music present, BPM, cuts-on-beat vs chance | Medium | Compare cuts_on_beat_ratio with cuts_on_beat_chance; equal means not beat-cut |
 | Sound effects list | Low | Without a vision/audio model the tool says only about 4 in 10 are real. Report as "candidates", never as a count |
 | Live / AI / 3D verdict | Ignore | Platform re-encoding wipes the evidence; we don't need it for style |
