@@ -20,6 +20,22 @@ for f in cfg.get("fixes",{}):
 def ts(t):
     h=int(t//3600);m=int(t%3600//60);s=t%60;return f"{h}:{m:02d}:{s:05.2f}"
 cap_y=cfg.get("cap_margin_v",540); hook=cfg["hook"]
+# Hook title looks (styles/hook-titles.md, Andy 10 Nov 2026: "only use these styles").
+# V1 native white box, V2 plain bold white, V3 outline listicle, V4 condensed caps (*word* = yellow).
+# "legacy" = the old yellow box, kept only to re-render old drafts.
+look=cfg.get("hook_look","V1"); hm=cfg.get("hook_margin_v",310)
+HS={
+ "V1":("Montserrat ExtraBold",58,"&H00000000","&H00FFFFFF","&H00FFFFFF",100,100,0,3,14,0),
+ "V2":("Montserrat ExtraBold",66,"&H00FFFFFF","&H00000000","&H80000000",100,100,0,1,0,4),
+ "V3":("Montserrat ExtraBold",72,"&H00FFFFFF","&H00000000","&H00000000",100,100,0,1,7,0),
+ "V4":("Montserrat Black",104,"&H00FFFFFF","&H00000000","&H80000000",100,125,-2,1,0,3),
+ "legacy":("Montserrat ExtraBold",64,"&H00000000","&H0000D7FF","&H0000D7FF",100,100,1,3,18,0),
+}
+fn,fs,pc,oc,bc,sx,sy,sp,bs,ol,sh=HS[look]
+HOOK_STYLE=f"Style: Hook,{fn},{cfg.get('hook_size',fs)},{pc},{pc},{oc},{bc},-1,0,0,0,{sx},{sy},{sp},0,{bs},{ol},{sh},8,70,70,{hm},1"
+import re as _re
+hook=_re.sub(r"\*([^*]+)\*",r"{\\c&H0000D4FF&}\1{\\c}",hook)
+if cfg.get("hook_sub"): hook+="\\N{\\fs"+str(int(fs*0.62))+"}"+cfg["hook_sub"]
 ass=f"""[Script Info]
 ScriptType: v4.00+
 PlayResX: 1080
@@ -29,12 +45,13 @@ WrapStyle: 2
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
 Style: Cap,Montserrat ExtraBold,{cfg.get('cap_size',78)},&H00FFFFFF,&H00FFFFFF,&H00000000,&H96000000,0,0,0,0,100,100,1,0,1,6,3,8,60,60,{cap_y},1
-Style: Hook,Montserrat ExtraBold,{cfg.get('hook_size',64)},&H00000000,&H00000000,&H0000D7FF,&H0000D7FF,0,0,0,0,100,100,1,0,3,18,0,8,70,70,{cfg.get('hook_margin_v',310)},1
+{HOOK_STYLE}
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 """
-ass+=f"Dialogue: 1,{ts(0)},{ts(cfg.get('hook_end',3.6))},Hook,,0,0,0,,{hook}\n"
+he=cfg.get("hook_end","full")  # "full" = whole video (single-shot take); else seconds, e.g. the first cut away
+ass+=f"Dialogue: 1,{ts(0)},{ts(total if he=='full' else he)},Hook,,0,0,0,,{hook}\n"
 n=cfg.get("group",3)
 groups=[];g=[]
 for x in out:
