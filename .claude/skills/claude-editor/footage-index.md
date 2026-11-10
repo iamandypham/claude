@@ -2,7 +2,7 @@
 
 Built 10 Nov 2026 from /mnt/project-files/creative-raw/2026-03-shoot/transcripts.json (45 clips, 16-18 Mar 2026 shoot, Andy's Drive, link-shared). Group notes, ad rules and used/never-run inference: inventory.md and HANDOFF-editing.md in that folder. Download: https://drive.usercontent.google.com/download?id=<ID>&export=download&confirm=t
 
-Status: "never run" comes from inventory.md; blank means probably already run or unknown (see inventory.md). Flags are automatic keyword hits from the transcript (check by ear before cutting): $15M, Dodgy, make/money (ad rule 3), email CTA (rule 9), figure early (a per-month figure in the opening, rule 4), IFVG early (Ryan's $43k to $103k result in the first ~250 characters, rule 2). Adeel is often misspelled by Whisper ("a deal", "deal trades", "Adil"); the Names column catches those (11 Nov fix). Named people need Andy's permission (rule 7).
+Status: "never run" comes from inventory.md; blank means probably already run or unknown (see inventory.md). Flags are automatic keyword hits from the transcript (check by ear before cutting): $15M, Dodgy, make/money (ad rule 3), email CTA (rule 9), figure early (a per-month figure in the opening, rule 4), IFVG early (Ryan's $43k to $103k result in the first ~250 characters, rule 2). Adeel is often misspelled by Whisper ("a deal", "deal trades", "Adil"); the Names column catches those (10 Nov fix). Named people need Andy's permission (rule 7).
 
 B-roll and transitions: no B-roll library is on file in project files or Slite (checked 10 Nov; Andy's Drive not searched). Transitions are rendered in ffmpeg (30 ms audio fades, hard cuts), so no transition files are needed for the talking-head style. Add new footage to this table when it arrives.
 
