@@ -10,7 +10,9 @@ for si,(a,b) in enumerate(segs):
         mid=(x["s"]+x["e"])/2
         if a<=mid<=b and x["s"] not in drop: out.append({"w":x["w"].strip(),"s":max(x["s"],a)-a+off,"e":min(x["e"],b)-a+off,"seg":si})
     off+=b-a
-tail=cfg.get("tail",0.0)
+import os
+FONTS=os.path.expanduser(cfg.get("fonts_dir","~/.fonts"))
+tail=cfg.get("tail",0.3)  # R-104 end hold
 total=off+tail
 for f in cfg.get("fixes",{}):
     for x in out:
@@ -27,7 +29,7 @@ WrapStyle: 2
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
 Style: Cap,Montserrat ExtraBold,{cfg.get('cap_size',78)},&H00FFFFFF,&H00FFFFFF,&H00000000,&H96000000,0,0,0,0,100,100,1,0,1,6,3,8,60,60,{cap_y},1
-Style: Hook,Montserrat ExtraBold,{cfg.get('hook_size',64)},&H00000000,&H00000000,&H0000D7FF,&H0000D7FF,0,0,0,0,100,100,1,0,3,18,0,8,70,70,{cfg.get('hook_margin_v',230)},1
+Style: Hook,Montserrat ExtraBold,{cfg.get('hook_size',64)},&H00000000,&H00000000,&H0000D7FF,&H0000D7FF,0,0,0,0,100,100,1,0,3,18,0,8,70,70,{cfg.get('hook_margin_v',310)},1
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
@@ -53,7 +55,7 @@ for i,(a,b) in enumerate(segs):
     d=b-a
     fc.append(f"[0:v]trim={a}:{b},setpts=PTS-STARTPTS[v{i}];[0:a]atrim={a}:{b},asetpts=PTS-STARTPTS,afade=t=in:d={fd},afade=t=out:st={d-fd:.3f}:d={fd}[a{i}]")
 fc.append("".join(f"[v{i}][a{i}]" for i in range(len(segs)))+f"concat=n={len(segs)}:v=1:a=1[vc0][ac0];[vc0]tpad=stop_mode=clone:stop_duration={tail}[vc];[ac0]apad=pad_dur={tail}[ac]")
-fc.append(f"[vc]subtitles={W}/caps.ass:fontsdir=/root/.fonts,format=yuv420p,setparams=color_primaries=bt709:color_trc=bt709:colorspace=bt709[vo];[ac]LOUDNORM,aresample=48000[ao]")
+fc.append(f"[vc]subtitles={W}/caps.ass:fontsdir={FONTS},format=yuv420p,setparams=color_primaries=bt709:color_trc=bt709:colorspace=bt709[vo];[ac]LOUDNORM,aresample=48000[ao]")
 import re
 fc1=";".join(fc[:-1])+f";[ac]loudnorm=I=-14:TP=-1.5:LRA=11:print_format=json[ao];[vc]nullsink"
 r=subprocess.run(["ffmpeg","-hide_banner","-y","-i",cfg["src"],"-filter_complex",fc1,"-map","[ao]","-f","null","-"],capture_output=True,text=True)

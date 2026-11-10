@@ -3,7 +3,7 @@ name: claude-editor
 description: Edit a BG ad video or reel from a brief (Claude edits, a human judges on the BG Creative Review page, every repeatable note becomes a rule). Use for any new cut, recut or variant.
 ---
 
-# Claude-as-editor (BG, adopted 10 Nov 2026)
+# Claude-as-editor (BG, tested 10 Nov 2026; adopted once Andy merges this and judges a draft on the review page)
 
 Source of truth: Slite "Claude-as-editor framework" VV0_v7-7j8_ltv (Content Systems, part 2). Rules live in Slite "Rules and lessons learned" pNd6jkZP4XtKih; ad rules in /mnt/project-files/creative-raw/2026-03-shoot/HANDOFF-editing.md ("Ad rules" 1-10). If this file and those pages disagree, the pages win.
 
@@ -27,15 +27,19 @@ Nothing gets uploaded to an ad account or posted without Andy's typed go. Upload
 1. Download the source by Drive id: `https://drive.usercontent.google.com/download?id=<ID>&export=download&confirm=t`.
 2. Word times: `python3 -I scripts/words.py <16k mono wav> words.json medium.en` (needs `pip install faster-whisper`).
 3. Pick segments from the script. **Cut points come from the audio level dip, not Whisper word times** (R-103): print 50 ms RMS around each cut and cut in the lowest window.
-4. Write a brief JSON like `examples/louis-views-t1_v2.json` and run `python3 scripts/build_cut.py brief.json`. It does: 30 ms fades per cut, caption groups of 3 that break at sentence ends and at cuts (R-102), yellow hook box 0-3.6 s with its top below 285 px (R-101, `hook_margin_v` 310), optional end hold (`tail` 0.3, R-104), two-pass loudnorm to -14 LUFS (R-105), 1080x1920 H.264 High CRF 10 BT.709 master + 720p preview. Install Montserrat (Google Fonts variable TTF) into ~/.fonts first.
+4. Fill the 7-field brief (`examples/louis-views-t1_brief.json`), then write a render config like `examples/louis-views-t1_v2.json` and run `python3 scripts/build_cut.py brief.json`. It does: 30 ms fades per cut, caption groups of 3 that break at sentence ends and at cuts (R-102), yellow hook box 0-3.6 s with its top below 285 px (R-101, `hook_margin_v` default 310), end hold (`tail` default 0.3, R-104), two-pass loudnorm to -14 LUFS (R-105), 1080x1920 H.264 High CRF 10 BT.709 master + 720p preview. Install Montserrat (Google Fonts variable TTF) into ~/.fonts first.
 5. Never upscale. Never alter a screen-share recording; only add proof on top. Strip the C2PA stamp before delivery.
 
 ## 4. Self-check (before the judge sees it; record evidence)
 - Re-transcribe the render; diff against the script. Any word under 60 ms = clipped (R-103). Any added or dropped real word = ear-test the source.
 - `ffmpeg -i master -af ebur128 -f null -` integrated within -14 ±0.5 LUFS.
 - `ffprobe`: 1080x1920, h264 High, bt709.
-- Frame sheet: look at it. Hook box clear of the top 269 px; captions clear of the face and the bottom 35%.
-- Banned words (ad rule 3), first-5 s figures (rule 4), names (rule 7), CTA matches the funnel (rule 9).
+- Frame sheet: look at it. Hook box top at 285 px or lower (R-101); captions clear of the face and the bottom 35%.
+- Ad rules 1-10 (HANDOFF-editing.md), each ticked with what you checked:
+  - 1: Dodgy not in the first ~5 s, ad not only about him. 2: Ryan's $43k to $103k (IFVG) result is never the hook; Jack out of the opening.
+  - 3: banned words (make/made/earn, money, $15M, dated years, guarantees). 4: no per-month figure in the first 5 s.
+  - 5: qualifier banner starts with "For" and says "$10K+". 7: named clients need Andy's OK. 9: CTA matches the funnel.
+- Every cut point sits at an audio dip (print the 50 ms RMS around it); ear-test any cut that doesn't.
 
 ## 5. Review page
 BG Creative Review: https://claude.ai/artifact/DGWHnJjQjhvZSPTn5BNQ36 (db + assets).

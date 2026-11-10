@@ -10,3 +10,6 @@ Pass/fail
 - [ ] Repeats and softeners cut ("Well, the reality is", "if you want", "if you don't, then don't")
 - [ ] Ends on the CTA verb with a 0.3 s hold (R-104); CTA = free training on the next page, never an email opt-in (rule 9)
 - [ ] Self-check section 4 of SKILL.md passes
+- [ ] Ad rule 1: Dodgy not in the first ~5 s
+- [ ] Ad rule 2: Ryan's IFVG result not the hook; Jack not in the opening
+- [ ] Ad rule 5: banner starts with "For", uses "$10K+"
