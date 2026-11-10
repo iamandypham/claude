@@ -1,0 +1,57 @@
+# Footage index (Claude reads this before picking a clip)
+
+Built 10 Nov 2026 from /mnt/project-files/creative-raw/2026-03-shoot/transcripts.json (45 clips, 16-18 Mar 2026 shoot, Andy's Drive, link-shared). Group notes, ad rules and used/never-run inference: inventory.md and HANDOFF-editing.md in that folder. Download: https://drive.usercontent.google.com/download?id=<ID>&export=download&confirm=t
+
+Status: "never run" comes from inventory.md; blank means probably already run or unknown (see inventory.md). Flags are automatic keyword hits from the transcript (check by ear before cutting): $15M, Dodgy, make/money (ad rule 3), email CTA (rule 9), figure early (a per-month figure in the opening, rule 4). Named people need Andy's permission (rule 7).
+
+B-roll and transitions: no B-roll library is on file in project files or Slite (checked 10 Nov; Andy's Drive not searched). Transitions are rendered in ffmpeg (30 ms audio fades, hard cuts), so no transition files are needed for the talking-head style. Add new footage to this table when it arrives.
+
+| File | Drive id | Length | Res | Status | Cuts made | Names spoken | Flags | Opening words |
+|---|---|---|---|---|---|---|---|---|
+| DJI_20260317223717_0056_original.MOV | `10JlhP6VMD3-83rrInsts_0U2eozZ-67y` | 86 s | 1512x2688  |  |  | - | $15M, make/money, email CTA | So, of course, all our trading discords, we've done over $15 million in revenue just in th... |
+| DJI_20260317223911_0058_original.MOV | `16EQeOarWUBn-HE285T0EWAOtaY8Jtvgq` | 74 s | 1512x2688  |  |  | Jack | $15M, email CTA, figure early | So here's what we built for Jack Trades to get his trading discord from 2k a month to over... |
+| DJI_20260317224041_0059_original.MOV | `14DYJbBbG9eERly8PCMdEHNIzTjspqm0y` | 64 s | 1512x2688  |  |  | Jack | $15M | This is the content strategy we used to take Jack trades from literally 16k followers to o... |
+| DJI_20260317224156_0060_original.MOV | `1KL77QNUqyK-OxfO1CWfCrpizr3BUEyTE` | 41 s | 1512x2688  |  |  | - | $15M, email CTA | We've worked with over 218 trading discord owners. We've done over $15 million in revenue ... |
+| IMG_0873.MOV | `18Ae9mBeH-txx-e5u5pZmtKN2C2QL63k3` | 33 s | 1080x1920  |  |  | Jack | $15M, email CTA | So Jack Trades Discord was at 2k MRR and then 60 days later it was at 40k MRR and all we d... |
+| IMG_0875.MOV | `1DLZHuaHjZCpuaH9znoBwnEcANTWqcP9O` | 35 s | 1080x1920  |  |  | Jack, Brittany, Sean | $15M, email CTA, figure early | One of our trading discord clients, Brittany, just hit 80k this month. When she found us, ... |
+| IMG_0876.MOV | `1IJ7J3RaqyDgUXKlYc1rp5DJnevJI4tQx` | 46 s | 1080x1920  | never run | C4 | Jack, Sean | $15M, email CTA | We have helped 218 trading discord scale and the ones that win all do the same three thing... |
+| IMG_0879.MOV | `18e1MKek_lIDEUdyle0txdsKt76uOoA_r` | 38 s | 1080x1920  |  |  | Jack | $15M, make/money, figure early | So Jack Trades grew his Discord from 2k a month to 40k a month in 60 days and all we did w... |
+| IMG_0882.MOV | `1qdy8e5oWU-XcRJ6LSvQcYZDMG4WNI7l0` | 36 s | 1080x1920  | never run | C5 | - | $15M, email CTA, figure early | We've scaled 218 trading info businesses, and the ones stuck at about 10 to 20K a month al... |
+| IMG_0883.MOV | `1_9izOJF5WtlL3ykGvit_41T4oZvKLMZ6` | 30 s | 1080x1920  |  |  | - | email CTA, figure early | We grew this IFG traders trading discord by 60k a month in 81 days and all we did was fix ... |
+| IMG_0886.MOV | `1G4QTnz-gsdMHdiKQLfsxtI2yNPNmn4HV` | 43 s | 1080x1920  |  |  | - | $15M, email CTA, figure early | So a deals trading discord was at $0 and now he's at $50k a month and above. Why? Well he ... |
+| IMG_0906.MOV | `18xDX-4eoepahxzs54pryv5Rvv-brO3jX` | 34 s | 1080x1920  |  |  | - | $15M, figure early | So we took this well-known IFG traders Discord from 43k a month to over 103k a month in ju... |
+| IMG_0907.MOV | `1WU8MbboxAW_bbhjH6dK2zSjGR6zlIwXE` | 41 s | 1080x1920  | never run |  | - | $15M | $15 million in trading discord sales. Now that might sound unethical, that might sound lik... |
+| IMG_0909.MOV | `18bcZmoFoLtOOJqgtGZR_-HN27ZAA_XPM` | 34 s | 1080x1920  |  |  | - | $15M, email CTA, figure early | You ever wondered how some trading this calls to like a hundred K a month while you're stu... |
+| IMG_0910.MOV | `1yJO2cor8-oSECfFRxBeQPVEXDFVrlIws` | 34 s | 1080x1920  | never run |  | - | $15M, figure early | There's one system behind every single trading discord that has scaled to over 100k a mont... |
+| IMG_0911.MOV | `1N298hjuiDtV6fNHp9_e2vefKNHUR-cxt` | 78 s | 1080x1920  |  |  | Jack | $15M, figure early | This funnel is why some trading discord scale to over 100k a month and others completely p... |
+| IMG_0912.MOV | `1t95VmidoLE51kBQU5dmgevi-T_wJCxDy` | 38 s | 1080x1920  |  |  | - | $15M | Have you ever wondered why your trading content is getting you views and followers but not... |
+| IMG_0914.MOV | `1HGwtkoNldfLZ-GVu9thx_TsARpnjh7OO` | 39 s | 1080x1920  | never run |  | - | $15M, figure early | Every single trading discord that does over 100k a month has this one thing and no it isn'... |
+| IMG_2241.MOV | `17Kl9Hplr3L4GuSozpyCKYPWRcloQB5Wg` | 52 s | 1920x1080 16:9 (no 9:16 use) |  |  | - | email CTA, figure early | We took a deal from literally $0 in revenue to over $50k a month and he went from 0 follow... |
+| IMG_2243.MOV | `19COFPvpHq9sjDrRLPG-Cy6La8H3_38oV` | 64 s | 1920x1080 16:9 (no 9:16 use) |  |  | Jack | $15M, Dodgy, email CTA | We've generated over $15 million in revenue for trading discords on WAP just in the last t... |
+| IMG_2244.MOV | `1tjydbiK7FN1xZLeoUC3q7AKgsoqPYKnE` | 53 s | 1920x1080 16:9 (no 9:16 use) |  |  | Jack | $15M, Dodgy, email CTA | So deal trades here when we met had zero dollars in revenue now He's over a hundred K foll... |
+| IMG_2245.MOV | `1YerRD9VD70z-MujwXOK8WJ79SncA8H2Y` | 78 s | 1920x1080 16:9 (no 9:16 use) |  |  | - | $15M, email CTA | So of course all our trading discords, we've done over 15 million dollars in revenue on WA... |
+| IMG_2246.MOV | `187G39QdZfV-SRbDtmPm_RiVBX82nNWaU` | 56 s | 1920x1080 16:9 (no 9:16 use) |  |  | Jack | $15M, make/money, email CTA | I'm gonna give you the exact system we plugged in for Jack trades to take him from 16,000 ... |
+| IMG_2247.MOV | `1d3-PY1qAA-D-iQae0BGzfkk1TzLqFfq5` | 64 s | 1920x1080 16:9 (no 9:16 use) |  |  | Jack | $15M, email CTA, figure early | We were able to take Jack trades from $2,000 a month to over $40,000 a month with his trad... |
+| IMG_2248.MOV | `1tqEGYioJO1HjbxQOKqia-wrDdMDbv1le` | 58 s | 1920x1080 16:9 (no 9:16 use) |  |  | - | $15M, email CTA | Our team at BusinessGorror has worked with over 218 trading discord owners by this point. ... |
+| dji_mimo_20260317_000706.mp4 | `1eIGoMAn88C0PZ4IC5J_S60BcKVpa4Md9` | 41 s | 1728x3072  |  |  | Jack, Brittany, Sean | $15M, Dodgy, email CTA, figure early | One of our trading fiscal clients, Brittany, just hit 80k last month and she was at about ... |
+| dji_mimo_20260317_001206.mp4 | `1x-cqotqEs3INLGuCUXKw7dz4cT6OXvOj` | 36 s | 1080x1920  |  |  | Jack | $15M, email CTA, figure early | So we grew Jack Trade's Discord from 2k a month to 40k a month in about 60 days and all he... |
+| dji_mimo_20260317_002120.mp4 | `17xt1_s5QsfXbsRdL0UWzcGabRDmgrOEx` | 32 s | 1080x1920  |  |  | - | $15M, figure early | We grew this IFG traders trading discord by 60k a month in 81 days and all it took was imp... |
+| dji_mimo_20260317_223256_glamour.MP4 | `1sUP3robpE9qKjL3C2AU4imKPi__nxOgP` | 55 s | 1512x2688  |  |  | - | $15M, email CTA, figure early | We took a deal trades from $0 in revenue to over $50k a month. We took them from zero foll... |
+| dji_mimo_20260317_223532_glamour.MP4 | `1KLnMrMgQDcunHvj8BrPaw2nzOLZZePpw` | 75 s | 1512x2688  | never run | C3 | Jack, Lee | $15M, email CTA | We've generated over $15 million in revenue for trading discords just in the last two year... |
+| dji_mimo_20260317_223702_glamour.MP4 | `1Q39Dq-huON0Gj4wpR5A3iLkSKCv6NZEs` | 77 s | 1512x2688  |  | A1, B1 | - | $15M, make/money, email CTA, figure early | Adil trades was literally doing $0 a month when we met. He's now at over $50k a month and ... |
+| dji_mimo_20260318_061332.mp4 | `1dWcY17tViAcFI8BiBdQoedxscPah7hie` | 51 s | 1080x1920  |  |  | - | $15M, email CTA, figure early | 43k a month to 103k a month. That's one IFEG trader's discord. Very well known IFEG trader... |
+| dji_mimo_20260318_061658.mp4 | `1v3nxiy0fgbtLzy7PstcpSjEUdHlM__UK` | 43 s | 1080x1920  | never run |  | - | $15M, email CTA | $15 million in trading Discord sales and counting. Now that might sound like a scam or une... |
+| dji_mimo_20260318_061902.mp4 | `1n0Sb8xUwKP3Ex4CVrGnUr8B87YtB4o9A` | 30 s | 1080x1920  |  |  | - | $15M, figure early | Have you ever wondered how some trading discords are hitting like 100k a month and you're ... |
+| dji_mimo_20260318_062408.mp4 | `1JqApGvM8ON1dFk5BIS7rhecWI9zmArVQ` | 25 s | 1080x1920  | never run |  | - | email CTA, figure early | There's one system behind every single trading discord that's ever crossed 100k a month, a... |
+| dji_mimo_20260318_063144.mp4 | `1Neo4EFMCVgbmCSNomMKw0YNj24gVdw7D` | 52 s | 1080x1920  |  |  | Jack | $15M, make/money, email CTA | This funnel is why some trading discords... What does that say? This funnel is why some tr... |
+| dji_mimo_20260318_063250.mp4 | `1LuDSdMAVly_9h8qDQQXqLnU3gSV_FmRQ` | 39 s | 1080x1920  |  |  | - | $15M | Have you ever wondered why your trading content gets you views but not paying members for ... |
+| dji_mimo_20260318_063414.mp4 | `1-jdLvQl9RCX7czTueeihK0OtMhRHN0R5` | 50 s | 1080x1920  |  |  | - | $15M, figure early | Every trading discord doing over 100k a month has this one thing and it isn't, you know, b... |
+| hook_1_miro.mov | `1tEHc0IoSnzwbbPDDZyNfXEt6BCtOm1RZ` | 101 s | 1080x1920  | likely run |  | Jack, Lee | $15M, make/money, email CTA | We took a deal trades here from literally zero followers and zero dollars in revenue to ov... |
+| hook_2_miro.mov | `1TJCcH5O76MOvBcqV5AZg3WoLD7ZtZbr0` | 165 s | 1080x1920  |  |  | Jack, Lee, Bree | $15M, email CTA | We've done $15 million in revenue across 218 different trading communities, some of them a... |
+| hook_3_miro.mov | `1adgGyd77a_E0WqGE8HYZlXxq_i7Bwauo` | 153 s | 1080x1920  | likely run |  | Jack, Bree | $15M, make/money, email CTA | A deal with trades here was literally at $0 in revenue and zero followers when we met him.... |
+| hook_4_miro.mov | `18PHc7bwbYnPIEjD5uhmIRXvbb-yf_RXQ` | 169 s | 1080x1920  | likely run |  | Jack | $15M, email CTA | $15 million in sales across all the trading discords that have worked with us, so over $21... |
+| hook_5_miro.mov | `1DcdX5-H0bK491SSb_rEvVKfn0nre-7Tt` | 183 s | 1080x1920  | likely run |  | Jack | $15M, make/money, email CTA, figure early | Here's what we built for JAP trade to take it from 16K followers to over 100K followers an... |
+| hook_6_miro.mov | `1i8Tk6TUrx7DAKe7q0OwZ6jhVu6tlhbb7` | 142 s | 1080x1920  | likely run |  | Lee | $15M, email CTA, figure early | In 45 days we took jap grades from 2k per month to over 40k a month, he does way more now,... |
+| hook_7_miro.mov | `1bU5sy0moGeqYFVT4Wyvwgsr6RmMKgGxP` | 92 s | 1080x1920  |  | C6 | Jack | $15M, email CTA | We've worked with 218 trading discords. We've done 15 million dollars and more for them in... |
+
+Test cut 10 Nov: IMG_0912 -> LOUIS-VIEWS-T1 v2 (review page draft louis-views-t1-v2, passed). Not uploaded.
