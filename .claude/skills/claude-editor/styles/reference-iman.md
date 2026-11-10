@@ -40,7 +40,7 @@ Sound
 - [S] Documentary (WO-Gl6-6gLE only): 5-6 word subtitles at the bottom (y 88%) for scene audio, b&w inserts, photo-frame borders. Not our use case.
 
 ## C. Pass/fail for a BG short cut in this style
-- [ ] Median shot 1.2-2.6 s; no shot over 4 s unless it is a screen share
+- [ ] Median shot 1.2-2.6 s; no shot over 4 s unless it is a screen share. On one-camera footage get there with punch-ins on cuts (R-107)
 - [ ] No pause over 0.35 s; cut points still at audio dips (R-103)
 - [ ] Captions: 2 words (max 4), sentence case, punctuation kept, breaks at sentence ends and cuts, no one-word orphan at the end of a shot
 - [ ] Captions centred at 50-58% of frame height. Exception: if that band covers eyes or mouth, use the nearest clear band and write the number in the brief
@@ -55,7 +55,7 @@ Sound
 
 ## D. Conflicts with our rules (ours win until Andy rules)
 1. Hook title: his is small, at the top, gone after 4-5 s, or absent. Ours is a Brian Mark title that stays for a single-shot take.
-2. Punch-in on cuts: on 1080p footage that is an upscale, which SKILL.md bans. Needs 4K source, or shoot wider and crop.
+2. RULED 10 Nov 2026 2:05 PM ET, Andy: "punch in on cuts is fine". Punch-ins on cuts are allowed, including on 1080p (R-107). Not built into build_cut.py yet.
 3. Caption look: ours is ALL CAPS Montserrat ExtraBold 78 px with a 6 px outline in groups of 3 (R-102), low in the frame. His is sentence case, no outline, groups of 2, mid-frame, similar letter height but much lighter weight. Lighter text may read worse on a paid ad with sound off. Test before adopting on ads.
 4. Speaker cuts need two cameras or two people; most of our footage is one person, one camera.
 5. Music: nothing licensed in the ledger yet.
@@ -63,7 +63,7 @@ Sound
 ## E. Test on our footage (10 Nov, Louis IMG_0912, draft louis-views-t1-ref-iman-v3)
 - Captions: 40 captions, 2 words each (last one 3 to avoid an orphan), sentence case. Same OCR as the reference reads our caption box at 4.1-4.2% of frame height and 33% width (his median 4.4% and 33%). 4 emphasis words in yellow italic serif at 5.0, 12.6, 16.7 and 20.9 s. First one comes later than his 2-11 s rule would like.
 - Caption position FAILS his 50-58% line on purpose: that band is Louis's forehead, because he films with his face in the lower half. Captions sit at 38%, between the hook title and his hair. In the first 3 s his white sleeve passes behind the caption and contrast drops.
-- Pacing FAILS his range: one camera, 6 shots, median 3.55 s, longest 7.3 s (his: median about 1.4 s, almost nothing over 4 s). Reaching it needs b-roll, a second angle or 4K punch-ins. None exist for this clip.
+- Pacing FAILS his range: one camera, 6 shots, median 3.55 s, longest 7.3 s (his: median about 1.4 s, almost nothing over 4 s). Punch-ins on cuts are now allowed (R-107) and would bring it into range, but Andy said not to re-render this test.
 - Self-check: 23.3 s, -14.5 LUFS, true peak -1.2 dBFS on master and preview, 1080x1920 H.264 High. Same segments as the passed v2 of the normal cut, so cut points are unchanged.
 - v2 of this test (60 px text, red emphasis bunched in the first 12 s, preview audio peaking over 0) was replaced after the independent review.
 

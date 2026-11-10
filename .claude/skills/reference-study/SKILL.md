@@ -47,5 +47,5 @@ scripts/sheet.sh clip.mp4 sheet.jpg 2                    # frames every 0.5 s, t
 ## 5. Write the style file
 - Put it in `.claude/skills/claude-editor/styles/reference-<name>.md`: measured numbers with n, what was seen by eye, then a pass/fail list an edit can be checked against.
 - Mark every line as measured (tool), seen (frames) or not checked (sound by ear).
-- List conflicts with our rules (hook titles OsOEPll4gUpaO_, never upscale, caption fixes, ad rules). Our rules win until Andy says otherwise.
+- List conflicts with our rules (hook titles OsOEPll4gUpaO_, never upscale except punch-ins on cuts (R-107), caption fixes, ad rules). Our rules win until Andy says otherwise.
 - Test it on one of our own clips and put the draft on the BG Creative Review page. The style is Draft until Andy passes a draft.
