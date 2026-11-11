@@ -12,8 +12,17 @@ cards.json is a list. Each card has "id" and "type":
   list     {"title": "The six fixes", "items": ["Your strategy", ...], "build": true}
            build writes one image per step (id-1, id-2, ...) with the newest item in yellow
   quote    {"text": "Emails, not views.", "by": ""}
-  proof    {"image": "/abs/path.png", "caption": "Options Discord, monthly recurring", "blur": [[x, y, w, h], ...]}
-           blur boxes are fractions of the image (0-1) and hide a name or brand pill
+  proof    {"image": "/abs/path.png", "caption": "Options Discord, monthly recurring", "blur": [[x, y, w, h], ...],
+            "crop": [x, y, w, h], "kicker": "REAL DASHBOARD"}
+           blur boxes are fractions of the (cropped) image (0-1) and hide a name or brand pill;
+           crop is a fraction box of the source image and is the cleaner way to drop a name
+  proof2   {"left": {"image": ..., "crop": ..., "caption": "Before"}, "right": {...}, "note": "about 77 days"}
+  flow     {"title": "The flywheel", "items": ["Reel", "PDF", "Email", "Video", "Discord"], "build": true}
+  ladder   {"title": "The back end", "items": ["Monthly community", ..., "High ticket"], "build": true}
+           first item is the bottom rung; build adds rungs bottom to top
+  strike   {"old": "Too expensive", "new": "Onboarding", "kicker": "THE REAL REASON"}   id-1 = old only, id-2 = struck + new
+  checks   {"title": "All six", "items": [...]}                       every item ticked
+  cta      {"kicker": "FREE", "title": "Discord template", "sub": "First link in the description"}
 
 Writes OUT_DIR/<id>.png and OUT_DIR/index.json (id -> file). One accent colour, no client names in text.
 Every number on a card must be one that is spoken at that moment and cleared in the script.
@@ -55,7 +64,26 @@ body{display:flex;align-items:center;justify-content:center;
 .shot img{display:block;max-width:1500px;max-height:760px}
 .blur{position:absolute;backdrop-filter:blur(22px);background:rgba(120,120,120,.25);border-radius:10px}
 .cap{font-size:50px;font-weight:800;color:#d9d9de}
-""".replace("ACCENT", ACCENT)
+""".replace("ACCENT", ACCENT) + """
+.pair{display:flex;align-items:flex-start;justify-content:center;gap:60px}
+.pair .shot img{max-width:760px;max-height:620px}
+.pair .cap{margin-top:22px}
+.flow{display:flex;align-items:center;justify-content:center;gap:26px;flex-wrap:nowrap}
+.flow .node{font-weight:900;font-size:78px;padding:26px 40px;border-radius:26px;border:4px solid rgba(255,255,255,.22);
+ background:rgba(255,255,255,.05)}
+.flow .node.new{border-color:#FFD400;color:#FFD400;background:rgba(255,212,0,.08)}
+.flow .ar{font-size:70px;color:#8b8b95;font-weight:900}
+.h1{font-weight:800;font-size:60px;letter-spacing:.14em;text-transform:uppercase;color:#FFD400;margin-bottom:56px}
+.ladder{display:flex;flex-direction:column-reverse;align-items:center;gap:18px}
+.ladder .rung{font-weight:900;font-size:74px;padding:20px 0;border-radius:22px;border:4px solid rgba(255,255,255,.2);
+ background:rgba(255,255,255,.05);text-align:center}
+.ladder .rung.new{border-color:#FFD400;color:#FFD400;background:rgba(255,212,0,.08)}
+.old{font-weight:900;font-size:170px;line-height:1.05}
+.old.x{color:#6d6d77;text-decoration:line-through;text-decoration-color:#ff4d4d;text-decoration-thickness:14px;font-size:120px}
+.newt{font-weight:900;font-size:190px;color:#FFD400;margin-top:26px;line-height:1.05}
+.tick{color:#FFD400;width:100px;text-align:right;font-weight:900}
+.sub{font-size:66px;margin-top:34px;color:#d9d9de}
+"""
 
 
 def e(s):
@@ -65,6 +93,22 @@ def e(s):
 def data_uri(path):
     mt = mimetypes.guess_type(path)[0] or "image/png"
     return f"data:{mt};base64," + base64.b64encode(open(path, "rb").read()).decode()
+
+
+def shot(c):
+    """An image in a rounded frame, optionally cropped (fraction box) and with blur boxes."""
+    blurs = "".join(f'<div class="blur" style="left:{x * 100}%;top:{y * 100}%;width:{w * 100}%;height:{h * 100}%"></div>'
+                    for x, y, w, h in c.get("blur", []))
+    src = c["image"]
+    if c.get("crop"):
+        import subprocess, tempfile
+        x, y, w, h = c["crop"]
+        out = tempfile.mktemp(suffix=".png")
+        subprocess.run(["ffmpeg", "-hide_banner", "-loglevel", "error", "-y", "-i", src, "-vf",
+                        f"crop=iw*{w}:ih*{h}:iw*{x}:ih*{y}", out], check=True)
+        src = out
+    mw = f' style="width:{c["width"]}px;max-width:none"' if c.get("width") else ""
+    return f'<div class="shot"><img src="{data_uri(src)}"{mw}>{blurs}</div>'
 
 
 def body(c, shown=None):
@@ -97,10 +141,50 @@ def body(c, shown=None):
         by = f'<div class="by">{e(c["by"])}</div>' if c.get("by") else ""
         return f'<div class="wrap"><div class="quote serif">{e(c["text"])}</div>{by}</div>'
     if t == "proof":
-        blurs = "".join(f'<div class="blur" style="left:{x * 100}%;top:{y * 100}%;width:{w * 100}%;height:{h * 100}%"></div>'
-                        for x, y, w, h in c.get("blur", []))
+        k = f'<div class="kicker" style="margin-bottom:0">{e(c["kicker"])}</div>' if c.get("kicker") else ""
         cap = f'<div class="cap">{e(c["caption"])}</div>' if c.get("caption") else ""
-        return (f'<div class="wrap proof"><div class="shot"><img src="{data_uri(c["image"])}">{blurs}</div>{cap}</div>')
+        return f'<div class="wrap proof">{k}{shot(c)}{cap}</div>'
+    if t == "proof2":
+        def side(s_):
+            cap = f'<div class="cap">{e(s_["caption"])}</div>' if s_.get("caption") else ""
+            return f'<div>{shot(s_)}{cap}</div>'
+        note = f'<div class="note serif">{e(c["note"])}</div>' if c.get("note") else ""
+        return f'<div class="wrap"><div class="pair">{side(c["left"])}{side(c["right"])}</div>{note}</div>'
+    if t == "flow":
+        n = len(c["items"]) if shown is None else shown
+        parts = []
+        for i, it in enumerate(c["items"]):
+            vis = "" if i < n else ' style="visibility:hidden"'
+            if i:
+                parts.append(f'<div class="ar"{vis}>&rarr;</div>')
+            parts.append(f'<div class="node {"new" if (shown is not None and i + 1 == n) else ""}"{vis}>{e(it)}</div>')
+        ttl = f'<div class="h1">{e(c["title"])}</div>' if c.get("title") else ""
+        inner = "".join(parts)
+        if c.get("size"):
+            inner = f'<style>.flow .node{{font-size:{int(c["size"])}px}}</style>' + inner
+        return f'<div class="wrap" style="width:1800px">{ttl}<div class="flow">{inner}</div></div>'
+    if t == "ladder":
+        n = len(c["items"]) if shown is None else shown
+        m = len(c["items"])
+        rows = "".join(
+            f'<div class="rung {"new" if (shown is not None and i + 1 == n) else ""}" '
+            f'style="width:{1500 - (i * 700 // max(m - 1, 1))}px;{"" if i < n else "visibility:hidden"}">{e(it)}</div>'
+            for i, it in enumerate(c["items"]))
+        ttl = f'<div class="h1" style="margin-bottom:36px">{e(c["title"])}</div>' if c.get("title") else ""
+        return f'<div class="wrap">{ttl}<div class="ladder">{rows}</div></div>'
+    if t == "strike":
+        k = f'<div class="kicker">{e(c["kicker"])}</div>' if c.get("kicker") else ""
+        if shown == 1:
+            return f'<div class="wrap"><div class="old serif">&ldquo;{e(c["old"])}&rdquo;</div></div>'
+        return (f'<div class="wrap">{k}<div class="old x">{e(c["old"])}</div>'
+                f'<div class="newt">{e(c["new"])}</div></div>')
+    if t == "checks":
+        rows = "".join(f'<div class="it"><span class="tick">&#10003;</span><span>{e(it)}</span></div>' for it in c["items"])
+        return f'<div class="wrap"><div class="list"><h1>{e(c.get("title", ""))}</h1>{rows}</div></div>'
+    if t == "cta":
+        k = f'<div class="kicker">{e(c["kicker"])}</div>' if c.get("kicker") else ""
+        sub = f'<div class="sub serif">{e(c["sub"])}</div>' if c.get("sub") else ""
+        return f'<div class="wrap">{k}<div class="title" style="font-size:{c.get("size", 150)}px">{e(c["title"])}</div>{sub}</div>'
     sys.exit(f"unknown card type {t!r} in card {c.get('id')}")
 
 
@@ -115,9 +199,12 @@ def main():
     os.makedirs(out, exist_ok=True)
     jobs = []
     for c in cards:
-        if c["type"] == "list" and c.get("build"):
+        if c["type"] in ("list", "flow", "ladder") and c.get("build"):
             for k in range(1, len(c["items"]) + 1):
                 jobs.append((f'{c["id"]}-{k}', page(body(c, k))))
+        elif c["type"] == "strike":
+            jobs.append((f'{c["id"]}-1', page(body(c, 1))))
+            jobs.append((f'{c["id"]}-2', page(body(c, 2))))
         else:
             jobs.append((c["id"], page(body(c))))
     # Playwright is the Node one that ships with the machine; a pip copy would not find the installed browser.
