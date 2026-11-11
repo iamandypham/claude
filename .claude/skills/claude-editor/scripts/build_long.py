@@ -493,6 +493,37 @@ def main():
     esc = lambda p: p.replace("\\", "/").replace(":", "\\:").replace("'", "\\'")
     fc.append(f"[{last}]subtitles='{esc(ass_path)}':fontsdir='{esc(fonts)}'[txt]")
     last = "txt"
+    # full-frame cards (lists, big numbers, proof on a designed card): opaque WxH images that cut in over
+    # everything while he keeps talking. All cards ride on ONE extra input, so 50 cards cost the same as 1.
+    card_report = []
+    cards = []
+    for ci_, cd in enumerate(cfg.get("cards", [])):
+        t0, _ = event_time(cd, words, segs, f"card {ci_ + 1}")
+        cards.append((t0, float(cd.get("dur", 3.0)), cd["image"]))
+    cards.sort()
+    if cards:
+        from PIL import Image
+        blank = os.path.join(work, "card_blank.png")
+        Image.new("RGB", (W, H), (11, 11, 15)).save(blank)
+        lines, cur, wins = ["ffconcat version 1.0"], 0.0, []
+        for i, (t0, d, img) in enumerate(cards):
+            t0 = max(round(t0 * fps) / fps, cur)                  # never overlap the previous card
+            nxt = cards[i + 1][0] if i + 1 < len(cards) else main_total
+            d = max(2 / fps, min(d, nxt - t0, main_total - t0))
+            d = round(d * fps) / fps
+            if t0 - cur > 1e-6:
+                lines += [f"file '{os.path.abspath(blank)}'", f"duration {t0 - cur:.6f}"]
+            lines += [f"file '{os.path.abspath(img)}'", f"duration {d:.6f}"]
+            wins.append([t0, t0 + d]); cur = t0 + d
+            card_report.append({"image": os.path.basename(img), "start": round(t0, 2), "dur": round(d, 2)})
+        lines += [f"file '{os.path.abspath(blank)}'", f"duration {max(main_total - cur, 1 / fps) + 1:.6f}",
+                  f"file '{os.path.abspath(blank)}'"]
+        cl = os.path.join(work, "cards.ffconcat")
+        open(cl, "w").write("\n".join(lines) + "\n")
+        inputs += ["-f", "concat", "-safe", "0", "-i", cl]
+        fc.append(f"[{idx}:v]fps={fps},scale={W}:{H},format=yuv420p,setsar=1,setpts=N/({fps}*TB)[cardtrack];"
+                  f"[{last}][cardtrack]overlay=0:0:enable='{enable_expr(wins, fps)}':eof_action=pass[crd]")
+        last = "crd"; idx += 1
     if co:
         inputs += ["-ss", f"{co['start']:.3f}", "-t", f"{co_dur:.3f}", "-i", co_file]
         fc.append(f"[{idx}:v]fps={fps},scale='min({W},iw)':'min({H},ih)':force_original_aspect_ratio=decrease,"
@@ -533,7 +564,7 @@ def main():
     for x in cw: x["s"] = round(x["s"] + co_dur, 3); x["e"] = round(x["e"] + co_dur, 3)
     json.dump(cw, open(os.path.join(work, "cut_words.json"), "w"), indent=0)
     json.dump({"name": name, "fps": fps, "size": [W, H], "total": round(total, 3), "cold_open": co_dur, "tail": tail,
-               "sync_offset": off, "segments": segs, "text": text_report, "proof": proof_report, "chapters": ch,
+               "sync_offset": off, "segments": segs, "text": text_report, "proof": proof_report, "cards": card_report, "chapters": ch,
                "loudnorm_input": meas, "cam": cam, "screen": scr, "config": os.path.abspath(sys.argv[1])},
               open(os.path.join(work, "timeline.json"), "w"), indent=1)
     cuts = len(segs) - 1

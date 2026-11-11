@@ -105,7 +105,8 @@ def main():
     row("no black gaps", not black, f"{len(black)} found" + (f", first at {black[0][0]} s" if black else ""))
     co = tl.get("cold_open", 0.0)
     # a held proof image is a still on purpose, so a freeze that starts inside a proof window does not count
-    proof_wins = [(co + e["start"] - 0.5, co + e["start"] + e.get("dur", 0) + 0.5) for e in tl.get("proof", [])]
+    proof_wins = [(co + e["start"] - 0.5, co + e["start"] + e.get("dur", 0) + 0.5)
+                  for e in list(tl.get("proof", [])) + list(tl.get("cards", []))]
     frozen = [f for f in detect(master, "freezedetect=n=0.001:d=3", r"freeze_start: ([\d.]+)")
               if not any(x <= float(f) <= y for x, y in proof_wins)]
     row("no frozen picture over 3 s (proof holds excluded)", not frozen,
@@ -123,7 +124,9 @@ def main():
     for e in tl.get("proof", []):
         ev.append(co + e["start"] + min(0.1, e.get("dur", 1) / 2))
         ev.append(co + e["start"] + e.get("dur", 1) / 2)
-    n2 = sheet(master, sorted(ev)[:72], os.path.join(work, "sheet_events.jpg"))
+    for e in tl.get("cards", []):
+        ev.append(co + e["start"] + e.get("dur", 1) / 2)
+    n2 = sheet(master, sorted(ev)[:144], os.path.join(work, "sheet_events.jpg"))
     even = [t for t in (i * a.sheet_every + 1.0 for i in range(int(p["dur"] // a.sheet_every) + 1)) if t < p["dur"]]
     n3 = sheet(master, even[:72], os.path.join(work, "sheet_even.jpg"))
     print(f"sheets: {n1} cut frames, {n2} event frames, {n3} evenly spaced frames -> look at them before calling it done")
