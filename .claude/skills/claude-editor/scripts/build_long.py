@@ -422,13 +422,20 @@ def main():
         m = round(m * fps) / fps
         return split_shot(a, m) + split_shot(m, b)
     shots, lvl_wins, k, prev_sec = [], {i: [] for i in range(len(levels))}, 0, None
+    # "level_hold": a cut that comes sooner than this after the last framing change keeps the framing (a plain jump
+    # cut), so tightened pauses do not make the picture flicker between sizes. 0 = change framing on every cut.
+    hold = float(cfg.get("level_hold", 0)); li = None; since = 0.0
     for sg in cam_segs:
         for a, b in split_shot(sg["out_a"], sg["out_b"]):
-            if sg["sec"] != prev_sec:
+            new_sec = sg["sec"] != prev_sec
+            if new_sec:
                 k, prev_sec = 0, sg["sec"]
-            li = pattern[k % len(pattern)] % len(levels); k += 1
-            shots.append({"a": round(a, 3), "b": round(b, 3), "level": levels[li]})
-            lvl_wins[li].append([a, b])
+            if li is None or new_sec or not hold or a - since >= hold - 1e-6:
+                li = pattern[k % len(pattern)] % len(levels); k += 1; since = a
+                shots.append({"a": round(a, 3), "b": round(b, 3), "level": levels[li]})
+                lvl_wins[li].append([a, b])
+            else:
+                shots[-1]["b"] = round(b, 3); lvl_wins[li][-1][1] = b
     for sg in cam_segs: sg["punch"] = False
     used = [i for i in range(len(levels)) if levels[i] > 1.001 and lvl_wins[i]]
     # side panels: he is moved to the left and a graphic sits on the right while he keeps talking
