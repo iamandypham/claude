@@ -28,6 +28,11 @@ cards.json is a list. Each card has "id" and "type":
   strike   {"old": "Too expensive", "new": "Onboarding", "kicker": "THE REAL REASON"}   id-1 = old only, id-2 = struck + new
   checks   {"title": "All six", "items": [...]}                       every item ticked
   cta      {"kicker": "FREE", "title": "Discord template", "sub": "First link in the description"}
+  raw      {"html": "<div>...</div>", "css": ".x{...}"}      your own markup inside the centred 1640 px wrap
+
+Any card can carry "mode": "side": the content is laid out in the right-hand panel (x 1080 on) that build_long.py
+shows next to the speaker. Every card also gets two pop-in lead frames, <id>.pop1.png and <id>.pop2.png
+(not for later steps of a build); "no_pop": true skips them.
 
 Writes OUT_DIR/<id>.png and OUT_DIR/index.json (id -> file). One accent colour, no client names in text.
 Every number on a card must be one that is spoken at that moment and cleared in the script.
@@ -88,6 +93,20 @@ body{display:flex;align-items:center;justify-content:center;
 .newt{font-weight:900;font-size:190px;color:#FFD400;margin-top:26px;line-height:1.05}
 .tick{color:#FFD400;width:100px;text-align:right;font-weight:900}
 .sub{font-size:66px;margin-top:34px;color:#d9d9de}
+body.side{background:#0B0B0F}
+body.side:before{content:"";position:absolute;left:1080px;top:0;width:3px;height:100%;
+ background:linear-gradient(rgba(255,212,0,0),rgba(255,212,0,.85),rgba(255,212,0,0))}
+body.side .wrap{position:absolute;left:1140px;top:0;width:720px;height:1080px;display:flex;flex-direction:column;
+ justify-content:center;text-align:left}
+body.side .list{display:block}
+body.side .list h1{font-size:40px;margin-bottom:34px}
+body.side .list .it{font-size:56px;line-height:1.22;gap:22px;margin-bottom:22px}
+body.side .list .n{width:56px;flex:none}
+body.side .kicker{font-size:36px}
+body.side .big{font-size:170px}
+body.side .label{font-size:46px}
+body.side .title{font-size:96px}
+body.side .words div{font-size:100px}
 """
 
 
@@ -131,8 +150,11 @@ def body(c, shown=None):
         lab = f'<div class="label">{e(c["label"])}</div>' if c.get("label") else ""
         return f'<div class="wrap">{k}<div class="big hi">{e(c["big"])}</div>{lab}</div>'
     if t == "compare":
+        longest = max(len(str(c["left"]["big"])), len(str(c["right"]["big"])))
+        fs = c.get("size") or (190 if longest <= 8 else 130 if longest <= 11 else 96)
         def side(s, cls=""):
-            return f'<div><div class="big {cls}">{e(s["big"])}</div><div class="label">{e(s.get("label", ""))}</div></div>'
+            return (f'<div><div class="big {cls}" style="font-size:{fs}px">{e(s["big"])}</div>'
+                    f'<div class="label">{e(s.get("label", ""))}</div></div>')
         note = f'<div class="note serif">{e(c["note"])}</div>' if c.get("note") else ""
         return (f'<div class="wrap"><div class="cmp">{side(c["left"])}<div class="arrow">&rarr;</div>'
                 f'{side(c["right"], "hi")}</div>{note}</div>')
@@ -188,6 +210,8 @@ def body(c, shown=None):
     if t == "checks":
         rows = "".join(f'<div class="it"><span class="tick">&#10003;</span><span>{e(it)}</span></div>' for it in c["items"])
         return f'<div class="wrap"><div class="list"><h1>{e(c.get("title", ""))}</h1>{rows}</div></div>'
+    if t == "raw":
+        return f'<div class="wrap">{c["html"]}</div>'
     if t == "cta":
         k = f'<div class="kicker">{e(c["kicker"])}</div>' if c.get("kicker") else ""
         sub = f'<div class="sub serif">{e(c["sub"])}</div>' if c.get("sub") else ""
@@ -221,9 +245,11 @@ def font_css(d):
     return "".join(out)
 
 
-def page(inner):
-    return (f'<!doctype html><html><head><meta charset="utf-8"><style>{FONT_CSS}{CSS}</style></head>'
-            f'<body><div class="grid"></div>{inner}</body></html>')
+def page(inner, side=False, pop=0, css=""):
+    """pop 1 and 2 are the two lead frames of the pop-in: smaller and fainter than the card itself."""
+    popcss = {0: "", 1: ".wrap{transform:scale(.9);opacity:.3}", 2: ".wrap{transform:scale(.96);opacity:.75}"}[pop]
+    return (f'<!doctype html><html><head><meta charset="utf-8"><style>{FONT_CSS}{CSS}{css}{popcss}</style></head>'
+            f'<body class="{"side" if side else ""}"><div class="grid"></div>{inner}</body></html>')
 
 
 def find_browser(given):
@@ -273,14 +299,20 @@ def main():
     os.makedirs(out, exist_ok=True)
     jobs = []
     for c in cards:
+        side, css = c.get("mode") == "side", c.get("css", "")
+        def add(cid, shown=None, pops=True):
+            jobs.append((cid, page(body(c, shown), side, 0, css)))
+            if pops and not c.get("no_pop"):
+                jobs.append((cid + ".pop1", page(body(c, shown), side, 1, css)))
+                jobs.append((cid + ".pop2", page(body(c, shown), side, 2, css)))
         if c["type"] in ("list", "flow", "ladder") and c.get("build"):
             for k in range(1, len(c["items"]) + 1):
-                jobs.append((f'{c["id"]}-{k}', page(body(c, k))))
+                add(f'{c["id"]}-{k}', k, pops=(k == 1))        # later steps cut in hard: only the new line changes
         elif c["type"] == "strike":
-            jobs.append((f'{c["id"]}-1', page(body(c, 1))))
-            jobs.append((f'{c["id"]}-2', page(body(c, 2))))
+            add(f'{c["id"]}-1', 1)
+            add(f'{c["id"]}-2', 2, pops=False)
         else:
-            jobs.append((c["id"], page(body(c))))
+            add(c["id"])
     tmp = tempfile.mkdtemp(prefix="cards-")
     index, plan = {}, []
     for cid, doc in jobs:

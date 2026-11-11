@@ -399,22 +399,59 @@ def main():
     has_pip = scr and any(s["layout"] == "pip" for s in segs)
     punch = float(cfg.get("punch", 1.12))
     cam_segs = [s for s in segs if s["layout"] == "cam"]
-    punched, prev = [], None
-    for s in cam_segs:                                   # alternate wide/tight on consecutive camera shots
-        s["punch"] = bool(prev is not None and prev["sec"] == s["sec"] and not prev.get("punch")) and punch > 1.001
-        prev = s
-        if s["punch"]: punched.append([s["out_a"], s["out_b"]])
-    if punch > 1.001 and (cam["w"] / punch < W or cam["h"] / punch < H) and not cfg.get("allow_punch_upscale", True):
-        punched = []
-        for s in cam_segs: s["punch"] = False
-    n_split = 1 + (1 if punched else 0) + (1 if has_pip else 0)
+    # Framing levels. One camera, so variety comes from punch-ins: every shot takes the next level in the pattern.
+    # A "shot" is a kept range, or a piece of a long one split at a sentence end ("max_shot" seconds, 0 = off).
+    levels = [float(x) for x in (cfg.get("punch_levels") or ([1.0, punch] if punch > 1.001 else [1.0]))]
+    if (cam["w"] / max(levels) < W * 0.74 or cam["h"] / max(levels) < H * 0.74) and not cfg.get("allow_punch_upscale", True):
+        levels = [1.0]
+    pattern = cfg.get("punch_pattern") or ([0, 1, 0, 2] if len(levels) > 2 else [0, 1])
+    max_shot = float(cfg.get("max_shot", 0)); min_shot = float(cfg.get("min_shot", 2.5))
+    ends = []                                            # output times where a sentence ends inside a kept range
+    for i in range(len(words) - 1):
+        w, nx = words[i], words[i + 1]
+        if w["w"].rstrip()[-1:] in ".?!":
+            t = src_to_out((w["e"] + nx["s"]) / 2, segs)
+            if t is not None: ends.append(t)
+    def split_shot(a, b):
+        if not max_shot or b - a <= max_shot:
+            return [[a, b]]
+        c = [t for t in ends if a + min_shot <= t <= b - min_shot]
+        if not c:
+            return [[a, b]]
+        m = min(c, key=lambda t: abs(t - (a + min(max_shot * 0.75, (b - a) / 2))))
+        m = round(m * fps) / fps
+        return split_shot(a, m) + split_shot(m, b)
+    shots, lvl_wins, k, prev_sec = [], {i: [] for i in range(len(levels))}, 0, None
+    for sg in cam_segs:
+        for a, b in split_shot(sg["out_a"], sg["out_b"]):
+            if sg["sec"] != prev_sec:
+                k, prev_sec = 0, sg["sec"]
+            li = pattern[k % len(pattern)] % len(levels); k += 1
+            shots.append({"a": round(a, 3), "b": round(b, 3), "level": levels[li]})
+            lvl_wins[li].append([a, b])
+    for sg in cam_segs: sg["punch"] = False
+    used = [i for i in range(len(levels)) if levels[i] > 1.001 and lvl_wins[i]]
+    # side panels: he is moved to the left and a graphic sits on the right while he keeps talking
+    side_cfg = cfg.get("side", {})
+    PX = int(side_cfg.get("x", 1080)); SH = int(side_cfg.get("shift", 340))
+    has_side = any(c.get("mode") == "side" for c in cfg.get("cards", []))
+    n_split = 1 + len(used) + (1 if has_pip else 0) + (1 if has_side else 0)
     fc.append(f"[0:v]fps={fps}:start_time=0,select='{sel()}',setpts=N/({fps}*TB)" +
               (f",split={n_split}" + "".join(f"[c{i}]" for i in range(n_split)) if n_split > 1 else "[c0]"))
     fc.append(f"[c0]scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},setsar=1[camfull]")
     ci = 1
-    if punched:
-        fc.append(f"[c{ci}]crop=iw/{punch}:ih/{punch},scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},setsar=1[campunch]")
+    pcy = float(cfg.get("punch_cy", 0.5))                # 0 = keep the top edge, 0.5 = centred
+    punch_layers = []
+    for li in used:
+        pz = levels[li]
+        fc.append(f"[c{ci}]crop=iw/{pz}:ih/{pz}:(iw-iw/{pz})/2:(ih-ih/{pz})*{pcy},scale={W}:{H}:force_original_aspect_ratio=increase,"
+                  f"crop={W}:{H},setsar=1[campunch{li}]")
+        punch_layers.append((f"campunch{li}", lvl_wins[li])); ci += 1
+    if has_side:
+        fc.append(f"[c{ci}]scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},crop={W - SH}:{H}:{SH}:0,"
+                  f"pad={W}:{H}:0:0:color=0x0B0B0F,setsar=1[camshift]")
         ci += 1
+    punched = [w for _, wins in punch_layers for w in wins]
     idx = 1
     if scr:
         inputs += ["-i", cfg["screen"]]
@@ -455,14 +492,14 @@ def main():
                 fc.append(f"[{last}][{ring_in}]overlay={x - ring}:{y - ring}:enable='{en}':shortest=0:eof_action=pass[r{i}];"
                           f"[r{i}][{pip_in}]overlay={x}:{y}:enable='{en}':eof_action=pass[p{i}]")
                 last = f"p{i}"
-        cam_wins = [[s["out_a"], s["out_b"]] for s in cam_segs if not s.get("punch")]
+        cam_wins = [[s["out_a"], s["out_b"]] for s in cam_segs]
         fc.append(f"[{last}][camfull]overlay=0:0:enable='{enable_expr(cam_wins, fps)}':eof_action=pass[k0]")
         last = "k0"
     else:
         last = "camfull"
-    if punched:
-        fc.append(f"[{last}][campunch]overlay=0:0:enable='{enable_expr(punched, fps)}':eof_action=pass[k1]")
-        last = "k1"
+    for pi_, (lab, wins) in enumerate(punch_layers):
+        fc.append(f"[{last}][{lab}]overlay=0:0:enable='{enable_expr(wins, fps)}':eof_action=pass[kp{pi_}]")
+        last = f"kp{pi_}"
 
     # proof images: quick flashes, then one held, on a solid card
     proof_report = []
@@ -496,34 +533,63 @@ def main():
     # full-frame cards (lists, big numbers, proof on a designed card): opaque WxH images that cut in over
     # everything while he keeps talking. All cards ride on ONE extra input, so 50 cards cost the same as 1.
     card_report = []
-    cards = []
-    for ci_, cd in enumerate(cfg.get("cards", [])):
-        t0, _ = event_time(cd, words, segs, f"card {ci_ + 1}")
-        cards.append((t0, float(cd.get("dur", 3.0)), cd["image"]))
-    cards.sort()
-    if cards:
+    fwd = lambda p: os.path.abspath(p).replace("\\", "/")
+
+    def card_track(items, tag):
+        """One concat input for a list of (t0, dur, image). Returns (label index, windows)."""
+        nonlocal idx
         from PIL import Image
         blank = os.path.join(work, "card_blank.png")
-        Image.new("RGB", (W, H), (11, 11, 15)).save(blank)
+        if not os.path.exists(blank):
+            Image.new("RGB", (W, H), (11, 11, 15)).save(blank)
         lines, cur, wins = ["ffconcat version 1.0"], 0.0, []
-        for i, (t0, d, img) in enumerate(cards):
+        for i, (t0, d, img, pop) in enumerate(items):
             t0 = max(round(t0 * fps) / fps, cur)                  # never overlap the previous card
-            nxt = cards[i + 1][0] if i + 1 < len(cards) else main_total
+            nxt = items[i + 1][0] if i + 1 < len(items) else main_total
             d = max(2 / fps, min(d, nxt - t0, main_total - t0))
             d = round(d * fps) / fps
             if t0 - cur > 1e-6:
-                lines += [f"file '{os.path.abspath(blank)}'", f"duration {t0 - cur:.6f}"]
-            lines += [f"file '{os.path.abspath(img)}'", f"duration {d:.6f}"]
+                lines += [f"file '{fwd(blank)}'", f"duration {t0 - cur:.6f}"]
+            # pop-in: two lead frames (smaller and fainter), 2 video frames each, then the card itself
+            lead = 0.0
+            base = os.path.splitext(img)[0]
+            pops = [base + ".pop1.png", base + ".pop2.png"]
+            if pop and all(os.path.exists(x) for x in pops) and d > 12 / fps:
+                for x in pops:
+                    lines += [f"file '{fwd(x)}'", f"duration {2 / fps:.6f}"]; lead += 2 / fps
+            lines += [f"file '{fwd(img)}'", f"duration {d - lead:.6f}"]
             wins.append([t0, t0 + d]); cur = t0 + d
-            card_report.append({"image": os.path.basename(img), "start": round(t0, 2), "dur": round(d, 2)})
-        lines += [f"file '{os.path.abspath(blank)}'", f"duration {max(main_total - cur, 1 / fps) + 1:.6f}",
-                  f"file '{os.path.abspath(blank)}'"]
-        cl = os.path.join(work, "cards.ffconcat")
+            card_report.append({"image": os.path.basename(img), "start": round(t0, 2), "dur": round(d, 2), "mode": tag})
+        lines += [f"file '{fwd(blank)}'", f"duration {max(main_total - cur, 1 / fps) + 1:.6f}", f"file '{fwd(blank)}'"]
+        cl = os.path.join(work, f"cards_{tag}.ffconcat")
         open(cl, "w").write("\n".join(lines) + "\n")
-        inputs += ["-f", "concat", "-safe", "0", "-i", cl]
-        fc.append(f"[{idx}:v]fps={fps},scale={W}:{H},format=yuv420p,setsar=1,setpts=N/({fps}*TB)[cardtrack];"
+        inputs.extend(["-f", "concat", "-safe", "0", "-i", cl])
+        idx += 1
+        return idx - 1, wins
+
+    full_items, side_items = [], []
+    for ci_, cd in enumerate(cfg.get("cards", [])):
+        t0, _ = event_time(cd, words, segs, f"card {ci_ + 1}")
+        img = cd["image"] if os.path.isabs(cd["image"]) else os.path.join(cfg.get("cards_dir", ""), cd["image"])
+        if not os.path.exists(img):
+            sys.exit(f"card {ci_ + 1}: image not found: {img}")
+        (side_items if cd.get("mode") == "side" else full_items).append(
+            (t0, float(cd.get("dur", 3.0)), img, cd.get("pop", True)))
+    full_items.sort(); side_items.sort()
+    side_wins = []
+    if side_items:
+        # the panel goes under the text layer's full cards but over the camera; the camera is shifted for the same windows
+        si, side_wins = card_track(side_items, "side")
+        fc.append(f"[{last}][camshift]overlay=0:0:enable='{enable_expr(side_wins, fps)}':eof_action=pass[shf];"
+                  f"[{si}:v]fps={fps},scale={W}:{H},crop={W - PX}:{H}:{PX}:0,format=yuv420p,setsar=1,setpts=N/({fps}*TB)[sidetrack];"
+                  f"[shf][sidetrack]overlay={PX}:0:enable='{enable_expr(side_wins, fps)}':eof_action=pass[sdo]")
+        last = "sdo"
+    if full_items:
+        fi, wins = card_track(full_items, "full")
+        fc.append(f"[{fi}:v]fps={fps},scale={W}:{H},format=yuv420p,setsar=1,setpts=N/({fps}*TB)[cardtrack];"
                   f"[{last}][cardtrack]overlay=0:0:enable='{enable_expr(wins, fps)}':eof_action=pass[crd]")
-        last = "crd"; idx += 1
+        last = "crd"
+    card_report.sort(key=lambda c: c["start"])
     if co:
         inputs += ["-ss", f"{co['start']:.3f}", "-t", f"{co_dur:.3f}", "-i", co_file]
         fc.append(f"[{idx}:v]fps={fps},scale='min({W},iw)':'min({H},ih)':force_original_aspect_ratio=decrease,"
@@ -564,7 +630,7 @@ def main():
     for x in cw: x["s"] = round(x["s"] + co_dur, 3); x["e"] = round(x["e"] + co_dur, 3)
     json.dump(cw, open(os.path.join(work, "cut_words.json"), "w"), indent=0)
     json.dump({"name": name, "fps": fps, "size": [W, H], "total": round(total, 3), "cold_open": co_dur, "tail": tail,
-               "sync_offset": off, "segments": segs, "text": text_report, "proof": proof_report, "cards": card_report, "chapters": ch,
+               "sync_offset": off, "segments": segs, "text": text_report, "proof": proof_report, "cards": card_report, "shots": shots, "chapters": ch,
                "loudnorm_input": meas, "cam": cam, "screen": scr, "config": os.path.abspath(sys.argv[1])},
               open(os.path.join(work, "timeline.json"), "w"), indent=1)
     cuts = len(segs) - 1
