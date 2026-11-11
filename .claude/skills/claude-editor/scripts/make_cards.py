@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 """Render full-frame graphic cards (1920x1080 PNG) for build_long.py "cards".
 
-  python3 -I make_cards.py cards.json OUT_DIR
+  python3 -I make_cards.py cards.json OUT_DIR [--fonts DIR] [--images DIR] [--browser PATH]
+
+  --fonts DIR    folder of .ttf files (Montserrat 800/900, Playfair Display italic) to embed in the page;
+                 without it the fonts must be installed on the machine
+  --images DIR   folder that relative "image" paths in cards.json are read from (default: the cards.json folder)
+  --browser PATH Chrome or Edge to use when the Node Playwright is not on the machine (found on its own on Windows)
 
 cards.json is a list. Each card has "id" and "type":
   step     {"kicker": "FIX 1", "title": "One strategy"}
@@ -99,7 +104,9 @@ def shot(c):
     """An image in a rounded frame, optionally cropped (fraction box) and with blur boxes."""
     blurs = "".join(f'<div class="blur" style="left:{x * 100}%;top:{y * 100}%;width:{w * 100}%;height:{h * 100}%"></div>'
                     for x, y, w, h in c.get("blur", []))
-    src = c["image"]
+    src = c["image"] if os.path.isabs(c["image"]) else os.path.join(IMAGES, c["image"])
+    if not os.path.exists(src):
+        sys.exit(f"image not found: {src}")
     if c.get("crop"):
         import subprocess, tempfile
         x, y, w, h = c["crop"]
@@ -188,14 +195,81 @@ def body(c, shown=None):
     sys.exit(f"unknown card type {t!r} in card {c.get('id')}")
 
 
+FONT_CSS = ""
+IMAGES = "."
+
+
+def font_css(d):
+    """@font-face rules with the .ttf files of a folder embedded, so the page needs no installed fonts."""
+    out = []
+    for f in sorted(os.listdir(d)):
+        if not f.lower().endswith(".ttf"):
+            continue
+        low = f.lower()
+        fam = "Playfair Display" if "playfair" in low else "Montserrat" if "montserrat" in low else None
+        if not fam:
+            continue
+        wt = next((w for w in ("900", "800", "700", "600", "500", "400") if w in low), "400")
+        style = "italic" if fam == "Playfair Display" else "normal"
+        if fam == "Playfair Display":
+            wt = "400 900"                      # one italic file serves every weight the cards ask for
+        b = base64.b64encode(open(os.path.join(d, f), "rb").read()).decode()
+        out.append(f"@font-face{{font-family:'{fam}';font-style:{style};font-weight:{wt};"
+                   f"src:url(data:font/ttf;base64,{b}) format('truetype')}}")
+        if fam == "Playfair Display":
+            break
+    return "".join(out)
+
+
 def page(inner):
-    return (f'<!doctype html><html><head><meta charset="utf-8"><style>{CSS}</style></head>'
+    return (f'<!doctype html><html><head><meta charset="utf-8"><style>{FONT_CSS}{CSS}</style></head>'
             f'<body><div class="grid"></div>{inner}</body></html>')
 
 
+def find_browser(given):
+    import shutil
+    cands = [given, os.environ.get("CARDS_BROWSER"),
+             r"C:\Program Files\Google\Chrome\Application\chrome.exe",
+             r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe",
+             r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
+             r"C:\Program Files\Microsoft\Edge\Application\msedge.exe",
+             "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"]
+    cands += [shutil.which(n) for n in ("chrome", "google-chrome", "chromium", "chromium-browser", "msedge")]
+    return next((c for c in cands if c and os.path.exists(c)), None)
+
+
+def shoot_with_browser(browser, plan):
+    """No Playwright: headless Chrome/Edge screenshots a taller window, ffmpeg crops the 1920x1080 page out of it."""
+    import subprocess, pathlib
+    for h, f in plan:
+        raw = f + ".raw.png"
+        cmd = [browser, "--headless=new", "--disable-gpu", "--hide-scrollbars", "--force-device-scale-factor=1",
+               "--window-size=1920,1400", "--virtual-time-budget=3000", f"--screenshot={raw}", pathlib.Path(h).as_uri()]
+        if os.name != "nt" and hasattr(os, "geteuid") and os.geteuid() == 0:
+            cmd.insert(1, "--no-sandbox")
+        r = subprocess.run(cmd, capture_output=True, text=True)
+        if not os.path.exists(raw):
+            sys.exit(f"browser screenshot failed for {h}:\n" + r.stderr[-1500:])
+        subprocess.run(["ffmpeg", "-hide_banner", "-loglevel", "error", "-y", "-i", raw, "-vf", "crop=1920:1080:0:0",
+                        "-frames:v", "1", f], check=True)
+        os.remove(raw)
+
+
 def main():
-    cards = json.load(open(sys.argv[1]))
-    out = sys.argv[2]
+    global FONT_CSS, IMAGES
+    import argparse, subprocess, tempfile
+    ap = argparse.ArgumentParser()
+    ap.add_argument("cards")
+    ap.add_argument("out")
+    ap.add_argument("--fonts")
+    ap.add_argument("--images")
+    ap.add_argument("--browser")
+    a = ap.parse_args()
+    cards = json.load(open(a.cards, encoding="utf-8"))
+    out = a.out
+    IMAGES = a.images or os.path.dirname(os.path.abspath(a.cards))
+    if a.fonts:
+        FONT_CSS = font_css(a.fonts)
     os.makedirs(out, exist_ok=True)
     jobs = []
     for c in cards:
@@ -207,8 +281,6 @@ def main():
             jobs.append((f'{c["id"]}-2', page(body(c, 2))))
         else:
             jobs.append((c["id"], page(body(c))))
-    # Playwright is the Node one that ships with the machine; a pip copy would not find the installed browser.
-    import subprocess, tempfile
     tmp = tempfile.mkdtemp(prefix="cards-")
     index, plan = {}, []
     for cid, doc in jobs:
@@ -216,26 +288,37 @@ def main():
         open(h, "w", encoding="utf-8").write(doc)
         f = os.path.abspath(os.path.join(out, f"{cid}.png"))
         plan.append([h, f]); index[cid] = f
-    js = os.path.join(tmp, "shoot.js")
-    open(js, "w").write("""
+    # The Node Playwright that ships with the cloud machine is tried first (a pip copy would not find its browser);
+    # a machine without it (a Windows PC) falls back to its own Chrome or Edge.
+    has_pw = (not a.browser) and subprocess.run(["node", "-e", "require('playwright')"], capture_output=True,
+                                                 shell=(os.name == "nt")).returncode == 0
+    if has_pw:
+        js = os.path.join(tmp, "shoot.js")
+        open(js, "w").write("""
 const { chromium } = require('playwright');
-const jobs = JSON.parse(process.argv[2]);
+const jobs = JSON.parse(require('fs').readFileSync(process.argv[2], 'utf8'));
 (async () => {
   const b = await chromium.launch();
   const p = await b.newPage({ viewport: { width: 1920, height: 1080 }, deviceScaleFactor: 1 });
   for (const [h, f] of jobs) {
-    await p.goto('file://' + h, { waitUntil: 'load' });
+    await p.goto(require('url').pathToFileURL(h).href, { waitUntil: 'load' });
     await p.evaluate(() => document.fonts.ready);
     await p.screenshot({ path: f });
   }
   await b.close();
 })().catch(e => { console.error(e); process.exit(1); });
 """)
-    jf = os.path.join(tmp, "jobs.json")
-    r = subprocess.run(["node", js, json.dumps(plan)], capture_output=True, text=True)
-    if r.returncode:
-        sys.exit("card render failed:\n" + r.stderr[-2000:])
-    json.dump(index, open(os.path.join(out, "index.json"), "w"), indent=1)
+        jf = os.path.join(tmp, "jobs.json")
+        json.dump(plan, open(jf, "w"))
+        r = subprocess.run(["node", js, jf], capture_output=True, text=True)
+        if r.returncode:
+            sys.exit("card render failed:\n" + r.stderr[-2000:])
+    else:
+        browser = find_browser(a.browser)
+        if not browser:
+            sys.exit("no Node Playwright and no Chrome/Edge found; pass --browser PATH")
+        shoot_with_browser(browser, plan)
+    json.dump({k: os.path.basename(v) for k, v in index.items()}, open(os.path.join(out, "index.json"), "w"), indent=1)
     print(f"{len(index)} cards -> {out}")
 
 
