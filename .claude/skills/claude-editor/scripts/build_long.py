@@ -430,10 +430,32 @@ def main():
         if w["w"].rstrip()[-1:] in ".?!":
             t = src_to_out((w["e"] + nx["s"]) / 2, segs)
             if t is not None: ends.append(t)
+    # He often runs a whole paragraph without a full stop. Where a long shot has no sentence end to change framing on,
+    # fall back to a clause boundary: a comma, or a breath of 0.18 s or more between two words.
+    soft = []
+    for i in range(len(words) - 1):
+        w, nx = words[i], words[i + 1]
+        if w["w"].rstrip()[-1:] in ",;:" or nx["s"] - w["e"] >= 0.18:
+            t = src_to_out((w["e"] + nx["s"]) / 2, segs)
+            if t is not None: soft.append(t)
+    # Still nothing (a transcript with no punctuation and no gaps): the start of a new clause ("and", "so", "but"...),
+    # and last of all any word boundary, so no plain shot runs much past "max_shot".
+    joiners, anyword = [], []
+    JOIN = {"and", "so", "but", "because", "which", "then", "if", "when", "now", "or", "like", "right"}
+    for i in range(len(words) - 1):
+        w, nx = words[i], words[i + 1]
+        t = src_to_out((w["e"] + nx["s"]) / 2, segs)
+        if t is None: continue
+        anyword.append(t)
+        if re.sub(r"[^a-z]", "", nx["w"].lower()) in JOIN: joiners.append(t)
     def split_shot(a, b):
         if not max_shot or b - a <= max_shot:
             return [[a, b]]
         c = [t for t in ends if a + min_shot <= t <= b - min_shot]
+        if cfg.get("soft_splits", True):
+            for tier in (soft, joiners, anyword):
+                if c: break
+                c = [t for t in tier if a + min_shot <= t <= b - min_shot]
         if not c:
             return [[a, b]]
         m = min(c, key=lambda t: abs(t - (a + min(max_shot * 0.75, (b - a) / 2))))
@@ -443,17 +465,43 @@ def main():
     # "level_hold": a cut that comes sooner than this after the last framing change keeps the framing (a plain jump
     # cut), so tightened pauses do not make the picture flicker between sizes. 0 = change framing on every cut.
     hold = float(cfg.get("level_hold", 0)); li = None; since = 0.0
+    # "wide": source-time windows that stay on the widest framing (the outro, where the end screen needs the room, or
+    # anywhere he leans out of a tight frame). A shot that starts inside a window is held wide.
+    wide = []
+    for wa, wb in cfg.get("wide", []):
+        oa = next((sg["out_a"] + max(0.0, wa - sg["a"]) for sg in segs if sg["b"] > wa), None)
+        ob = next((sg["out_a"] + min(sg["b"], wb) - sg["a"] for sg in reversed(segs) if sg["a"] < wb), None)
+        if oa is not None and ob is not None and ob > oa: wide.append([oa, ob])
+    w0 = min(range(len(levels)), key=lambda i: levels[i])
+    was_wide = False
     for sg in cam_segs:
         for a, b in split_shot(sg["out_a"], sg["out_b"]):
             new_sec = sg["sec"] != prev_sec
             if new_sec:
                 k, prev_sec = 0, sg["sec"]
+            in_wide = any(wa - 1e-3 <= a < wb - 1e-3 for wa, wb in wide)
+            if in_wide:
+                if li == w0 and shots and not new_sec:
+                    shots[-1]["b"] = round(b, 3); lvl_wins[li][-1][1] = b
+                else:
+                    li = w0; since = a
+                    shots.append({"a": round(a, 3), "b": round(b, 3), "level": levels[li]})
+                    lvl_wins[li].append([a, b])
+                was_wide = True
+                continue
+            if was_wide:
+                was_wide = False; since = -1e9
             if li is None or new_sec or not hold or a - since >= hold - 1e-6:
                 li = pattern[k % len(pattern)] % len(levels); k += 1; since = a
                 shots.append({"a": round(a, 3), "b": round(b, 3), "level": levels[li]})
                 lvl_wins[li].append([a, b])
             else:
                 shots[-1]["b"] = round(b, 3); lvl_wins[li][-1][1] = b
+    if cfg.get("plan_only"):                             # write the shot plan and stop before any rendering
+        json.dump({"shots": shots, "total": total}, open(os.path.join(work, "shots_plan.json"), "w"), indent=1)
+        d = sorted(s["b"] - s["a"] for s in shots)
+        print(f"plan only: {len(shots)} shots, median {d[len(d) // 2]:.1f} s, longest {d[-1]:.1f} s -> {work}/shots_plan.json")
+        return
     for sg in cam_segs: sg["punch"] = False
     used = [i for i in range(len(levels)) if levels[i] > 1.001 and lvl_wins[i]]
     # side panels: he is moved to the left and a graphic sits on the right while he keeps talking
