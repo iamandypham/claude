@@ -79,13 +79,21 @@ def merge_windows(wins, eps=1e-6):
     return out
 
 
+def sum_terms(terms, group=10):
+    """Add up expression terms in bracketed groups. Newer ffmpeg builds fail to parse one flat sum of about
+    100 terms ("Cannot allocate memory"); grouped, the same expression parses."""
+    if len(terms) <= group:
+        return "+".join(terms)
+    return "+".join("(" + "+".join(terms[i:i + group]) + ")" for i in range(0, len(terms), group))
+
+
 def enable_expr(wins, fps):
     """ffmpeg enable expression for output-time windows, safe at frame edges."""
     e = 0.5 / fps
     wins = merge_windows(wins)
     if not wins:
         return "0"
-    return "+".join(f"between(t,{a - e:.4f},{b - e - 1e-4:.4f})" for a, b in wins)
+    return sum_terms([f"between(t,{a - e:.4f},{b - e - 1e-4:.4f})" for a, b in wins])
 
 
 def subtract(keeps, drops):
@@ -399,7 +407,7 @@ def main():
 
     # ---- video graph
     def sel(shift=0):
-        return "+".join(f"between(n,{s['na'] + shift},{s['nb'] + shift - 1})" for s in segs)
+        return sum_terms([f"between(n,{s['na'] + shift},{s['nb'] + shift - 1})" for s in segs])
 
     inputs = ["-i", cfg["cam"]]
     fc = []
