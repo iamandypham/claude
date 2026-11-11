@@ -45,25 +45,40 @@ def detect(path, flt, pat):
     return re.findall(pat, r.stderr)
 
 
+def label_font():
+    """A font file for drawtext. Windows ffmpeg builds have no fontconfig, so drawtext needs a path there."""
+    for f in (r"C:\Windows\Fonts\arialbd.ttf", r"C:\Windows\Fonts\arial.ttf",
+              "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+              "/System/Library/Fonts/Supplemental/Arial Bold.ttf"):
+        if os.path.exists(f):
+            return f.replace("\\", "/").replace(":", "\\:")
+    return None
+
+
 def sheet(path, times, out, cols=6, w=480):
     times = [t for t in times if t is not None]
     if not times:
         return 0
     tmp = out + ".frames"
     os.makedirs(tmp, exist_ok=True)
+    font = label_font()
     files = []
-    for i, t in enumerate(times):
-        f = os.path.join(tmp, f"{i:03d}.jpg")
+    for t in times:
+        # numbered by success so the sheet step can read a plain sequence (no glob: Windows ffmpeg lacks it)
+        f = os.path.join(tmp, f"{len(files):03d}.jpg")
         label = f"{int(t // 60)}\\:{t % 60:05.2f}"
-        sh(["ffmpeg", "-hide_banner", "-loglevel", "error", "-y", "-ss", f"{max(t, 0):.3f}", "-i", path, "-frames:v", "1",
-            "-vf", f"scale={w}:-2,drawtext=text='{label}':x=8:y=8:fontsize=22:fontcolor=white:box=1:boxcolor=black@0.6",
-            "-q:v", "4", f])
-        if os.path.exists(f):
-            files.append(f)
+        text = (f"drawtext=fontfile='{font}':" if font else "drawtext=") + \
+            f"text='{label}':x=8:y=8:fontsize=22:fontcolor=white:box=1:boxcolor=black@0.6"
+        for vf in (f"scale={w}:-2,{text}", f"scale={w}:-2"):  # second try: no label rather than no frame
+            sh(["ffmpeg", "-hide_banner", "-loglevel", "error", "-y", "-ss", f"{max(t, 0):.3f}", "-i", path,
+                "-frames:v", "1", "-vf", vf, "-q:v", "4", f])
+            if os.path.exists(f):
+                files.append(f)
+                break
     if not files:
         return 0
     rows = (len(files) + cols - 1) // cols
-    sh(["ffmpeg", "-hide_banner", "-loglevel", "error", "-y", "-pattern_type", "glob", "-i", os.path.join(tmp, "*.jpg"),
+    sh(["ffmpeg", "-hide_banner", "-loglevel", "error", "-y", "-start_number", "0", "-i", os.path.join(tmp, "%03d.jpg"),
         "-vf", f"tile={cols}x{rows}", "-frames:v", "1", "-q:v", "4", out])
     for f in files:
         os.remove(f)
