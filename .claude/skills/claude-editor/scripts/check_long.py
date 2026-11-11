@@ -103,10 +103,14 @@ def main():
         row("true peak", tp is not None and tp <= -1.0, f"{tp} dBFS (want -1.0 or lower)")
     black = detect(master, "blackdetect=d=0.2:pix_th=0.06", r"black_start:([\d.]+) black_end:([\d.]+)")
     row("no black gaps", not black, f"{len(black)} found" + (f", first at {black[0][0]} s" if black else ""))
-    frozen = detect(master, "freezedetect=n=0.001:d=3", r"freeze_start: ([\d.]+)")
-    row("no frozen picture over 3 s", not frozen, f"{len(frozen)} found" + (f", first at {frozen[0]} s" if frozen else ""))
-
     co = tl.get("cold_open", 0.0)
+    # a held proof image is a still on purpose, so a freeze that starts inside a proof window does not count
+    proof_wins = [(co + e["start"] - 0.5, co + e["start"] + e.get("dur", 0) + 0.5) for e in tl.get("proof", [])]
+    frozen = [f for f in detect(master, "freezedetect=n=0.001:d=3", r"freeze_start: ([\d.]+)")
+              if not any(x <= float(f) <= y for x, y in proof_wins)]
+    row("no frozen picture over 3 s (proof holds excluded)", not frozen,
+        f"{len(frozen)} found" + (f", first at {frozen[0]} s" if frozen else ""))
+
     segs = tl["segments"]
     cut_times = [s["out_a"] + co + 0.05 for s in segs[1:]]
     step = max(1, len(cut_times) // 60 + (1 if len(cut_times) % 60 else 0)) if len(cut_times) > 60 else 1

@@ -1,0 +1,69 @@
+{
+ "_about": "Example config for build_long.py, talking head only. plan_long.py writes the keeps, drops and sections; the editor fills hook, phrases and proof from the script's cue list.",
+ "name": "grow-trading-discord-2027",
+ "work": "work",
+ "cam": "cam.mp4",
+ "words": "work/words.json",
+ "fps": 30,
+ "size": [
+  1920,
+  1080
+ ],
+ "preset": "medium",
+ "crf": 18,
+ "punch": 1.12,
+ "fonts_dir": "~/.fonts",
+ "keeps": [
+  [
+   1.2,
+   14.8
+  ],
+  [
+   15.6,
+   41.0
+  ]
+ ],
+ "drops": [],
+ "maybe_drops": [],
+ "sections": [
+  {
+   "start": 0.0,
+   "end": 41.0,
+   "layout": "cam",
+   "step": "",
+   "title": "",
+   "chapter": "The six fixes"
+  },
+  {
+   "start": 41.0,
+   "end": 160.0,
+   "layout": "cam",
+   "step": "Fix 1",
+   "title": "One strategy",
+   "chapter": "Fix 1: One strategy"
+  }
+ ],
+ "hook": {
+  "text": "How we did $20M+ for trading Discords",
+  "sub": "(Full Blueprint)",
+  "look": "V1",
+  "end": 6.0
+ },
+ "phrases": [
+  {
+   "find": "emails, not views",
+   "text": "emails, not views",
+   "pos": "tl"
+  }
+ ],
+ "proof": [
+  {
+   "find": "27,580",
+   "images": [
+    "proof/jack-27580-mrr-blurred.png"
+   ],
+   "flash": 0.4,
+   "hold": 3.0
+  }
+ ]
+}

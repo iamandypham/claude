@@ -55,3 +55,14 @@ For every note: check it first (push back with evidence if the check contradicts
 - Clone a competitor's ad.
 - Run production nonstop. Cost per booked call and show rate are the bottleneck, not volume.
 - Upload or post anything without Andy's go.
+
+## 8. Long-form (16:9 YouTube): talking head or tutorial with a screen recording
+Style: `styles/long-form.md` (Draft until Andy passes a cut). Scripts: `plan_long.py`, `build_long.py`, `check_long.py`. Sections 1, 2, 5, 6 and 7 above still apply.
+1. Footage: one camera file. For a tutorial, also a screen recording made at the same time, with sound on both (the sound is how they get synced). He claps once between sections and restarts the sentence after a mistake.
+2. Plan: `python3 -I scripts/plan_long.py --cam cam.mp4 [--screen screen.mkv] --work WORK --name NAME`. It transcribes, trims pauses over 0.6 s down to 0.3 s, cuts claps and exact retakes, syncs the screen to the camera, and writes `WORK/plan.md` and `WORK/NAME_config.json`.
+3. Read `plan.md`. Retakes are cut by default. "Possible restarts" are only flagged: move a pair from `maybe_drops` to `drops` to cut it. If sync confidence is low, check a frame by eye and pass `--sync-offset`.
+4. Fill the config (`examples/long-form_talking-head.json`): `sections` (layout `cam`, `pip` or `screen`, step card, chapter), `hook` (Brian Mark looks only), `phrases` (words he says near that moment, found with `find`), `proof` (images that flash, the last one holds). Every phrase and proof image comes from the script's cue list, and every number on screen is one he says.
+5. Render in the background, never in a foreground command: `python3 -I scripts/build_long.py WORK/NAME_config.json`. A 3-minute 1080p60 cut took about 6 minutes on 4 cores at `preset: veryfast`, peak memory 0.5 GB. A foreground command is killed at 10 minutes (exit 137), which looks like a crash and is not one.
+6. Check: `python3 -I scripts/check_long.py WORK/timeline.json`, then open `sheet_cuts.jpg`, `sheet_events.jpg` and `sheet_even.jpg` and look. A script cannot judge a frame.
+7. Also do the section 4 checks that are not automated yet: re-transcribe and diff against the script, 50 ms level around each cut, strip the C2PA stamp. No music or sound effects unless licensed.
+8. Screen recordings are never cropped, zoomed, blurred or dimmed. Whop can show on screen and is never typed in a phrase or caption.
