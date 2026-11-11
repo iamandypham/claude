@@ -159,13 +159,25 @@ def main():
     db = level_db(x, sr)
     sp, thr, noise, loud = speech_runs(db)
 
-    # runs with no words in them are noise; short loud ones are claps
+    # Runs with no words on them AND no pitch are noise; short loud ones are claps. Word times from the transcript
+    # drift by a few tenths of a second, so a short word ("So", "But", "Four") can look wordless: a run that any word
+    # touches, or that is mostly pitched, is speech and is never dropped here (10 Nov 2026: 30 words lost this way).
     def words_in(t0, t1):
-        return [w for w in words if t0 <= (w["s"] + w["e"]) / 2 < t1]
+        return [w for w in words if w["s"] < t1 and w["e"] > t0]
+    def pitched(t0, t1):
+        seg = x[int(max(t0 - 0.03, 0) * sr):int((t1 + 0.03) * sr)].astype(np.float32)
+        fl, hop, res = int(0.04 * sr), int(0.01 * sr), []
+        for i in range(0, len(seg) - fl, hop):
+            f = seg[i:i + fl]
+            if not f.any(): continue
+            f = f - f.mean(); ac = np.correlate(f, f, "full")[fl - 1:]
+            if ac[0] <= 0: continue
+            res.append((ac / ac[0])[sr // 320:sr // 75].max() > 0.5)
+        return bool(res) and float(np.mean(res)) >= 0.4
     claps, noise_runs, voiced = [], [], []
     for t0, t1 in sp:
         peak = float(db[int(t0 / HOP):max(int(t0 / HOP) + 1, int(t1 / HOP))].max())
-        if not words_in(t0 - 0.05, t1 + 0.05):
+        if not words_in(t0 - 0.15, t1 + 0.15) and not pitched(t0, t1):
             (claps if (t1 - t0) < 0.3 and peak >= loud - 3 else noise_runs).append([round(t0, 2), round(t1, 2)])
         else:
             voiced.append([t0, t1])
