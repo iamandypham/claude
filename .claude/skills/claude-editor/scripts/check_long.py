@@ -25,7 +25,7 @@ import argparse, json, os, re, subprocess, sys
 
 
 def sh(cmd):
-    return subprocess.run(cmd, capture_output=True, text=True)
+    return subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", errors="replace")
 
 
 def probe(path):
@@ -102,18 +102,31 @@ def silences(path, db=-38.0, dur=1.0):
     return list(zip(st, en + [None] * (len(st) - len(en))))
 
 
+C2PA_UUID = bytes.fromhex("d8fec3d61b0e483c92975828877ec481")
+
+
 def has_c2pa(path):
-    """True when the file carries a C2PA / JUMBF content-credentials box."""
-    marks, tail = (b"c2pa", b"jumb", b"jumd"), b""
+    """True when an MP4/MOV carries a C2PA manifest: a top-level 'uuid' box with the C2PA id, or a 'jumb' box.
+    Walks the box headers only. Searching the whole file for the letters gives false alarms on long videos,
+    because compressed picture data contains every 4-byte pattern sooner or later."""
+    size = os.path.getsize(path)
     with open(path, "rb") as f:
-        while True:
-            chunk = f.read(8 << 20)
-            if not chunk:
-                return False
-            buf = tail + chunk
-            if any(m in buf for m in marks):
+        pos = 0
+        while pos + 8 <= size:
+            f.seek(pos)
+            hdr = f.read(32)
+            n, kind = int.from_bytes(hdr[:4], "big"), hdr[4:8]
+            head = 8
+            if n == 1:                                    # 64-bit size follows the type
+                n, head = int.from_bytes(hdr[8:16], "big"), 16
+            elif n == 0:                                  # box runs to the end of the file
+                n = size - pos
+            if kind in (b"jumb", b"c2pa") or (kind == b"uuid" and hdr[head:head + 16] == C2PA_UUID):
                 return True
-            tail = buf[-8:]
+            if n < head:                                  # not a box structure: stop rather than loop
+                return False
+            pos += n
+    return False
 
 
 def norm_word(w):
@@ -121,7 +134,7 @@ def norm_word(w):
 
 
 def load_words(path):
-    d = json.load(open(path))
+    d = json.load(open(path, encoding="utf-8"))
     d = d.get("words", d) if isinstance(d, dict) else d
     out = []
     for x in d:
@@ -140,7 +153,7 @@ def transcribe(master, out):
     m = WhisperModel("small.en", device="cpu", compute_type="int8", cpu_threads=os.cpu_count() or 4)
     segs, _ = m.transcribe(y, word_timestamps=True, condition_on_previous_text=False, vad_filter=True, beam_size=1)
     words = [{"w": w.word, "s": round(w.start, 2), "e": round(w.end, 2)} for sg in segs for w in sg.words]
-    json.dump(words, open(out, "w"))
+    json.dump(words, open(out, "w", encoding="utf-8"))
     return len(words)
 
 
@@ -158,15 +171,17 @@ def word_diff(raw, final, segs, co, near=0.8):
                 break
     edges = sorted({co + sg["out_a"] for sg in segs[1:]})
     sm = difflib.SequenceMatcher(None, [e[0] for e in exp], [f[0] for f in final], autojunk=False)
-    bad = []
+    bad, warn = [], []
     for tag, i1, i2, j1, j2 in sm.get_opcodes():
-        # "going to" heard as "gonna" is the transcriber, not the cut: only count words that went missing
-        if tag == "equal" or (i2 - i1) - (j2 - j1) < 2:
+        lost = (i2 - i1) - (j2 - j1)
+        if tag == "equal" or lost < 1:                    # "going to" heard as "gonna" is the transcriber, not the cut
             continue
         t = exp[i1][1]
         if edges and min(abs(t - c) for c in edges) <= near:
-            bad.append((round(t, 2), " ".join(e[0] for e in exp[i1:i2]), " ".join(f[0] for f in final[j1:j2])))
-    return len(exp), len(final), bad
+            item = (round(t, 2), " ".join(e[0] for e in exp[i1:i2]), " ".join(f[0] for f in final[j1:j2]))
+            # two or more words gone is a bad cut; one word is usually the transcriber, so it is listed, not failed
+            (bad if lost >= 2 else warn).append(item)
+    return len(exp), len(final), bad, warn
 
 
 def main():
@@ -180,7 +195,7 @@ def main():
     ap.add_argument("--final-words", help="transcript of the finished master, same model as --words")
     ap.add_argument("--transcribe", action="store_true", help="make --final-words with faster-whisper small.en")
     a = ap.parse_args()
-    tl = json.load(open(a.timeline))
+    tl = json.load(open(a.timeline, encoding="utf-8"))
     work = os.path.dirname(os.path.abspath(a.timeline))
     master = os.path.join(work, f"{tl['name']}_master.mp4")
     rows = []
@@ -202,7 +217,7 @@ def main():
     if p["has_audio"]:
         row("audio and video same length", abs(p["adur"] - p["vdur"]) < 0.1, f"video {p['vdur']:.2f} s, audio {p['adur']:.2f} s")
         i, tp = loudness(master)
-        row("loudness", i is not None and abs(i - a.lufs) <= 1.0, f"{i} LUFS (want {a.lufs} +/- 1)")
+        row("loudness", i is not None and abs(i - a.lufs) <= 0.5, f"{i} LUFS (want {a.lufs} +/- 0.5)")
         row("true peak", tp is not None and tp <= -1.0, f"{tp} dBFS (want -1.0 or lower)")
     black = detect(master, "blackdetect=d=0.2:pix_th=0.06", r"black_start:([\d.]+) black_end:([\d.]+)")
     row("no black gaps", not black, f"{len(black)} found" + (f", first at {black[0][0]} s" if black else ""))
@@ -221,22 +236,26 @@ def main():
         f"{len(sliv)} found" + (f", first at {sliv[0][0]:.2f} s ({sliv[0][1]:.2f} s long)" if sliv else ""))
     if p["has_audio"]:
         tail_from = p["dur"] - max(1.0, tl.get("tail", 0.0) + 0.5)
-        sil = [(x, y) for x, y in silences(master, dur=a.max_silence) if x < tail_from and x > 0.05]
-        row(f"no silence over {a.max_silence} s (end tail excluded)", not sil,
+        sil = [(x, y) for x, y in silences(master, dur=a.max_silence) if x < tail_from
+               and not (x < co and (y or 0) <= co + 0.3)]   # a silent cold open is on purpose
+        row(f"no silence over {a.max_silence} s (silent cold open and end tail excluded)", not sil,
             f"{len(sil)} found" + (f", first at {sil[0][0]:.2f} s" if sil else ""))
     c2 = has_c2pa(master)
     row("no C2PA / content-credentials bytes", not c2, "found" if c2 else "clean")
     fw = a.final_words or (os.path.join(work, "final_words.json") if a.transcribe else None)
-    if a.transcribe:
+    if a.transcribe and not (a.final_words and os.path.exists(a.final_words)):   # never overwrite a given transcript
         try:
             print(f"transcribed {transcribe(master, fw)} words -> {fw}")
         except Exception as e:                              # no faster-whisper here: say so, do not pass silently
             row("words kept at cuts", False, f"could not transcribe: {e}")
             fw = None
     if a.words and fw and os.path.exists(fw):
-        ne, nh, bad = word_diff(load_words(a.words), load_words(fw), segs, co)
+        ne, nh, bad, warn = word_diff(load_words(a.words), load_words(fw), segs, co)
         row("words kept at cuts", not bad, f"expected {ne} words, heard {nh}, {len(bad)} gaps next to a cut"
             + "".join(f"; {t} s missing [{m}] heard [{h}]" for t, m, h in bad[:5]))
+        for t, m, h in warn:                              # check these by level trace or by ear: one word each
+            print(f"LOOK  one word may be clipped at {t} s: expected [{m}] heard [{h}]")
+        rows[-1]["look"] = [{"t": t, "expected": m, "heard": h} for t, m, h in warn]
     else:
         print("SKIP  words kept at cuts: pass --words and --final-words (or --transcribe) to run it")
     cut_times = [s["out_a"] + co + 0.05 for s in segs[1:]]
@@ -257,7 +276,7 @@ def main():
     n3 = sheet(master, even[:72], os.path.join(work, "sheet_even.jpg"))
     print(f"sheets: {n1} cut frames, {n2} event frames, {n3} evenly spaced frames -> look at them before calling it done")
     json.dump({"master": master, "rows": rows, "sheets": {"cuts": n1, "events": n2, "even": n3}},
-              open(os.path.join(work, "check_report.json"), "w"), indent=1)
+              open(os.path.join(work, "check_report.json"), "w", encoding="utf-8"), indent=1)
     sys.exit(0 if all(r["verdict"] == "PASS" for r in rows) else 1)
 
 

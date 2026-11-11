@@ -1,5 +1,5 @@
 {
- "_about": "Example config for build_long.py, talking head only. plan_long.py writes the keeps, drops and sections; the editor fills hook, phrases and proof from the script's cue list.",
+ "_about": "Example config for build_long.py, talking head only. plan_long.py writes the keeps, drops and sections; the editor fills hook, phrases and proof from the script's cue list. No hook block: long-form opens without a hook title (Andy, 10 Nov 2026); add \"hook\" only when a brief asks for one.",
  "name": "grow-trading-discord-2027",
  "work": "work",
  "cam": "cam.mp4",
@@ -43,12 +43,6 @@
    "chapter": "Fix 1: One strategy"
   }
  ],
- "hook": {
-  "text": "How we did $20M+ for trading Discords",
-  "sub": "(Full Blueprint)",
-  "look": "V1",
-  "end": 6.0
- },
  "phrases": [
   {
    "find": "emails, not views",

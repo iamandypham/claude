@@ -19,7 +19,7 @@ HOP = 0.01
 
 
 def run(cmd):
-    r = subprocess.run(cmd, capture_output=True, text=True)
+    r = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", errors="replace")
     if r.returncode != 0:
         sys.exit("failed: " + " ".join(cmd)[:300] + "\n" + r.stderr[-2000:])
     return r
@@ -154,8 +154,8 @@ def main():
         m = WhisperModel(a.model, device="cpu", compute_type="int8")
         segs, _ = m.transcribe(x, beam_size=5, word_timestamps=True)
         json.dump([{"w": w.word, "s": round(w.start, 2), "e": round(w.end, 2)} for s in segs for w in s.words],
-                  open(wpath, "w"), indent=0)
-    words = json.load(open(wpath))
+                  open(wpath, "w", encoding="utf-8"), indent=0)
+    words = json.load(open(wpath, encoding="utf-8"))
     db = level_db(x, sr)
     sp, thr, noise, loud = speech_runs(db)
 
@@ -264,14 +264,14 @@ def main():
     plan = {"cam": cam, "screen": scr, "sync": sync_info, "threshold_db": round(float(thr), 1), "noise_db": round(float(noise), 1),
             "speech_db": round(float(loud), 1), "claps": claps, "noise": noise_runs, "keeps": keeps, "drops": drops, "maybe_drops": maybes, "flags": flags,
             "raw_s": round(dur, 2), "kept_s": round(kept, 2)}
-    json.dump(plan, open(os.path.join(a.work, "plan.json"), "w"), indent=1)
+    json.dump(plan, open(os.path.join(a.work, "plan.json"), "w", encoding="utf-8"), indent=1)
     cfg = {"name": a.name, "work": a.work, "cam": a.cam, "words": wpath, "fps": min(60, round(cam["fps"])), "size": [1920, 1080],
            "keeps": keeps, "drops": drops, "maybe_drops": maybes, "sections": sections,
            "hook": {"text": "", "look": "V1"}, "phrases": [], "proof": [], "punch": 1.12,
            "pip": {"size": 300, "corner": "br", "margin": 40, "ring": 6, "cx": 0.5, "cy": 0.45, "zoom": 0.9}}
     if scr:
         cfg["screen"] = a.screen; cfg["sync_offset"] = sync_info["offset"]
-    json.dump(cfg, open(os.path.join(a.work, f"{a.name}_config.json"), "w"), indent=1)
+    json.dump(cfg, open(os.path.join(a.work, f"{a.name}_config.json"), "w", encoding="utf-8"), indent=1)
 
     L = [f"# Cut plan: {a.name}", "",
          f"Raw {mmss(dur)}, kept {mmss(kept)} ({100 * kept / max(dur, 1e-9):.0f}%), {len(keeps)} speech blocks, "
@@ -297,7 +297,7 @@ def main():
     for u in U:
         tag = " [RETAKE, dropped]" if "retake_of" in u else ""
         L += [f"- {mmss(u['s'])} to {mmss(u['e'])}{tag}: {u['text']}"]
-    open(os.path.join(a.work, "plan.md"), "w").write("\n".join(L) + "\n")
+    open(os.path.join(a.work, "plan.md"), "w", encoding="utf-8").write("\n".join(L) + "\n")
     print(f"raw {dur:.1f} s, kept {kept:.1f} s, {len(keeps)} blocks, {len(claps)} claps, {len(flags)} retakes, sync {sync_info}")
 
 

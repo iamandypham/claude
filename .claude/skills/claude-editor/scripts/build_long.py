@@ -14,9 +14,9 @@ Rules built in (Slite "Rules and lessons learned" pNd6jkZP4XtKih):
 - Punch-ins happen on camera cuts only (R-107), never on screen footage.
 - Cuts get 30 ms audio fades; loudness is two-pass to -14 LUFS (R-105).
 - No music or sound effects are added.
-Style notes: styles/long-form-tutorial.md.
+Style notes: styles/long-form.md.
 """
-import json, math, os, re, subprocess, sys, wave
+import json, math, os, re, subprocess, sys, wave, time
 import numpy as np
 
 SR = 48000
@@ -24,7 +24,7 @@ FADE = 0.03
 
 
 def run(cmd, **kw):
-    r = subprocess.run(cmd, capture_output=True, text=True, **kw)
+    r = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", errors="replace", **kw)
     if r.returncode != 0:
         sys.exit("ffmpeg failed:\n" + " ".join(map(str, cmd))[:600] + "\n" + r.stderr[-3000:])
     return r
@@ -34,7 +34,7 @@ def graph_opt(graph):
     """ffmpeg 7 and later read a filter graph file with -/filter_complex; older builds only know -filter_complex_script,
     which the 2026 nightlies removed. Ask the installed ffmpeg which one it has."""
     try:
-        h = subprocess.run(["ffmpeg", "-hide_banner", "-h", "full"], capture_output=True, text=True).stdout
+        h = subprocess.run(["ffmpeg", "-hide_banner", "-h", "full"], capture_output=True, text=True, encoding="utf-8", errors="replace").stdout
     except Exception:
         h = ""
     return ["-filter_complex_script", graph] if "filter_complex_script" in h else ["-/filter_complex", graph]
@@ -56,6 +56,10 @@ def probe(path):
             w, h = h, w
         n, d = v.get("avg_frame_rate", "30/1").split("/")
         info.update(w=w, h=h, fps=float(n) / float(d or 1) if float(d or 1) else 30.0)
+        try:                                              # the picture can be shorter than the file (longer audio)
+            info["vduration"] = float(v["duration"])
+        except (KeyError, ValueError):
+            info["vduration"] = info["duration"]
     return info
 
 
@@ -84,7 +88,8 @@ def sum_terms(terms, group=10):
     100 terms ("Cannot allocate memory"); grouped, the same expression parses."""
     if len(terms) <= group:
         return "+".join(terms)
-    return "+".join("(" + "+".join(terms[i:i + group]) + ")" for i in range(0, len(terms), group))
+    # nest again while the top level is still long (over 100 groups would be a flat sum again)
+    return sum_terms(["(" + "+".join(terms[i:i + group]) + ")" for i in range(0, len(terms), group)], group)
 
 
 def enable_expr(wins, fps):
@@ -132,6 +137,11 @@ def build_segments(cfg, fps):
             segs.append({"sec": si, "na": na, "nb": nb, "layout": sec.get("layout", "pip")})
     if not segs:
         sys.exit("No segments: check keeps and sections in the config.")
+    for p, q in zip(segs, segs[1:]):
+        # the picture is picked with one select() per input, which only moves forward in source time
+        if q["na"] < p["nb"]:
+            sys.exit(f"Sections overlap or run backwards in camera time near {q['na'] / fps:.2f} s. "
+                     "List sections in the order they were filmed, without overlap.")
     off = 0
     for s in segs:
         s["a"], s["b"] = s["na"] / fps, s["nb"] / fps
@@ -199,14 +209,20 @@ def cut_audio(src, segs, tail, lead):
     nf = int(FADE * SR)
     ramp = np.linspace(0.0, 1.0, nf, dtype=np.float32)[:, None]
     parts = [lead] if lead is not None and len(lead) else []
-    for s in segs:
+    for n, s in enumerate(segs):
         i0, i1 = int(round(s["a"] * SR)), int(round(s["b"] * SR))
         x = np.zeros((i1 - i0, 2), dtype=np.float32)
         got = src[max(0, i0):min(len(src), i1)]
         x[:len(got)] = got
+        # two ranges that touch in the source (a section boundary mid-sentence) are not a cut: no fade there,
+        # or the join puts a 60 ms dip inside a word
+        joins_prev = n > 0 and segs[n - 1]["nb"] == s["na"]
+        joins_next = n + 1 < len(segs) and segs[n + 1]["na"] == s["nb"]
         if len(x) > 2 * nf:
-            x[:nf] *= ramp
-            x[-nf:] *= ramp[::-1]
+            if not joins_prev:
+                x[:nf] *= ramp
+            if not joins_next:
+                x[-nf:] *= ramp[::-1]
         parts.append(x)
     parts.append(np.zeros((int(tail * SR), 2), dtype=np.float32))
     return np.concatenate(parts)
@@ -355,14 +371,15 @@ def make_mask(work, D, ring):
 
 
 def main():
-    cfg = json.load(open(sys.argv[1]))
+    t_start = time.time()
+    cfg = json.load(open(sys.argv[1], encoding="utf-8"))
     work = cfg["work"]; os.makedirs(work, exist_ok=True)
     name = cfg["name"]
     W, H = cfg.get("size", [1920, 1080])
     cam = probe(cfg["cam"])
     scr = probe(cfg["screen"]) if cfg.get("screen") else None
     fps = int(cfg.get("fps") or min(60, round(cam["fps"])))
-    words = json.load(open(cfg["words"])) if cfg.get("words") else []
+    words = json.load(open(cfg["words"], encoding="utf-8")) if cfg.get("words") else []
     if cam["w"] < W or cam["h"] < H:
         if not cfg.get("allow_cam_upscale"):
             sys.exit(f"Camera is {cam['w']}x{cam['h']}, smaller than {W}x{H}. Never upscale: lower \"size\" or set allow_cam_upscale.")
@@ -402,7 +419,7 @@ def main():
     # ---- text
     ass, text_report = build_ass(cfg, segs, words, main_total, fps, W, H)
     ass_path = os.path.join(work, "long.ass")
-    open(ass_path, "w").write(ass)
+    open(ass_path, "w", encoding="utf-8").write(ass)
     fonts = os.path.expanduser(cfg.get("fonts_dir", "~/.fonts"))
 
     # ---- video graph
@@ -474,8 +491,18 @@ def main():
         if oa is not None and ob is not None and ob > oa: wide.append([oa, ob])
     w0 = min(range(len(levels)), key=lambda i: levels[i])
     was_wide = False
+    def at_wide_edges(pieces):
+        """Cut a shot where a hold-wide window starts or ends, so the window never begins mid-shot on a punch-in."""
+        out = []
+        for a, b in pieces:
+            cuts = sorted(e for wa, wb in wide for e in (wa, wb) if a + 0.2 < e < b - 0.2)
+            for e in cuts:
+                out.append((a, e)); a = e
+            out.append((a, b))
+        return out
+
     for sg in cam_segs:
-        for a, b in split_shot(sg["out_a"], sg["out_b"]):
+        for a, b in at_wide_edges(split_shot(sg["out_a"], sg["out_b"])):
             new_sec = sg["sec"] != prev_sec
             if new_sec:
                 k, prev_sec = 0, sg["sec"]
@@ -498,7 +525,7 @@ def main():
             else:
                 shots[-1]["b"] = round(b, 3); lvl_wins[li][-1][1] = b
     if cfg.get("plan_only"):                             # write the shot plan and stop before any rendering
-        json.dump({"shots": shots, "total": total}, open(os.path.join(work, "shots_plan.json"), "w"), indent=1)
+        json.dump({"shots": shots, "total": total}, open(os.path.join(work, "shots_plan.json"), "w", encoding="utf-8"), indent=1)
         d = sorted(s["b"] - s["a"] for s in shots)
         print(f"plan only: {len(shots)} shots, median {d[len(d) // 2]:.1f} s, longest {d[-1]:.1f} s -> {work}/shots_plan.json")
         return
@@ -531,7 +558,7 @@ def main():
         s_idx = idx; idx += 1
         lo = min(s["na"] + offn for s in segs); hi = max(s["nb"] + offn for s in segs)
         pre = max(0, -lo)
-        post = max(0, hi - int(scr["duration"] * fps)) + fps
+        post = max(0, hi - int(scr.get("vduration", scr["duration"]) * fps)) + fps
         pad = f"tpad=start={pre}:start_mode=clone:stop={post}:stop_mode=clone," if (pre or post > fps) else ""
         fc.append(f"[{s_idx}:v]fps={fps}:start_time=0,{pad}select='{sel(offn + pre)}',setpts=N/({fps}*TB),"
                   f"scale='min({W},iw)':'min({H},ih)':force_original_aspect_ratio=decrease,"
@@ -635,7 +662,7 @@ def main():
             card_report.append({"image": os.path.basename(img), "start": round(t0, 2), "dur": round(d, 2), "mode": tag})
         lines += [f"file '{fwd(blank)}'", f"duration {max(main_total - cur, 1 / fps) + 1:.6f}", f"file '{fwd(blank)}'"]
         cl = os.path.join(work, f"cards_{tag}.ffconcat")
-        open(cl, "w").write("\n".join(lines) + "\n")
+        open(cl, "w", encoding="utf-8").write("\n".join(lines) + "\n")
         inputs.extend(["-f", "concat", "-safe", "0", "-i", cl])
         idx += 1
         return idx - 1, wins
@@ -672,7 +699,7 @@ def main():
     fc.append(f"[{last}]tpad=stop_mode=clone:stop_duration={tail},trim=duration={total:.4f},format=yuv420p,"
               f"setparams=color_primaries=bt709:color_trc=bt709:colorspace=bt709[vo]")
     graph = os.path.join(work, "graph.txt")
-    open(graph, "w").write(";\n".join(fc))
+    open(graph, "w", encoding="utf-8").write(";\n".join(fc))
     master = os.path.join(work, f"{name}_master.mp4")
     a_idx = idx
     cmd = ["ffmpeg", "-hide_banner", "-loglevel", "error", "-y"] + inputs + ["-i", os.path.join(work, "cut_audio_norm.wav"),
@@ -697,15 +724,16 @@ def main():
     ch = [c for i, c in enumerate(chapters) if i == 0 or c[0] - chapters[i - 1][0] >= 10]
     def yt(t):
         t = int(t); return f"{t // 3600}:{t % 3600 // 60:02d}:{t % 60:02d}" if t >= 3600 else f"{t // 60}:{t % 60:02d}"
-    open(os.path.join(work, "chapters.txt"), "w").write("".join(f"{yt(t)} {n}\n" for t, n in ch))
+    open(os.path.join(work, "chapters.txt"), "w", encoding="utf-8").write("".join(f"{yt(t)} {n}\n" for t, n in ch))
 
     cw = remap_words(words, segs)
     for x in cw: x["s"] = round(x["s"] + co_dur, 3); x["e"] = round(x["e"] + co_dur, 3)
-    json.dump(cw, open(os.path.join(work, "cut_words.json"), "w"), indent=0)
+    json.dump(cw, open(os.path.join(work, "cut_words.json"), "w", encoding="utf-8"), indent=0)
     json.dump({"name": name, "fps": fps, "size": [W, H], "total": round(total, 3), "cold_open": co_dur, "tail": tail,
                "sync_offset": off, "segments": segs, "text": text_report, "proof": proof_report, "cards": card_report, "shots": shots, "chapters": ch,
-               "loudnorm_input": meas, "cam": cam, "screen": scr, "config": os.path.abspath(sys.argv[1])},
-              open(os.path.join(work, "timeline.json"), "w"), indent=1)
+               "loudnorm_input": meas, "cam": cam, "screen": scr,
+               "render_seconds": round(time.time() - t_start, 1), "config": os.path.abspath(sys.argv[1])},
+              open(os.path.join(work, "timeline.json"), "w", encoding="utf-8"), indent=1)
     cuts = len(segs) - 1
     print(f"total {total:.2f} s, {len(segs)} shots, {cuts} cuts, {cuts / max(total / 60, 1e-9):.1f} cuts/min -> {master}")
 
