@@ -2,6 +2,14 @@
 """Checks on a long-form (16:9) master rendered by build_long.py.
 
   python3 -I check_long.py WORK/timeline.json [--sheet-every 20]
+        [--words RAW_WORDS.json --final-words FINAL_WORDS.json] [--transcribe]
+
+--words is the transcript of the RAW camera audio (the file plan_long.py wrote);
+--final-words is a transcript of the FINISHED master, same model. With both, the
+check lines the two up and fails when words that should be there are missing next
+to a cut. --transcribe makes FINAL_WORDS itself with faster-whisper when it is
+installed (small.en, CPU). Use the same model for both transcripts, or model
+differences show up as false alarms.
 
 Reads timeline.json (written by build_long.py) and the master next to it, then
 prints PASS/FAIL rows and writes:
@@ -86,11 +94,91 @@ def sheet(path, times, out, cols=6, w=480):
     return len(files)
 
 
+def silences(path, db=-38.0, dur=1.0):
+    r = sh(["ffmpeg", "-hide_banner", "-nostats", "-i", path, "-vn", "-af", f"silencedetect=noise={db}dB:d={dur}",
+            "-f", "null", "-"])
+    st = [float(x) for x in re.findall(r"silence_start: (-?[\d.]+)", r.stderr)]
+    en = [float(x) for x in re.findall(r"silence_end: (-?[\d.]+)", r.stderr)]
+    return list(zip(st, en + [None] * (len(st) - len(en))))
+
+
+def has_c2pa(path):
+    """True when the file carries a C2PA / JUMBF content-credentials box."""
+    marks, tail = (b"c2pa", b"jumb", b"jumd"), b""
+    with open(path, "rb") as f:
+        while True:
+            chunk = f.read(8 << 20)
+            if not chunk:
+                return False
+            buf = tail + chunk
+            if any(m in buf for m in marks):
+                return True
+            tail = buf[-8:]
+
+
+def norm_word(w):
+    return re.sub(r"[^a-z0-9$%]", "", w.lower())
+
+
+def load_words(path):
+    d = json.load(open(path))
+    d = d.get("words", d) if isinstance(d, dict) else d
+    out = []
+    for x in d:
+        w = norm_word(str(x.get("w", x.get("word", x.get("text", "")))))
+        if w:
+            out.append((w, float(x.get("s", x.get("start", 0.0))), float(x.get("e", x.get("end", 0.0)))))
+    return out
+
+
+def transcribe(master, out):
+    import numpy as np
+    from faster_whisper import WhisperModel
+    r = subprocess.run(["ffmpeg", "-hide_banner", "-loglevel", "error", "-i", master, "-vn", "-ac", "1", "-ar", "16000",
+                        "-f", "f32le", "-"], capture_output=True)
+    y = np.frombuffer(r.stdout, dtype=np.float32)
+    m = WhisperModel("small.en", device="cpu", compute_type="int8", cpu_threads=os.cpu_count() or 4)
+    segs, _ = m.transcribe(y, word_timestamps=True, condition_on_previous_text=False, vad_filter=True, beam_size=1)
+    words = [{"w": w.word, "s": round(w.start, 2), "e": round(w.end, 2)} for sg in segs for w in sg.words]
+    json.dump(words, open(out, "w"))
+    return len(words)
+
+
+def word_diff(raw, final, segs, co, near=0.8):
+    """Words the cut should contain (raw words whose middle sits in a kept range) against words heard in the master.
+    Returns (expected, heard, [(out_time, missing words, heard instead)]) for differences next to a cut."""
+    import difflib
+    kept = [(sg["a"], sg["b"], sg["out_a"]) for sg in segs]
+    exp = []
+    for w, s0, e0 in raw:
+        mid = (s0 + e0) / 2
+        for a, b, oa in kept:
+            if a <= mid < b:
+                exp.append((w, co + oa + mid - a))
+                break
+    edges = sorted({co + sg["out_a"] for sg in segs[1:]})
+    sm = difflib.SequenceMatcher(None, [e[0] for e in exp], [f[0] for f in final], autojunk=False)
+    bad = []
+    for tag, i1, i2, j1, j2 in sm.get_opcodes():
+        # "going to" heard as "gonna" is the transcriber, not the cut: only count words that went missing
+        if tag == "equal" or (i2 - i1) - (j2 - j1) < 2:
+            continue
+        t = exp[i1][1]
+        if edges and min(abs(t - c) for c in edges) <= near:
+            bad.append((round(t, 2), " ".join(e[0] for e in exp[i1:i2]), " ".join(f[0] for f in final[j1:j2])))
+    return len(exp), len(final), bad
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("timeline")
     ap.add_argument("--sheet-every", type=float, default=20.0)
     ap.add_argument("--lufs", type=float, default=-14.0)
+    ap.add_argument("--min-seg", type=float, default=0.20, help="a kept range shorter than this is a sliver")
+    ap.add_argument("--max-silence", type=float, default=1.0, help="longest silent stretch allowed, seconds")
+    ap.add_argument("--words", help="transcript of the raw camera audio (plan_long.py output)")
+    ap.add_argument("--final-words", help="transcript of the finished master, same model as --words")
+    ap.add_argument("--transcribe", action="store_true", help="make --final-words with faster-whisper small.en")
     a = ap.parse_args()
     tl = json.load(open(a.timeline))
     work = os.path.dirname(os.path.abspath(a.timeline))
@@ -128,6 +216,29 @@ def main():
         f"{len(frozen)} found" + (f", first at {frozen[0]} s" if frozen else ""))
 
     segs = tl["segments"]
+    sliv = [(sg["out_a"] + co, sg["b"] - sg["a"]) for sg in segs if sg["b"] - sg["a"] < a.min_seg]
+    row(f"no slivers (kept range under {a.min_seg} s)", not sliv,
+        f"{len(sliv)} found" + (f", first at {sliv[0][0]:.2f} s ({sliv[0][1]:.2f} s long)" if sliv else ""))
+    if p["has_audio"]:
+        tail_from = p["dur"] - max(1.0, tl.get("tail", 0.0) + 0.5)
+        sil = [(x, y) for x, y in silences(master, dur=a.max_silence) if x < tail_from and x > 0.05]
+        row(f"no silence over {a.max_silence} s (end tail excluded)", not sil,
+            f"{len(sil)} found" + (f", first at {sil[0][0]:.2f} s" if sil else ""))
+    c2 = has_c2pa(master)
+    row("no C2PA / content-credentials bytes", not c2, "found" if c2 else "clean")
+    fw = a.final_words or (os.path.join(work, "final_words.json") if a.transcribe else None)
+    if a.transcribe:
+        try:
+            print(f"transcribed {transcribe(master, fw)} words -> {fw}")
+        except Exception as e:                              # no faster-whisper here: say so, do not pass silently
+            row("words kept at cuts", False, f"could not transcribe: {e}")
+            fw = None
+    if a.words and fw and os.path.exists(fw):
+        ne, nh, bad = word_diff(load_words(a.words), load_words(fw), segs, co)
+        row("words kept at cuts", not bad, f"expected {ne} words, heard {nh}, {len(bad)} gaps next to a cut"
+            + "".join(f"; {t} s missing [{m}] heard [{h}]" for t, m, h in bad[:5]))
+    else:
+        print("SKIP  words kept at cuts: pass --words and --final-words (or --transcribe) to run it")
     cut_times = [s["out_a"] + co + 0.05 for s in segs[1:]]
     step = max(1, len(cut_times) // 60 + (1 if len(cut_times) % 60 else 0)) if len(cut_times) > 60 else 1
     n1 = sheet(master, cut_times[::step], os.path.join(work, "sheet_cuts.jpg"))
