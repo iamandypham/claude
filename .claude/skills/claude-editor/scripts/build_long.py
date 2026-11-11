@@ -30,6 +30,16 @@ def run(cmd, **kw):
     return r
 
 
+def graph_opt(graph):
+    """ffmpeg 7 and later read a filter graph file with -/filter_complex; older builds only know -filter_complex_script,
+    which the 2026 nightlies removed. Ask the installed ffmpeg which one it has."""
+    try:
+        h = subprocess.run(["ffmpeg", "-hide_banner", "-h", "full"], capture_output=True, text=True).stdout
+    except Exception:
+        h = ""
+    return ["-filter_complex_script", graph] if "filter_complex_script" in h else ["-/filter_complex", graph]
+
+
 def probe(path):
     r = run(["ffprobe", "-v", "error", "-print_format", "json", "-show_streams", "-show_format", path])
     j = json.loads(r.stdout)
@@ -610,7 +620,7 @@ def main():
     master = os.path.join(work, f"{name}_master.mp4")
     a_idx = idx
     cmd = ["ffmpeg", "-hide_banner", "-loglevel", "error", "-y"] + inputs + ["-i", os.path.join(work, "cut_audio_norm.wav"),
-           "-filter_complex_script", graph, "-map", "[vo]", "-map", f"{a_idx}:a",
+           *graph_opt(graph), "-map", "[vo]", "-map", f"{a_idx}:a",
            "-c:v", "libx264", "-profile:v", "high", "-crf", str(cfg.get("crf", 16)), "-preset", cfg.get("preset", "medium"),
            "-r", str(fps), "-colorspace", "bt709", "-color_primaries", "bt709", "-color_trc", "bt709",
            "-c:a", "aac", "-b:a", "256k", "-t", f"{total:.4f}", "-movflags", "+faststart", master]
