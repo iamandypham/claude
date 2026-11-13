@@ -78,6 +78,9 @@ rep('''<p class="proof-line">From the team that’s helped trading education bus
 rep('''    $("#bgx-b-count").textContent = ($("#q-count").textContent || "") + " · " + pct + "%";''',
     '''    $("#bgx-b-count").textContent = (function(){ try { var sg = s.kind === "q" ? byId[s.id].seg : "next"; return ({you:"About you", traffic:"Traffic", conversion:"Conversion", monetisation:"Monetisation", next:"Next step"})[sg] || ""; } catch(e){ return ""; } })(); /* V2-NOCOUNT */''')
 
+# 10. send finished leads to the side-by-side n8n copy KUBSAOeLdXH8lcGx (under-$5K: tag lt5k, no SubmitApplication); live 4WaO untouched
+rep('''var WEBHOOK = "https://businessgrowr.app.n8n.cloud/webhook/bg-scorecard-ghl";''', '''var WEBHOOK = "https://businessgrowr.app.n8n.cloud/webhook/bg-scorecard-v2-ghl"; /* V2-WEBHOOK */''')
+
 # 8. mark the build
 s = s.replace('<title>Revenue Leak Scorecard</title>', '<title>Revenue Leak Scorecard</title>\n<!-- SCORECARD V2 2026-11-13: intro, 12 questions, early email, no cash gate, no counter. Built from live element; Jeremy conv a31b5255. -->', 1)
 open('scorecard-v2-element.html', 'w').write(s)
