@@ -692,7 +692,7 @@ img,svg,video,iframe{max-width:100%}
           <div class="bgx-b-more">
             <p class="bgx-b-line">Find where your trading business is leaking money.</p>
             <p class="bgx-b-get">You get your Leak Score out of 100, the part of your funnel to fix first, and your move this week.</p>
-            <ul class="bgx-b-list"><li>About 5 minutes. Your score shows the moment you finish</li><li>Free. Just tap your answers</li></ul>
+            <ul class="bgx-b-list"><li>About 3 minutes. Your score shows the moment you finish</li><li>Free. Just tap your answers</li></ul>
           </div>
         </div>
         <div class="q-top">
@@ -710,7 +710,7 @@ img,svg,video,iframe{max-width:100%}
       </div>
       <aside class="build" aria-label="Your scorecard so far">
         <p class="build-k">Your scorecard</p>
-        <p class="build-n"><span id="build-n">0</span> of 6 parts scored</p>
+        <p class="build-n"><span id="build-n">0</span> parts scored</p>
         <div class="build-groups" id="build-groups"></div>
         <p class="build-foot">Your score unlocks after the last question.</p>
       </aside>
@@ -876,10 +876,10 @@ var Q = [
     title:function(){ return "And what do you make from your own trading in a typical month?"; },
     options:[{v:"np",label:"Not consistently profitable yet"},{v:"u5",label:"Under $5K"},{v:"5to10",label:"$5K to $10K"},{v:"10p",label:"$10K+"}]},
   /* QUIZBELIEFS A (belief 2: current path won't get there). Unscored, data only. Andy t6913u wording. */
-  {id:"email", seg:"you", type:"text", eyebrow:"Your score", eyebrowDim:"Almost ready",
-    title:function(){ return "Your score is almost ready."; },
-    sub:"Where should we send it? Your full scorecard, your biggest leak and your first fix go to this email. Free.",
-    field:{id:"f-email", label:"Email", type:"email", autocomplete:"email", placeholder:"you@example.com", inputmode:"email"}, cta:"Send my score"},
+  {id:"email", seg:"you", type:"text", eyebrow:"Your score", eyebrowDim:"Saved as you go",
+    title:function(){ return "What’s your best email?"; },
+    sub:"We’ll save your progress. Your Leak Score is about 2 minutes away. Free.",
+    field:{id:"f-email", label:"Email", type:"email", autocomplete:"email", placeholder:"you@example.com", inputmode:"email"}, cta:"Continue"},
   {id:"audience", seg:"you", type:"choice",
     title:function(){ return "How many people follow you across all your platforms?"; },
     sub:"Add up Instagram, YouTube, TikTok and X.",
@@ -1040,7 +1040,7 @@ function showPresell(q){
     advanceFrom(q, true);
   });
 }
-function calAsk(a){ return (a.tiedown === "yes" || a.tiedown === "maybe") && a.who !== "prop" && a.who !== "vendor"; } /* V2-NOGATE */
+function calAsk(a){ return routeOf(a) === "qualified" && (a.tiedown === "yes" || a.tiedown === "maybe"); } /* V2-NOGATE: calendar questions only for people who get the calendar */
 
 var CONTACT = [
   {id:"name", title:function(){ return "What’s your first name?"; },
@@ -1142,6 +1142,20 @@ function ensureFbp(){
 var FBCLID = readFbclid();
 var LEAD_ID = "";
   var PARTIAL_URL = "https://businessgrowr.app.n8n.cloud/webhook/bg-scorecard-partial";
+  var V2_EMAIL_URL = "https://businessgrowr.app.n8n.cloud/webhook/bg-scorecard-v2-email"; /* V2-EMAIL-CAPTURE */
+  function postEmailCapture(ev){
+    try {
+      ensureSession();
+      var a = state.a || {};
+      var body = { email: ev, lead_id: LEAD_ID || SESSION_ID, session_id: SESSION_ID, page_url: location.href, ua: navigator.userAgent || "",
+        fbclid: (typeof FBCLID !== "undefined" ? FBCLID : ""), fbc: (typeof pickFbc === "function" ? pickFbc(FBCLID) : ""), fbp: (typeof ensureFbp === "function" ? ensureFbp() : ""),
+        attribution: (typeof ATTR !== "undefined" ? ATTR : {}),
+        test: (typeof isTest === "function" ? isTest(a) : false) || /\?.*bgtest=1|example\.com/i.test(location.href + " " + ev) };
+      var txt = JSON.stringify(body);
+      if (navigator.sendBeacon) { try { if (navigator.sendBeacon(V2_EMAIL_URL, new Blob([txt], {type: "text/plain;charset=UTF-8"}))) return; } catch(e){} }
+      fetch(V2_EMAIL_URL, {method:"POST", body: txt, headers:{"Content-Type":"text/plain;charset=UTF-8"}, keepalive:true, mode:"cors", credentials:"omit"}).catch(function(){});
+    } catch(e){}
+  }
   var SESSION_ID = "";
   function ensureSession(){
     if (!SESSION_ID) {
@@ -1411,7 +1425,7 @@ function fieldHTML(f, value, cta, extra){
 function goQ(id, dir){
   var q = byId[id]; if (!q) return;
   state.step = {kind:"q", id:id};
-  try { var bk = $("#v-quiz [data-action=back]"); if (bk) bk.style.visibility = id === Q[0].id ? "hidden" : ""; } catch(e){} /* QUIZSTEP v3.1pq: no Back on question 1 */
+  try { var bk = $("#v-quiz [data-action=back]"); if (bk) bk.style.visibility = ""; } catch(e){} /* V2: Back on Q1 returns to the intro */
   var vis = visibleQs(), i = vis.indexOf(q);
   if (i < 0) { vis = Q; i = Q.indexOf(q); }
   var segQs = Q.filter(function(x){ return x.seg === q.seg; }), pos = segQs.indexOf(q);
@@ -1422,7 +1436,7 @@ function goQ(id, dir){
   updateBuild();
 
   var st = STAGES[q.seg];
-  var eb = q.eyebrow ? eyebrowHTML(q.eyebrow, q.eyebrowDim) : st.part ? eyebrowHTML(st.part, st.label) : eyebrowHTML(st.label, "");
+  var eb = q.eyebrow ? eyebrowHTML(q.eyebrow, q.eyebrowDim) : eyebrowHTML(st.label, ""); /* V2-NOCOUNT: section name only */
   var sub = q.sub && (first || q.type === "text" || q.id === "revenue" || q.id === "audience") ? '<p class="q-sub">' + esc(q.sub) + '</p>' : "";
   var html = eb + '<h2 class="h-q" id="q-title" tabindex="-1">' + esc(q.title(state.a)) + '</h2>' + sub;
   if (q.type === "text") {
@@ -1447,7 +1461,7 @@ function goQ(id, dir){
     if (q.id === "email") { /* V2-EMAIL-EARLY 2026-11-13 (Jeremy spec): email-only capture after the first questions -> partial lead */
       var ev = val.trim();
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(ev)) return "Enter an email like name@example.com.";
-      state.a.email = ev; postPartial("answer", {q:"email", v:ev});
+      state.a.email = ev; postPartial("answer", {q:"email", v:ev}); postEmailCapture(ev);
       try { track("quiz_answer", {step_number:visibleQs().indexOf(q) + 1, step_id:"email", question:qText(q), answer:""}); } catch(e){}
       return advanceFrom(q);
     }
@@ -1493,11 +1507,10 @@ function bannerUpdate(){
     if (s.kind === "q" || s.kind === "presell") { done = Math.max(0, vis.indexOf(byId[s.id])); if (s.kind === "presell") done += 1; }
     else if (s.kind === "c") done = vis.length + s.i;
     var pct = Math.max(0, Math.min(100, Math.round(done / total * 100)));
-    $("#bgx-b-count").textContent = (function(){ try { var sg = s.kind === "q" ? byId[s.id].seg : "next"; return ({you:"About you", traffic:"Traffic", conversion:"Conversion", monetisation:"Monetisation", next:"Next step"})[sg] || ""; } catch(e){ return ""; } })(); /* V2-NOCOUNT */
-    $("#bgx-b-fill").style.width = pct + "%";
-    $("#bgx-b-bar").setAttribute("aria-valuenow", String(pct));
+    $("#bgx-b-count").textContent = (function(){ try { var sg = (s.kind === "q" || s.kind === "presell") && byId[s.id] ? byId[s.id].seg : "next"; return ({you:"About you", traffic:"Traffic", conversion:"Conversion", monetisation:"Monetisation", next:"Next step"})[sg] || ""; } catch(e){ return ""; } })(); /* V2-NOCOUNT */
+    $("#bgx-b-fill").style.width = "0%"; $("#bgx-b-bar").style.display = "none"; /* V2-NOCOUNT: no percentage bar */
     var q1 = s.kind === "q" && s.id === Q[0].id;
-    b.classList.toggle("is-full", q1);
+    b.classList.toggle("is-full", false); /* V2: intro replaces the Q1 hero banner */
     var v = $("#v-quiz"); if (v) v.classList.toggle("bgx-q1", q1);
   } catch(e){}
 }
@@ -1582,7 +1595,7 @@ function goContact(i, dir){
   updateRail("next", i === 0 ? 0.93 : 0.98);
   updateBuild();
   var extra = c.consent ? '<p class="consent">' + esc(c.consent) + (c.consentLinks || '') + '</p>' : '';
-  var html = eyebrowHTML("Your scorecard is ready", "Last step") +
+  var html = eyebrowHTML("Your scorecard is ready", (state.step && state.step.i) ? "Last step" : "Almost done") +
     '<h2 class="h-q" id="q-title" tabindex="-1">' + esc(c.title(state.a)) + '</h2>' +
     '<p class="q-sub">' + esc(c.sub) + '</p>' + fieldHTML(c.field, state.a[c.id], c.cta, extra);
   paintCard(html, dir);
@@ -1763,7 +1776,7 @@ document.addEventListener("click", function(e){
   var t = e.target.closest ? e.target.closest("[data-action],[data-go]") : null;
   if (!t) return;
   var act = t.getAttribute("data-action") || t.getAttribute("data-go");
-  if (act === "begin") { state.example = null; try { track("quiz_start", {}); } catch(e){} goQ(Q[0].id, 1); }
+  if (act === "begin") { state.example = null; try { if (!state.started) { state.started = true; track("quiz_start", {}); } } catch(e){} goQ(Q[0].id, 1); }
   else if (act === "back") { back(); }
   else if (act === "start") { showStart(); }
   else if (act === "vendor-back") { delete state.a.who; goQ("who", -1); }

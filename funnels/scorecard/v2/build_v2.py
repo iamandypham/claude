@@ -81,6 +81,56 @@ rep('''    $("#bgx-b-count").textContent = ($("#q-count").textContent || "") + "
 # 10. send finished leads to the side-by-side n8n copy KUBSAOeLdXH8lcGx (under-$5K: tag lt5k, no SubmitApplication); live 4WaO untouched
 rep('''var WEBHOOK = "https://businessgrowr.app.n8n.cloud/webhook/bg-scorecard-ghl";''', '''var WEBHOOK = "https://businessgrowr.app.n8n.cloud/webhook/bg-scorecard-v2-ghl"; /* V2-WEBHOOK */''')
 
+# 11. reviewer fixes (review-v2.md, 13 Nov)
+# 11a. Back button visible on Q1 now that the intro exists
+rep("""  try { var bk = $("#v-quiz [data-action=back]"); if (bk) bk.style.visibility = id === Q[0].id ? "hidden" : ""; } catch(e){} /* QUIZSTEP v3.1pq: no Back on question 1 */""",
+    """  try { var bk = $("#v-quiz [data-action=back]"); if (bk) bk.style.visibility = ""; } catch(e){} /* V2: Back on Q1 returns to the intro */""")
+# 11b. timing/partner questions only for people who will see the calendar
+rep("""function calAsk(a){ return (a.tiedown === "yes" || a.tiedown === "maybe") && a.who !== "prop" && a.who !== "vendor"; } /* V2-NOGATE */""",
+    """function calAsk(a){ return routeOf(a) === "qualified" && (a.tiedown === "yes" || a.tiedown === "maybe"); } /* V2-NOGATE: calendar questions only for people who get the calendar */""")
+# 11c. no expanded banner on Q1 (intro already sold it) and no "5 minutes"
+rep("""<li>About 5 minutes. Your score shows the moment you finish</li>""", """<li>About 3 minutes. Your score shows the moment you finish</li>""")
+rep("""    b.classList.toggle("is-full", q1);""", """    b.classList.toggle("is-full", false); /* V2: intro replaces the Q1 hero banner */""")
+# 11d. no counts anywhere
+rep("""    $("#bgx-b-fill").style.width = pct + "%";
+    $("#bgx-b-bar").setAttribute("aria-valuenow", String(pct));""",
+    """    $("#bgx-b-fill").style.width = "0%"; $("#bgx-b-bar").style.display = "none"; /* V2-NOCOUNT: no percentage bar */""")
+rep("""var sg = s.kind === "q" ? byId[s.id].seg : "next";""", """var sg = (s.kind === "q" || s.kind === "presell") && byId[s.id] ? byId[s.id].seg : "next";""")
+rep("""  var eb = q.eyebrow ? eyebrowHTML(q.eyebrow, q.eyebrowDim) : st.part ? eyebrowHTML(st.part, st.label) : eyebrowHTML(st.label, "");""",
+    """  var eb = q.eyebrow ? eyebrowHTML(q.eyebrow, q.eyebrowDim) : eyebrowHTML(st.label, ""); /* V2-NOCOUNT: section name only */""")
+rep("""<p class="build-n"><span id="build-n">0</span> of 6 parts scored</p>""", """<p class="build-n"><span id="build-n">0</span> parts scored</p>""")
+rep("""  var html = eyebrowHTML("Your scorecard is ready", "Last step") +""",
+    """  var html = eyebrowHTML("Your scorecard is ready", (state.step && state.step.i) ? "Last step" : "Almost done") +""")
+# 11e. email screen copy that is true where it sits
+rep("""    title:function(){ return "Your score is almost ready."; },""", """    title:function(){ return "What’s your best email?"; },""")
+rep("""    sub:"Where should we send it? Your full scorecard, your biggest leak and your first fix go to this email. Free.",""",
+    """    sub:"We’ll save your progress. Your Leak Score is about 2 minutes away. Free.",""")
+rep("""inputmode:"email"}, cta:"Send my score"},""", """inputmode:"email"}, cta:"Continue"},""")
+rep("""eyebrow:"Your score", eyebrowDim:"Almost ready",""", """eyebrow:"Your score", eyebrowDim:"Saved as you go",""")
+# 11f. quiz_start once per session
+rep("""  if (act === "begin") { state.example = null; try { track("quiz_start", {}); } catch(e){} goQ(Q[0].id, 1); }""",
+    """  if (act === "begin") { state.example = null; try { if (!state.started) { state.started = true; track("quiz_start", {}); } } catch(e){} goQ(Q[0].id, 1); }""")
+
+# 12. email screen -> n8n enYxj1N5YZUaZfQC (email-only partial into GHL, tags scorecard-v2 + scorecard-partial; its Lead CAPI node is OFF until Andy's go)
+rep('''  var PARTIAL_URL = "https://businessgrowr.app.n8n.cloud/webhook/bg-scorecard-partial";''',
+'''  var PARTIAL_URL = "https://businessgrowr.app.n8n.cloud/webhook/bg-scorecard-partial";
+  var V2_EMAIL_URL = "https://businessgrowr.app.n8n.cloud/webhook/bg-scorecard-v2-email"; /* V2-EMAIL-CAPTURE */
+  function postEmailCapture(ev){
+    try {
+      ensureSession();
+      var a = state.a || {};
+      var body = { email: ev, lead_id: LEAD_ID || SESSION_ID, session_id: SESSION_ID, page_url: location.href, ua: navigator.userAgent || "",
+        fbclid: (typeof FBCLID !== "undefined" ? FBCLID : ""), fbc: (typeof pickFbc === "function" ? pickFbc(FBCLID) : ""), fbp: (typeof ensureFbp === "function" ? ensureFbp() : ""),
+        attribution: (typeof ATTR !== "undefined" ? ATTR : {}),
+        test: (typeof isTest === "function" ? isTest(a) : false) || /\\?.*bgtest=1|example\\.com/i.test(location.href + " " + ev) };
+      var txt = JSON.stringify(body);
+      if (navigator.sendBeacon) { try { if (navigator.sendBeacon(V2_EMAIL_URL, new Blob([txt], {type: "text/plain;charset=UTF-8"}))) return; } catch(e){} }
+      fetch(V2_EMAIL_URL, {method:"POST", body: txt, headers:{"Content-Type":"text/plain;charset=UTF-8"}, keepalive:true, mode:"cors", credentials:"omit"}).catch(function(){});
+    } catch(e){}
+  }''')
+rep('''      state.a.email = ev; postPartial("answer", {q:"email", v:ev});''',
+    '''      state.a.email = ev; postPartial("answer", {q:"email", v:ev}); postEmailCapture(ev);''')
+
 # 8. mark the build
 s = s.replace('<title>Revenue Leak Scorecard</title>', '<title>Revenue Leak Scorecard</title>\n<!-- SCORECARD V2 2026-11-13: intro, 12 questions, early email, no cash gate, no counter. Built from live element; Jeremy conv a31b5255. -->', 1)
 open('scorecard-v2-element.html', 'w').write(s)
