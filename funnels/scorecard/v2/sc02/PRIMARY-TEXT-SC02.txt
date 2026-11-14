@@ -1,78 +1,68 @@
-=== SC02-V1 ===
-Headline: Find Your Biggest Funnel Leak, Free
-utm_content: SC02-V1
+=== SC02-FUT ===
+Headline: Futures Community Owners: Find Your Leak, Free
+utm_content: SC02-FUT
 Primary text:
-Trading Discord owners: your funnel has six parts, and one of them is leaking.
+Futures trading community owners: your funnel has six parts, and one of them is leaking.
 It's a free scorecard. It scores your trading community out of 100 across six parts: reach, capture, nurture, sales, onboarding and backend. Then it names your biggest leak and the first move to fix it.
 For trading educators with a paid community or a following.
 Free. About 3 minutes. Your score on screen.
 Tap below and answer the first question.
 
-=== SC02-V2 ===
-Headline: Whop Owners: What's Your Biggest Leak?
-utm_content: SC02-V2
+=== SC02-OPT ===
+Headline: Options Community Owners: Find Your Leak, Free
+utm_content: SC02-OPT
 Primary text:
-Whop community owners: your funnel has six parts, and one of them is leaking.
+Options trading community owners: your funnel has six parts, and one of them is leaking.
 It's a free scorecard. It scores your trading community out of 100 across six parts: reach, capture, nurture, sales, onboarding and backend. Then it names your biggest leak and the first move to fix it.
 For trading educators with a paid community or a following.
 Free. About 3 minutes. Your score on screen.
 Tap below and answer the first question.
 
-=== SC02-V3 ===
-Headline: Free Leak Score For Trading Educators
-utm_content: SC02-V3
+=== SC02-IND ===
+Headline: Indicator Sellers: Find Your Leak, Free
+utm_content: SC02-IND
 Primary text:
-Trading educators: your funnel has six parts, and one of them is leaking.
+Indicator and signal sellers: your funnel has six parts, and one of them is leaking.
 It's a free scorecard. It scores your trading community out of 100 across six parts: reach, capture, nurture, sales, onboarding and backend. Then it names your biggest leak and the first move to fix it.
 For trading educators with a paid community or a following.
 Free. About 3 minutes. Your score on screen.
 Tap below and answer the first question.
 
-=== SC02-V4 ===
-Headline: Signal Sellers: Find Your Biggest Leak
-utm_content: SC02-V4
+=== SC02-ICT ===
+Headline: ICT Community Owners: Find Your Leak, Free
+utm_content: SC02-ICT
 Primary text:
-Signal group owners: your funnel has six parts, and one of them is leaking.
+ICT and smart money community owners: your funnel has six parts, and one of them is leaking.
 It's a free scorecard. It scores your trading community out of 100 across six parts: reach, capture, nurture, sales, onboarding and backend. Then it names your biggest leak and the first move to fix it.
 For trading educators with a paid community or a following.
 Free. About 3 minutes. Your score on screen.
 Tap below and answer the first question.
 
-=== SC02-V5 ===
-Headline: Members Cancelling? Find The Leak, Free
-utm_content: SC02-V5
+=== SC02-CRY ===
+Headline: Crypto Community Owners: Find Your Leak, Free
+utm_content: SC02-CRY
 Primary text:
-Trading Discord owners: members cancelling isn't random. It's usually one leaking part.
+Crypto trading community owners: your funnel has six parts, and one of them is leaking.
 It's a free scorecard. It scores your trading community out of 100 across six parts: reach, capture, nurture, sales, onboarding and backend. Then it names your biggest leak and the first move to fix it.
 For trading educators with a paid community or a following.
 Free. About 3 minutes. Your score on screen.
 Tap below and answer the first question.
 
-=== SC02-V6 ===
-Headline: Trials Not Converting? Find The Leak
-utm_content: SC02-V6
+=== SC02-FUTC ===
+Headline: Futures Owners: Members Cancelling? Find The Leak
+utm_content: SC02-FUTC
 Primary text:
-Whop community owners: trials that don't convert is a leak, not a mystery.
+Futures community owners: members cancelling isn't random. It's usually one leaking part.
 It's a free scorecard. It scores your trading community out of 100 across six parts: reach, capture, nurture, sales, onboarding and backend. Then it names your biggest leak and the first move to fix it.
 For trading educators with a paid community or a following.
 Free. About 3 minutes. Your score on screen.
 Tap below and answer the first question.
 
-=== SC02-V7 ===
-Headline: Why Members Leave, Free Score
-utm_content: SC02-V7
+=== SC02-FUTT ===
+Headline: Futures Owners: Trials Not Converting? Find The Leak
+utm_content: SC02-FUTT
 Primary text:
-Trading educators: members leaving usually traces back to one part of your funnel.
-It's a free scorecard. It scores your trading community out of 100 across six parts: reach, capture, nurture, sales, onboarding and backend. Then it names your biggest leak and the first move to fix it.
-For trading educators with a paid community or a following.
-Free. About 3 minutes. Your score on screen.
-Tap below and answer the first question.
-
-=== SC02-V8 ===
-Headline: What's Your Leak Score?
-utm_content: SC02-V8
-Primary text:
-Trading Discord owners: what's your funnel score out of 100?
+Futures community owners: trials that don't convert is a leak, not a mystery.
 It's a free scorecard. It scores your trading community out of 100 across six parts: reach, capture, nurture, sales, onboarding and backend. Then it names your biggest leak and the first move to fix it.
 For trading educators with a paid community or a following.
 Free. About 3 minutes. Your score on screen.

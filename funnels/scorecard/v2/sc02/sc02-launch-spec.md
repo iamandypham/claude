@@ -22,10 +22,13 @@ Built 13 Nov 2026 with Jeremy. Nothing is live. Launch needs Andy's typed go (li
 
 Part of the CPL drop is measurement: the lead now counts at Q3, not at the finish.
 
-## 3. Ads: one ad set, 9 ads
-- Control: SC01-05 N2 plain leak (existing creative). Last line of primary text changed to "Tap below and answer the first question."
-- 8 new N2-style plain cards, 1080x1350, bigger type, no example scorecard (Jeremy: keeps the native look). Files: /mnt/project-files/ads/scorecard-rerun-2026-11-13/statics-sc02/ (no C2PA stamp).
-- utm_content must start with the ad id (SC02-V1 ... SC02-V8) or the page shows the default N2 headline.
+## 3. Ads: one ad set, 8 ads, split by trading niche (Andy 13 Nov; Jeremy go)
+- Why niches: 74 Callix call write-ups (10 Nov study). Buyers vs not-closed by niche, read from the prospect's own description (rough; some people counted twice): futures/prop 14 vs 5, options 8 vs 3, indicator/algo 5 vs 3, ICT 3 vs 1, crypto 2 vs 1, forex 1 vs 4, signals 2 vs 3, stocks 1 vs 1. Directional, not proven: the 72 h per-ad read decides.
+- In: futures, options, indicator + signal sellers (signals folded in), ICT / smart money, crypto. Two pain variants run on futures, the strongest niche. Out of wave 1: forex (points the wrong way), stocks (1 vs 1).
+- Control: SC01-05 N2 plain leak (existing creative, generic "Trading Discord owners"). Change the last line of its primary text to "Tap below and answer the first question."
+- 7 new plain cards, 1080x1350, bigger type, no example scorecard. They're in the zip (no C2PA stamp).
+- The niche is a message filter, not targeting: keep the ad set broad and add no interest targeting (Jeremy).
+- utm_content must start with the ad id (SC02-FUT, SC02-OPT ...), or the page shows N2's headline.
 
 Shared primary text (swap only the first line):
 ```
@@ -38,14 +41,13 @@ Tap below and answer the first question.
 
 | Ad | Card + page headline | First line | Headline |
 |---|---|---|---|
-| SC02-V1 | Trading Discord owners: one of your six funnel parts is leaking. Find it in about 3 minutes. Free. | Trading Discord owners: your funnel has six parts, and one of them is leaking. | Find Your Biggest Funnel Leak, Free |
-| SC02-V2 | Whop community owners: find your biggest funnel leak in about 3 minutes. Free. | Whop community owners: your funnel has six parts, and one of them is leaking. | Whop Owners: What's Your Biggest Leak? |
-| SC02-V3 | Trading educators: find your biggest funnel leak in about 3 minutes. Free. | Trading educators: your funnel has six parts, and one of them is leaking. | Free Leak Score For Trading Educators |
-| SC02-V4 | Signal group owners: find your biggest funnel leak in about 3 minutes. Free. | Signal group owners: your funnel has six parts, and one of them is leaking. | Signal Sellers: Find Your Biggest Leak |
-| SC02-V5 | Trading Discord owners: if members keep cancelling, that's a leak. Find your biggest one in about 3 minutes. Free. | Trading Discord owners: members cancelling isn't random. It's usually one leaking part. | Members Cancelling? Find The Leak, Free |
-| SC02-V6 | Whop community owners: if trials don't convert, that's a leak. Find your biggest one in about 3 minutes. Free. | Whop community owners: trials that don't convert is a leak, not a mystery. | Trials Not Converting? Find The Leak |
-| SC02-V7 | Trading educators: members leaving might be your biggest leak. Find out in about 3 minutes. Free. | Trading educators: members leaving usually traces back to one part of your funnel. | Why Members Leave, Free Score |
-| SC02-V8 | Trading Discord owners: score your funnel out of 100. See your biggest leak in about 3 minutes. Free. | Trading Discord owners: what's your funnel score out of 100? | What's Your Leak Score? |
+| SC02-FUT | Futures trading community owners: find your biggest funnel leak in about 3 minutes. Free. | Futures trading community owners: your funnel has six parts, and one of them is leaking. | Futures Community Owners: Find Your Leak, Free |
+| SC02-OPT | Options trading community owners: find your biggest funnel leak in about 3 minutes. Free. | Options trading community owners: your funnel has six parts, and one of them is leaking. | Options Community Owners: Find Your Leak, Free |
+| SC02-IND | Indicator and signal sellers: find your biggest funnel leak in about 3 minutes. Free. | Indicator and signal sellers: your funnel has six parts, and one of them is leaking. | Indicator Sellers: Find Your Leak, Free |
+| SC02-ICT | ICT / smart money trading community owners: find your biggest funnel leak in about 3 minutes. Free. | ICT and smart money community owners: your funnel has six parts, and one of them is leaking. | ICT Community Owners: Find Your Leak, Free |
+| SC02-CRY | Crypto trading community owners: find your biggest funnel leak in about 3 minutes. Free. | Crypto trading community owners: your funnel has six parts, and one of them is leaking. | Crypto Community Owners: Find Your Leak, Free |
+| SC02-FUTC | Futures trading community owners: if members keep cancelling, that's a leak. Find your biggest one in about 3 minutes. Free. | Futures community owners: members cancelling isn't random. It's usually one leaking part. | Futures Owners: Members Cancelling? Find The Leak |
+| SC02-FUTT | Futures trading community owners: if trials don't convert, that's a leak. Find your biggest one in about 3 minutes. Free. | Futures community owners: trials that don't convert is a leak, not a mystery. | Futures Owners: Trials Not Converting? Find The Leak |
 
 ## 4. Ad set
 - SC02, broad US, $500/day, Lead optimization (event fires at the Q3 email + phone screen; Jeremy: SubmitApplication is 1 to 2 a week, too thin to learn on). CPBC stays the referee.
@@ -67,7 +69,7 @@ Tap below and answer the first question.
 4. Setters: Q3 partials arrive tagged scorecard-v2 + scorecard-partial with a phone; first dial within 60 s.
 
 ## 7. Wave 2 (Jeremy)
-These 8 are one message in 8 skins. Queue the next set from themes nothing speaks to yet: burned before (trust), "tell me what to do", second income taking pressure off trading, "you're good at trading, who runs the rest".
+Forex can come back if futures and options prove the niche swap works. Also queue the next set from themes nothing speaks to yet: burned before (trust), "tell me what to do", second income taking pressure off trading, "you're good at trading, who runs the rest".
 
 ## Go line for Andy
-"Launch SC02: host scorecard v2, publish its two n8n flows with the Lead event on, and run the 9 ads in one ad set at $500/day for 7 days."
+"Launch SC02: host scorecard v2, publish its two n8n flows with the Lead event on, and run the 8 ads in one ad set at $500/day for 7 days."
