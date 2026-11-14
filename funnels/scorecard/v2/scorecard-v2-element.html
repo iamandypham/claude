@@ -1123,6 +1123,14 @@ var CLICK_KEYS = ["utm_source","utm_medium","utm_campaign","utm_content","utm_te
 var ATTR = {};
 /* V2-Q1MATCH: each ad lands on its own hook, word for word (Jeremy). Default = N2, the ad that drove 64 of 110 sessions. */
 var HOOKS = [
+  {m:/SC02-V1\b/i, h:"Trading Discord owners: one of your six funnel parts is leaking. Find it in about 3 minutes. Free.", sub:"Free scorecard for trading educators."},
+  {m:/SC02-V2\b/i, h:"Whop community owners: find your biggest funnel leak in about 3 minutes. Free.", sub:"Free scorecard for trading educators."},
+  {m:/SC02-V3\b/i, h:"Trading educators: find your biggest funnel leak in about 3 minutes. Free.", sub:"Free scorecard for trading educators."},
+  {m:/SC02-V4\b/i, h:"Signal group owners: find your biggest funnel leak in about 3 minutes. Free.", sub:"Free scorecard for trading educators."},
+  {m:/SC02-V5\b/i, h:"Trading Discord owners: if members keep cancelling, that’s a leak. Find your biggest one in about 3 minutes. Free.", sub:"Free scorecard for trading educators."},
+  {m:/SC02-V6\b/i, h:"Whop community owners: if trials don’t convert, that’s a leak. Find your biggest one in about 3 minutes. Free.", sub:"Free scorecard for trading educators."},
+  {m:/SC02-V7\b/i, h:"Trading educators: members leaving might be your biggest leak. Find out in about 3 minutes. Free.", sub:"Free scorecard for trading educators."},
+  {m:/SC02-V8\b/i, h:"Trading Discord owners: score your funnel out of 100. See your biggest leak in about 3 minutes. Free.", sub:"Free scorecard for trading educators."},
   {m:/N1|journal/i, h:"You journal every trade. Who’s journaling your business?", sub:"Find your biggest funnel leak in about 3 minutes. Free."}
 ];
 function applyHook(){ try { var c = ATTR.utm_content || ""; for (var i = 0; i < HOOKS.length; i++) if (HOOKS[i].m.test(c)) { $("#bgx-hook").textContent = HOOKS[i].h; $("#bgx-hook-sub").textContent = HOOKS[i].sub; return; } } catch(e){} }
