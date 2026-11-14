@@ -1,9 +1,58 @@
 [
- {"id":"FUT","bg":"#04261A","card":"Futures trading community owners: find your biggest funnel leak in about 3 minutes. Free.","first":"Futures trading community owners: your funnel has six parts, and one of them is leaking.","headline":"Futures Community Owners: Find Your Leak, Free"},
- {"id":"OPT","bg":"#0E182C","card":"Options trading community owners: find your biggest funnel leak in about 3 minutes. Free.","first":"Options trading community owners: your funnel has six parts, and one of them is leaking.","headline":"Options Community Owners: Find Your Leak, Free"},
- {"id":"IND","bg":"#065F46","card":"Indicator and signal sellers: find your biggest funnel leak in about 3 minutes. Free.","first":"Indicator and signal sellers: your funnel has six parts, and one of them is leaking.","headline":"Indicator Sellers: Find Your Leak, Free"},
- {"id":"ICT","bg":"#04261A","card":"ICT / smart money trading community owners: find your biggest funnel leak in about 3 minutes. Free.","first":"ICT and smart money community owners: your funnel has six parts, and one of them is leaking.","headline":"ICT Community Owners: Find Your Leak, Free"},
- {"id":"CRY","bg":"#0E182C","card":"Crypto trading community owners: find your biggest funnel leak in about 3 minutes. Free.","first":"Crypto trading community owners: your funnel has six parts, and one of them is leaking.","headline":"Crypto Community Owners: Find Your Leak, Free"},
- {"id":"FUTC","bg":"#065F46","card":"Futures trading community owners: if members keep cancelling, that's a leak. Find your biggest one in about 3 minutes. Free.","first":"Futures community owners: members cancelling isn't random. It's usually one leaking part.","headline":"Futures Owners: Members Cancelling? Find The Leak"},
- {"id":"FUTT","bg":"#04261A","card":"Futures trading community owners: if trials don't convert, that's a leak. Find your biggest one in about 3 minutes. Free.","first":"Futures community owners: trials that don't convert is a leak, not a mystery.","headline":"Futures Owners: Trials Not Converting? Find The Leak"}
+ {
+  "id": "FUT",
+  "bg": "#04261A",
+  "card": "Futures trading community owners: find your biggest funnel leak in about 3 minutes. Free.",
+  "first": "Futures trading community owners: your funnel has six parts, and one of them is leaking.",
+  "headline": "Futures Community Owners: Find Your Leak, Free",
+  "adname": "N2 | niche-futures-leak | none | SC02-FUT-US-v1-1114"
+ },
+ {
+  "id": "OPT",
+  "bg": "#0E182C",
+  "card": "Options trading community owners: find your biggest funnel leak in about 3 minutes. Free.",
+  "first": "Options trading community owners: your funnel has six parts, and one of them is leaking.",
+  "headline": "Options Community Owners: Find Your Leak, Free",
+  "adname": "N2 | niche-options-leak | none | SC02-OPT-US-v1-1114"
+ },
+ {
+  "id": "IND",
+  "bg": "#065F46",
+  "card": "Indicator and signal sellers: find your biggest funnel leak in about 3 minutes. Free.",
+  "first": "Indicator and signal sellers: your funnel has six parts, and one of them is leaking.",
+  "headline": "Indicator Sellers: Find Your Leak, Free",
+  "adname": "N2 | niche-indicator-leak | none | SC02-IND-US-v1-1114"
+ },
+ {
+  "id": "ICT",
+  "bg": "#04261A",
+  "card": "ICT / smart money trading community owners: find your biggest funnel leak in about 3 minutes. Free.",
+  "first": "ICT and smart money community owners: your funnel has six parts, and one of them is leaking.",
+  "headline": "ICT Community Owners: Find Your Leak, Free",
+  "adname": "N2 | niche-ict-leak | none | SC02-ICT-US-v1-1114"
+ },
+ {
+  "id": "CRY",
+  "bg": "#0E182C",
+  "card": "Crypto trading community owners: find your biggest funnel leak in about 3 minutes. Free.",
+  "first": "Crypto trading community owners: your funnel has six parts, and one of them is leaking.",
+  "headline": "Crypto Community Owners: Find Your Leak, Free",
+  "adname": "N2 | niche-crypto-leak | none | SC02-CRY-US-v1-1114"
+ },
+ {
+  "id": "FUTC",
+  "bg": "#065F46",
+  "card": "Futures trading community owners: if members keep cancelling, that's a leak. Find your biggest one in about 3 minutes. Free.",
+  "first": "Futures community owners: members cancelling isn't random. It's usually one leaking part.",
+  "headline": "Futures Owners: Members Cancelling? Find The Leak",
+  "adname": "N2 | niche-futures-churn | none | SC02-FUTC-US-v1-1114"
+ },
+ {
+  "id": "FUTT",
+  "bg": "#04261A",
+  "card": "Futures trading community owners: if trials don't convert, that's a leak. Find your biggest one in about 3 minutes. Free.",
+  "first": "Futures community owners: trials that don't convert is a leak, not a mystery.",
+  "headline": "Futures Owners: Trials Not Converting? Find The Leak",
+  "adname": "N2 | niche-futures-trials | none | SC02-FUTT-US-v1-1114"
+ }
 ]

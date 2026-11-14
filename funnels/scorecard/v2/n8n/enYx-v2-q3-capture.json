@@ -1,0 +1,465 @@
+{
+ "id": "enYxj1N5YZUaZfQC",
+ "name": "BG — Scorecard v2 email capture → GHL",
+ "active": false,
+ "isArchived": false,
+ "versionId": "8f7e85b5-a1a4-4e21-a412-060a64400124",
+ "activeVersionId": null,
+ "triggerCount": 0,
+ "nodeCount": 11,
+ "createdAt": "2026-11-13T23:42:50.903Z",
+ "updatedAt": "2026-11-14T00:17:49.559Z",
+ "settings": {
+  "executionOrder": "v1",
+  "availableInMCP": true
+ },
+ "tags": [],
+ "parentFolderId": null,
+ "description": "Scorecard v2 Q3 (business email + mobile) -> GHL partial with phone, tags scorecard-v2 + scorecard-partial; test leads no phone + dialer-off. Lead CAPI node OFF until Andy's go (event_id sc2_lead_<lead_id>). Unpublished.",
+ "connections": {
+  "Email Webhook": {
+   "main": [
+    [
+     {
+      "node": "Map Email",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Map Email": {
+   "main": [
+    [
+     {
+      "node": "Valid email?",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Valid email?": {
+   "main": [
+    [
+     {
+      "node": "GHL Search",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "GHL Search": {
+   "main": [
+    [
+     {
+      "node": "Existing?",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Existing?": {
+   "main": [
+    [
+     {
+      "node": "Already in GHL?",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Already in GHL?": {
+   "main": [
+    [
+     {
+      "node": "GHL Add Tags",
+      "type": "main",
+      "index": 0
+     }
+    ],
+    [
+     {
+      "node": "GHL Upsert",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "GHL Upsert": {
+   "main": [
+    [
+     {
+      "node": "New Id",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "New Id": {
+   "main": [
+    [
+     {
+      "node": "GHL Add Tags",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "GHL Add Tags": {
+   "main": [
+    [
+     {
+      "node": "Real lead? (not a test)",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Real lead? (not a test)": {
+   "main": [
+    [
+     {
+      "node": "Lead CAPI on email (OFF until Andy's go)",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  }
+ },
+ "nodes": [
+  {
+   "id": "fbd615f5-a84b-4564-b158-5247a75db9e9",
+   "name": "Email Webhook",
+   "type": "n8n-nodes-base.webhook",
+   "typeVersion": 2,
+   "position": [
+    224,
+    0
+   ],
+   "parameters": {
+    "httpMethod": "POST",
+    "options": {
+     "allowedOrigins": "https://businessgrowr.com,https://www.businessgrowr.com"
+    },
+    "path": "bg-scorecard-v2-email",
+    "responseMode": "onReceived"
+   },
+   "webhookId": "1dae8b39-736a-4501-8e90-784873bb7aba"
+  },
+  {
+   "id": "ceecd720-b42a-45c6-bf41-a8927fc2d448",
+   "name": "Map Email",
+   "type": "n8n-nodes-base.code",
+   "typeVersion": 2,
+   "position": [
+    448,
+    0
+   ],
+   "parameters": {
+    "jsCode": "// Scorecard v2 Q3 screen (business email + mobile) -> GHL partial (built 13 Nov 2026; phone added 13 Nov ~7:30 PM ET, Jeremy pick (b)). Test leads keep no phone + dialer-off.\nconst j = $input.first().json || {};\nlet b = j.body;\nif (typeof b === 'string') { try { b = JSON.parse(b); } catch (e) { b = {}; } }\nif (!b || typeof b !== 'object') b = {};\nif (!b.email && Object.keys(b).length === 1) { try { b = JSON.parse(Object.keys(b)[0]); } catch (e) {} }\nconst email = String(b.email || '').trim().toLowerCase();\nconst ok = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$/.test(email);\nconst test = b.test === true || /@example\\.com$/i.test(email) || /^zz/i.test(email) || /[?&]bgtest=1/.test(String(b.page_url || ''));\nconst digits = String(b.phone || '').replace(/\\D/g, '');\nconst phone = digits.length === 10 ? '+1' + digits : (digits.length >= 7 && digits.length <= 15 ? '+' + digits : '');\nconst hdr = j.headers || {};\nconst ip = String(hdr['x-forwarded-for'] || hdr['x-real-ip'] || '').split(',')[0].trim();\nconst at = b.attribution || {};\nconst CF = { fbclid: 'JWTR0vAJRxMvAG6OlBif', fbp: 'RzbVjmM23gs65mEuKI19', fbc: 'c4AMd3QYRikJyNblx0eu', ua: 'pcY63eAnyn4Dv8UetO3O', ip: '9qj5KAwFui5fJpkh9YB5', ad_id: 'yyh23HPJJDb8YloY6gQB', adset_id: 'VqoSmEtBb0zHWBWqBpuN', campaign_id: 'kPnkh0heKr2HJrce6Dno', utm_source: 'smaUfk1Iu079oHCFMPaG', utm_campaign: 'G3SdU90aQCbDlO98C9IP', utm_content: 'PMfPo0K4d3v3DLf1Ncrn', callix_sid: 'rYIQSt8mCpDfUm7nAmz3' };\nconst customFields = [];\nconst put = (id, v) => { v = String(v == null ? '' : v).trim(); if (v && !/\\{\\{|%7B%7B/i.test(v)) customFields.push({ id, field_value: v }); };\nput(CF.fbclid, b.fbclid); put(CF.fbp, b.fbp); put(CF.fbc, b.fbc); put(CF.ua, b.ua); put(CF.ip, ip);\nfor (const k of ['ad_id', 'adset_id', 'campaign_id', 'utm_source', 'utm_campaign', 'utm_content', 'callix_sid']) put(CF[k], at[k]);\nconst tags = ['scorecard-v2', 'scorecard-partial'];\nif (test) tags.push('scorecard-test', 'dialer-off');\nreturn [{ json: { ok, test, email, lead_id: String(b.lead_id || ''), page_url: String(b.page_url || 'https://businessgrowr.com/scorecard').split('?')[0], fbp: String(b.fbp || ''), fbc: String(b.fbc || ''), fbclid: String(b.fbclid || ''), ip, ua: String(b.ua || ''), tags,\n  phone: test ? '' : phone,\n  upsertBody: Object.assign({ locationId: 'F8y82aHd3V0Y4Y2ccET6', email, source: 'Scorecard v2 partial', customFields }, (!test && phone) ? { phone } : {}) } }];"
+   }
+  },
+  {
+   "id": "080b2564-2fa3-4ce8-946e-df4e0941e76b",
+   "name": "Valid email?",
+   "type": "n8n-nodes-base.if",
+   "typeVersion": 2.2,
+   "position": [
+    672,
+    0
+   ],
+   "parameters": {
+    "conditions": {
+     "combinator": "and",
+     "conditions": [
+      {
+       "leftValue": "={{ $json.ok }}",
+       "operator": {
+        "operation": "true",
+        "singleValue": true,
+        "type": "boolean"
+       },
+       "rightValue": ""
+      }
+     ],
+     "options": {
+      "caseSensitive": true,
+      "leftValue": "",
+      "typeValidation": "loose"
+     }
+    }
+   }
+  },
+  {
+   "id": "3c9ef52a-c7e3-4c90-90c2-7b7d086d0850",
+   "name": "GHL Search",
+   "type": "n8n-nodes-base.httpRequest",
+   "typeVersion": 4.2,
+   "position": [
+    896,
+    0
+   ],
+   "parameters": {
+    "authentication": "genericCredentialType",
+    "genericAuthType": "httpBearerAuth",
+    "headerParameters": {
+     "parameters": [
+      {
+       "name": "Version",
+       "value": "2021-07-28"
+      },
+      {
+       "name": "Content-Type",
+       "value": "application/json"
+      },
+      {
+       "name": "Accept",
+       "value": "application/json"
+      }
+     ]
+    },
+    "method": "GET",
+    "options": {},
+    "sendHeaders": true,
+    "url": "={{ 'https://services.leadconnectorhq.com/contacts/?locationId=F8y82aHd3V0Y4Y2ccET6&limit=5&query=' + encodeURIComponent($json.email) }}"
+   },
+   "onError": "continueRegularOutput",
+   "credentials": {
+    "httpBearerAuth": {
+     "id": "I9syQTyegPSmKR0a",
+     "name": "GoHighLevel BG"
+    }
+   }
+  },
+  {
+   "id": "626df1a6-be7f-4a0d-9c03-187a57015051",
+   "name": "Existing?",
+   "type": "n8n-nodes-base.code",
+   "typeVersion": 2,
+   "position": [
+    1120,
+    0
+   ],
+   "parameters": {
+    "jsCode": "const m = $('Map Email').first().json;\nconst list = Array.isArray(($input.first().json || {}).contacts) ? $input.first().json.contacts : [];\nconst c = list.find((x) => String(x.email || '').toLowerCase() === m.email);\n// Existing contacts only get tags; their fields and source are never overwritten.\nreturn [{ json: { contactId: c ? c.id : '', existing: !!c } }];\n"
+   }
+  },
+  {
+   "id": "47e136ca-f791-46a4-bcdf-a5c691f1adcb",
+   "name": "Already in GHL?",
+   "type": "n8n-nodes-base.if",
+   "typeVersion": 2.2,
+   "position": [
+    1344,
+    0
+   ],
+   "parameters": {
+    "conditions": {
+     "combinator": "and",
+     "conditions": [
+      {
+       "leftValue": "={{ $json.existing }}",
+       "operator": {
+        "operation": "true",
+        "singleValue": true,
+        "type": "boolean"
+       },
+       "rightValue": ""
+      }
+     ],
+     "options": {
+      "caseSensitive": true,
+      "leftValue": "",
+      "typeValidation": "loose"
+     }
+    }
+   }
+  },
+  {
+   "id": "33d5be3e-b4c3-455b-8561-b52d8c6a7b51",
+   "name": "GHL Upsert",
+   "type": "n8n-nodes-base.httpRequest",
+   "typeVersion": 4.2,
+   "position": [
+    1568,
+    96
+   ],
+   "parameters": {
+    "authentication": "genericCredentialType",
+    "genericAuthType": "httpBearerAuth",
+    "headerParameters": {
+     "parameters": [
+      {
+       "name": "Version",
+       "value": "2021-07-28"
+      },
+      {
+       "name": "Content-Type",
+       "value": "application/json"
+      },
+      {
+       "name": "Accept",
+       "value": "application/json"
+      }
+     ]
+    },
+    "jsonBody": "={{ JSON.stringify($('Map Email').first().json.upsertBody) }}",
+    "method": "POST",
+    "options": {},
+    "sendBody": true,
+    "sendHeaders": true,
+    "specifyBody": "json",
+    "url": "https://services.leadconnectorhq.com/contacts/upsert"
+   },
+   "credentials": {
+    "httpBearerAuth": {
+     "id": "I9syQTyegPSmKR0a",
+     "name": "GoHighLevel BG"
+    }
+   }
+  },
+  {
+   "id": "770bc60c-c0f0-4182-9984-28a7b2e60c29",
+   "name": "New Id",
+   "type": "n8n-nodes-base.code",
+   "typeVersion": 2,
+   "position": [
+    1792,
+    96
+   ],
+   "parameters": {
+    "jsCode": "const c = ($input.first().json || {}).contact || {};\nif (!c.id) throw new Error('GHL upsert returned no contact id');\nreturn [{ json: { contactId: c.id, existing: false } }];\n"
+   }
+  },
+  {
+   "id": "177a8c74-10a3-464c-8c8a-95bf741a9280",
+   "name": "GHL Add Tags",
+   "type": "n8n-nodes-base.httpRequest",
+   "typeVersion": 4.2,
+   "position": [
+    2016,
+    0
+   ],
+   "parameters": {
+    "authentication": "genericCredentialType",
+    "genericAuthType": "httpBearerAuth",
+    "headerParameters": {
+     "parameters": [
+      {
+       "name": "Version",
+       "value": "2021-07-28"
+      },
+      {
+       "name": "Content-Type",
+       "value": "application/json"
+      },
+      {
+       "name": "Accept",
+       "value": "application/json"
+      }
+     ]
+    },
+    "jsonBody": "={{ JSON.stringify({ tags: $('Map Email').first().json.tags }) }}",
+    "method": "POST",
+    "options": {},
+    "sendBody": true,
+    "sendHeaders": true,
+    "specifyBody": "json",
+    "url": "={{ 'https://services.leadconnectorhq.com/contacts/' + $json.contactId + '/tags' }}"
+   },
+   "credentials": {
+    "httpBearerAuth": {
+     "id": "I9syQTyegPSmKR0a",
+     "name": "GoHighLevel BG"
+    }
+   }
+  },
+  {
+   "id": "d5e3a819-632b-4503-94e2-368a5893dfea",
+   "name": "Real lead? (not a test)",
+   "type": "n8n-nodes-base.if",
+   "typeVersion": 2.2,
+   "position": [
+    2240,
+    0
+   ],
+   "parameters": {
+    "conditions": {
+     "combinator": "and",
+     "conditions": [
+      {
+       "leftValue": "={{ $('Map Email').first().json.test }}",
+       "operator": {
+        "operation": "false",
+        "singleValue": true,
+        "type": "boolean"
+       },
+       "rightValue": ""
+      }
+     ],
+     "options": {
+      "caseSensitive": true,
+      "leftValue": "",
+      "typeValidation": "loose"
+     }
+    }
+   }
+  },
+  {
+   "id": "737697ba-4c86-4326-89c7-1c11ae412d67",
+   "name": "Lead CAPI on email (OFF until Andy's go)",
+   "type": "n8n-nodes-base.httpRequest",
+   "typeVersion": 4.2,
+   "position": [
+    2464,
+    0
+   ],
+   "parameters": {
+    "headerParameters": {
+     "parameters": [
+      {
+       "name": "Content-Type",
+       "value": "application/json"
+      },
+      {
+       "name": "User-Agent",
+       "value": "n8n"
+      }
+     ]
+    },
+    "jsonBody": "={{ JSON.stringify({ email: $('Map Email').first().json.email, phone: $('Map Email').first().json.phone || '', contact_id: $('Existing?').first().json.contactId || $('New Id').first().json.contactId, firstName: '', lastName: '', name: '', url: $('Map Email').first().json.page_url, event_id: 'sc2_lead_' + ($('Map Email').first().json.lead_id || $('Existing?').first().json.contactId || $('New Id').first().json.contactId), fbp: $('Map Email').first().json.fbp, fbc: $('Map Email').first().json.fbc, first_fbclid: $('Map Email').first().json.fbclid, ip: $('Map Email').first().json.ip, ua: $('Map Email').first().json.ua, contact: {} }) }}",
+    "method": "POST",
+    "options": {
+     "response": {
+      "response": {
+       "fullResponse": true,
+       "neverError": true
+      }
+     },
+     "timeout": 10000
+    },
+    "sendBody": true,
+    "sendHeaders": true,
+    "specifyBody": "json",
+    "url": "https://businessgrowr.app.n8n.cloud/webhook/bg-lead-capi"
+   },
+   "disabled": true,
+   "onError": "continueRegularOutput"
+  }
+ ],
+ "nodeGroups": [],
+ "activeVersion": null,
+ "meta": {
+  "aiBuilderAssisted": true,
+  "builderVariant": "mcp"
+ }
+}

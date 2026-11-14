@@ -1,6 +1,12 @@
-=== SC02-FUT ===
+=== N2 | discord-leak | none | SC02-N2-US-v1-1114 (control) ===
+Image: existing SC01-05 N2 plain leak creative
+Keep its primary text and headline; change the last line to: Tap below and answer the first question.
+URL parameters: utm_source=facebook&utm_campaign=SC02&utm_content={{ad.name}}
+
+=== N2 | niche-futures-leak | none | SC02-FUT-US-v1-1114 ===
+Image: SC02-FUT.png
 Headline: Futures Community Owners: Find Your Leak, Free
-utm_content: SC02-FUT
+URL parameters: utm_source=facebook&utm_campaign=SC02&utm_content={{ad.name}}
 Primary text:
 Futures trading community owners: your funnel has six parts, and one of them is leaking.
 It's a free scorecard. It scores your trading community out of 100 across six parts: reach, capture, nurture, sales, onboarding and backend. Then it names your biggest leak and the first move to fix it.
@@ -8,9 +14,10 @@ For trading educators with a paid community or a following.
 Free. About 3 minutes. Your score on screen.
 Tap below and answer the first question.
 
-=== SC02-OPT ===
+=== N2 | niche-options-leak | none | SC02-OPT-US-v1-1114 ===
+Image: SC02-OPT.png
 Headline: Options Community Owners: Find Your Leak, Free
-utm_content: SC02-OPT
+URL parameters: utm_source=facebook&utm_campaign=SC02&utm_content={{ad.name}}
 Primary text:
 Options trading community owners: your funnel has six parts, and one of them is leaking.
 It's a free scorecard. It scores your trading community out of 100 across six parts: reach, capture, nurture, sales, onboarding and backend. Then it names your biggest leak and the first move to fix it.
@@ -18,9 +25,10 @@ For trading educators with a paid community or a following.
 Free. About 3 minutes. Your score on screen.
 Tap below and answer the first question.
 
-=== SC02-IND ===
+=== N2 | niche-indicator-leak | none | SC02-IND-US-v1-1114 ===
+Image: SC02-IND.png
 Headline: Indicator Sellers: Find Your Leak, Free
-utm_content: SC02-IND
+URL parameters: utm_source=facebook&utm_campaign=SC02&utm_content={{ad.name}}
 Primary text:
 Indicator and signal sellers: your funnel has six parts, and one of them is leaking.
 It's a free scorecard. It scores your trading community out of 100 across six parts: reach, capture, nurture, sales, onboarding and backend. Then it names your biggest leak and the first move to fix it.
@@ -28,9 +36,10 @@ For trading educators with a paid community or a following.
 Free. About 3 minutes. Your score on screen.
 Tap below and answer the first question.
 
-=== SC02-ICT ===
+=== N2 | niche-ict-leak | none | SC02-ICT-US-v1-1114 ===
+Image: SC02-ICT.png
 Headline: ICT Community Owners: Find Your Leak, Free
-utm_content: SC02-ICT
+URL parameters: utm_source=facebook&utm_campaign=SC02&utm_content={{ad.name}}
 Primary text:
 ICT and smart money community owners: your funnel has six parts, and one of them is leaking.
 It's a free scorecard. It scores your trading community out of 100 across six parts: reach, capture, nurture, sales, onboarding and backend. Then it names your biggest leak and the first move to fix it.
@@ -38,9 +47,10 @@ For trading educators with a paid community or a following.
 Free. About 3 minutes. Your score on screen.
 Tap below and answer the first question.
 
-=== SC02-CRY ===
+=== N2 | niche-crypto-leak | none | SC02-CRY-US-v1-1114 ===
+Image: SC02-CRY.png
 Headline: Crypto Community Owners: Find Your Leak, Free
-utm_content: SC02-CRY
+URL parameters: utm_source=facebook&utm_campaign=SC02&utm_content={{ad.name}}
 Primary text:
 Crypto trading community owners: your funnel has six parts, and one of them is leaking.
 It's a free scorecard. It scores your trading community out of 100 across six parts: reach, capture, nurture, sales, onboarding and backend. Then it names your biggest leak and the first move to fix it.
@@ -48,9 +58,10 @@ For trading educators with a paid community or a following.
 Free. About 3 minutes. Your score on screen.
 Tap below and answer the first question.
 
-=== SC02-FUTC ===
+=== N2 | niche-futures-churn | none | SC02-FUTC-US-v1-1114 ===
+Image: SC02-FUTC.png
 Headline: Futures Owners: Members Cancelling? Find The Leak
-utm_content: SC02-FUTC
+URL parameters: utm_source=facebook&utm_campaign=SC02&utm_content={{ad.name}}
 Primary text:
 Futures community owners: members cancelling isn't random. It's usually one leaking part.
 It's a free scorecard. It scores your trading community out of 100 across six parts: reach, capture, nurture, sales, onboarding and backend. Then it names your biggest leak and the first move to fix it.
@@ -58,16 +69,13 @@ For trading educators with a paid community or a following.
 Free. About 3 minutes. Your score on screen.
 Tap below and answer the first question.
 
-=== SC02-FUTT ===
+=== N2 | niche-futures-trials | none | SC02-FUTT-US-v1-1114 ===
+Image: SC02-FUTT.png
 Headline: Futures Owners: Trials Not Converting? Find The Leak
-utm_content: SC02-FUTT
+URL parameters: utm_source=facebook&utm_campaign=SC02&utm_content={{ad.name}}
 Primary text:
 Futures community owners: trials that don't convert is a leak, not a mystery.
 It's a free scorecard. It scores your trading community out of 100 across six parts: reach, capture, nurture, sales, onboarding and backend. Then it names your biggest leak and the first move to fix it.
 For trading educators with a paid community or a following.
 Free. About 3 minutes. Your score on screen.
 Tap below and answer the first question.
-
-=== SC01-05 N2 (control) ===
-Keep its primary text; change the last line to: Tap below and answer the first question.
-utm_content: SC01-05 N2 plain leak
