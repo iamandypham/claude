@@ -19,7 +19,7 @@ const [,, file, out, liqIdx] = process.argv;
   const vis = async () => (await p.evaluate(() => [...document.querySelectorAll('.view')].filter(v => !v.hidden).map(v => v.dataset.view).join(',')));
   const log = [];
   log.push('view on load: ' + await vis());
-  await p.click('[data-action=begin]'); await p.waitForTimeout(500);
+  if ((await vis()) !== 'quiz') { await p.click('[data-action=begin]'); await p.waitForTimeout(500); }
   const choose = (t) => /paid trading community/.test('') ? 0 : 0;
   const want = (t) => {
     if (/describes you/i.test(t)) return 'paid trading community';

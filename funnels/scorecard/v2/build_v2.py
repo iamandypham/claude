@@ -26,7 +26,7 @@ i = s.find('{id:"audience"'); assert i > 0
 email_q = ('{id:"email", seg:"you", type:"text", eyebrow:"Your score", eyebrowDim:"Almost ready",\n'
   '    title:function(){ return "Your score is almost ready."; },\n'
   '    sub:"Where should we send it? Your full scorecard, your biggest leak and your first fix go to this email. Free.",\n'
-  '    field:{id:"f-email", label:"Email", type:"email", autocomplete:"email", placeholder:"you@example.com", inputmode:"email"}, cta:"Send my score"},\n  ')
+  '    field:{id:"f-email", label:"Business email", type:"email", autocomplete:"email", placeholder:"you@yourbusiness.com", inputmode:"email"}, cta:"Send my score"},\n  ')
 s = s[:i] + email_q + s[i:]
 
 # 3. text wiring handles email as well as name
@@ -59,20 +59,11 @@ rep('''  return ((revenue || following || trader) && liquid) ? "qualified" : "nu
 rep('''function calAsk(a){ return (a.tiedown === "yes" || a.tiedown === "maybe") && !!a.liquid && a.liquid !== "lt5" && a.who !== "prop" && a.who !== "vendor"; }''',
     '''function calAsk(a){ return (a.tiedown === "yes" || a.tiedown === "maybe") && a.who !== "prop" && a.who !== "vendor"; } /* V2-NOGATE */''')
 
-# 7. intro screen first (Jeremy spec), quiz starts on the CTA
-rep('''function showStart(){ if (state.view === "quiz" && state.step && state.step.kind === "q" && state.step.id === Q[0].id) return; goQ(Q[0].id, -1); }''',
-    '''function showStart(){ state.step = null; show("start"); } /* V2-INTRO 2026-11-13 (Jeremy spec): intro sells the score before question 1 */''')
-rep('''try { state.example = null; try { track("quiz_start", {}); } catch(e){} goQ(Q[0].id, 1); } catch(e){ try { show("start"); } catch(e2){} }''',
-    '''try { state.example = null; showStart(); } catch(e){ try { show("start"); } catch(e2){} }''')
-rep('''<h1 class="h-hero">Where is your trading business <em>leaking money?</em></h1>''', '''<h1 class="h-hero">Find where your trading business is <em>leaking money.</em></h1>''')
-rep('''<p class="lede">Score the six parts of your funnel across traffic, conversion and monetisation. See your biggest leak and the first move to fix it.</p>''',
-    '''<p class="lede">Answer a few quick questions about your trading community. You get your Leak Score out of 100, the one part to fix first, and your move this week.</p>''')
-rep('''data-action="begin">Find my biggest leak''', '''data-action="begin">Get my Leak Score''')
-rep('''<ul class="meta-row"><li>About 3 minutes</li><li>Free</li><li>Your score shows the moment you finish</li></ul>''',
-    '''<ul class="meta-row"><li>Free</li><li>About 3 minutes</li><li>Your score on screen</li></ul>''')
-rep('''<p class="proof-line">From the team that’s helped trading education businesses do <strong>$20M+</strong> in revenue.</p>''',
-    '''<p class="proof-line">We’ve helped trading education businesses do <strong>$20M+</strong> in revenue.</p>''')
-
+# 7. NO start screen (Andy 13 Nov: "this is the screen we were running before and nobody was clicking"; Jeremy agrees). Open on Q1; the hero banner above Q1 carries the promise.
+rep('''<p class="bgx-b-get">You get your Leak Score out of 100, the part of your funnel to fix first, and your move this week.</p>''',
+    '''<p class="bgx-b-get">Free scorecard for trading educators. About 3 minutes.</p>''')
+rep('''<ul class="bgx-b-list"><li>About 5 minutes. Your score shows the moment you finish</li><li>Free. Just tap your answers</li></ul>''',
+    '''<ul class="bgx-b-list"><li>Your Leak Score out of 100 and the part to fix first</li><li>Free. Just tap your answers</li></ul>''')
 
 # 9. mobile banner: section name only, no counts or percentages (Jeremy spec)
 rep('''    $("#bgx-b-count").textContent = ($("#q-count").textContent || "") + " · " + pct + "%";''',
@@ -82,15 +73,9 @@ rep('''    $("#bgx-b-count").textContent = ($("#q-count").textContent || "") + "
 rep('''var WEBHOOK = "https://businessgrowr.app.n8n.cloud/webhook/bg-scorecard-ghl";''', '''var WEBHOOK = "https://businessgrowr.app.n8n.cloud/webhook/bg-scorecard-v2-ghl"; /* V2-WEBHOOK */''')
 
 # 11. reviewer fixes (review-v2.md, 13 Nov)
-# 11a. Back button visible on Q1 now that the intro exists
-rep("""  try { var bk = $("#v-quiz [data-action=back]"); if (bk) bk.style.visibility = id === Q[0].id ? "hidden" : ""; } catch(e){} /* QUIZSTEP v3.1pq: no Back on question 1 */""",
-    """  try { var bk = $("#v-quiz [data-action=back]"); if (bk) bk.style.visibility = ""; } catch(e){} /* V2: Back on Q1 returns to the intro */""")
 # 11b. timing/partner questions only for people who will see the calendar
 rep("""function calAsk(a){ return (a.tiedown === "yes" || a.tiedown === "maybe") && a.who !== "prop" && a.who !== "vendor"; } /* V2-NOGATE */""",
     """function calAsk(a){ return routeOf(a) === "qualified" && (a.tiedown === "yes" || a.tiedown === "maybe"); } /* V2-NOGATE: calendar questions only for people who get the calendar */""")
-# 11c. no expanded banner on Q1 (intro already sold it) and no "5 minutes"
-rep("""<li>About 5 minutes. Your score shows the moment you finish</li>""", """<li>About 3 minutes. Your score shows the moment you finish</li>""")
-rep("""    b.classList.toggle("is-full", q1);""", """    b.classList.toggle("is-full", false); /* V2: intro replaces the Q1 hero banner */""")
 # 11d. no counts anywhere
 rep("""    $("#bgx-b-fill").style.width = pct + "%";
     $("#bgx-b-bar").setAttribute("aria-valuenow", String(pct));""",
@@ -102,7 +87,7 @@ rep("""<p class="build-n"><span id="build-n">0</span> of 6 parts scored</p>""", 
 rep("""  var html = eyebrowHTML("Your scorecard is ready", "Last step") +""",
     """  var html = eyebrowHTML("Your scorecard is ready", (state.step && state.step.i) ? "Last step" : "Almost done") +""")
 # 11e. email screen copy that is true where it sits
-rep("""    title:function(){ return "Your score is almost ready."; },""", """    title:function(){ return "What’s your best email?"; },""")
+rep("""    title:function(){ return "Your score is almost ready."; },""", """    title:function(){ return "What’s your business email?"; },""")
 rep("""    sub:"Where should we send it? Your full scorecard, your biggest leak and your first fix go to this email. Free.",""",
     """    sub:"We’ll save your progress. Your Leak Score is about 2 minutes away. Free.",""")
 rep("""inputmode:"email"}, cta:"Send my score"},""", """inputmode:"email"}, cta:"Continue"},""")
@@ -132,6 +117,6 @@ rep('''      state.a.email = ev; postPartial("answer", {q:"email", v:ev});''',
     '''      state.a.email = ev; postPartial("answer", {q:"email", v:ev}); postEmailCapture(ev);''')
 
 # 8. mark the build
-s = s.replace('<title>Revenue Leak Scorecard</title>', '<title>Revenue Leak Scorecard</title>\n<!-- SCORECARD V2 2026-11-13: intro, 12 questions, early email, no cash gate, no counter. Built from live element; Jeremy conv a31b5255. -->', 1)
+s = s.replace('<title>Revenue Leak Scorecard</title>', '<title>Revenue Leak Scorecard</title>\n<!-- SCORECARD V2 2026-11-13 (rev 2): opens on Q1, 12 questions, early email, no cash gate, no counter. Built from live element; Jeremy conv a31b5255. -->', 1)
 open('scorecard-v2-element.html', 'w').write(s)
 print('ok', len(src), '->', len(s))

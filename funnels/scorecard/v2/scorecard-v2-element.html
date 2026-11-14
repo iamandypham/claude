@@ -1,5 +1,5 @@
 <title>Revenue Leak Scorecard</title>
-<!-- SCORECARD V2 2026-11-13: intro, 12 questions, early email, no cash gate, no counter. Built from live element; Jeremy conv a31b5255. -->
+<!-- SCORECARD V2 2026-11-13 (rev 2): opens on Q1, 12 questions, early email, no cash gate, no counter. Built from live element; Jeremy conv a31b5255. -->
 <meta name="description" content="Score the six parts of your trading business funnel and find your biggest leak.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -597,13 +597,13 @@ img,svg,video,iframe{max-width:100%}
       <div class="wrap hero-in">
         <div class="hero-copy">
           <p class="eyebrow">Free scorecard <span class="rule"></span> <span class="dim">For Trading educators</span></p>
-          <h1 class="h-hero">Find where your trading business is <em>leaking money.</em></h1>
-          <p class="lede">Answer a few quick questions about your trading community. You get your Leak Score out of 100, the one part to fix first, and your move this week.</p>
+          <h1 class="h-hero">Where is your trading business <em>leaking money?</em></h1>
+          <p class="lede">Score the six parts of your funnel across traffic, conversion and monetisation. See your biggest leak and the first move to fix it.</p>
           <div class="cta-row">
-            <button class="btn btn-primary btn-lg" type="button" data-action="begin">Get my Leak Score <svg class="ha" viewBox="0 0 12 12" aria-hidden="true"><path class="ha-line" d="M1 6h8"/><path class="ha-tip" d="M4 2l4 4-4 4"/></svg></button>
+            <button class="btn btn-primary btn-lg" type="button" data-action="begin">Find my biggest leak <svg class="ha" viewBox="0 0 12 12" aria-hidden="true"><path class="ha-line" d="M1 6h8"/><path class="ha-tip" d="M4 2l4 4-4 4"/></svg></button>
           </div>
-          <ul class="meta-row"><li>Free</li><li>About 3 minutes</li><li>Your score on screen</li></ul>
-          <p class="proof-line">We’ve helped trading education businesses do <strong>$20M+</strong> in revenue.</p>
+          <ul class="meta-row"><li>About 3 minutes</li><li>Free</li><li>Your score shows the moment you finish</li></ul>
+          <p class="proof-line">From the team that’s helped trading education businesses do <strong>$20M+</strong> in revenue.</p>
         </div>
         <div class="visual">
           <figure class="rp" aria-label="Example scorecard">
@@ -691,8 +691,8 @@ img,svg,video,iframe{max-width:100%}
           <p class="bgx-b-count" id="bgx-b-count"></p>
           <div class="bgx-b-more">
             <p class="bgx-b-line">Find where your trading business is leaking money.</p>
-            <p class="bgx-b-get">You get your Leak Score out of 100, the part of your funnel to fix first, and your move this week.</p>
-            <ul class="bgx-b-list"><li>About 3 minutes. Your score shows the moment you finish</li><li>Free. Just tap your answers</li></ul>
+            <p class="bgx-b-get">Free scorecard for trading educators. About 3 minutes.</p>
+            <ul class="bgx-b-list"><li>Your Leak Score out of 100 and the part to fix first</li><li>Free. Just tap your answers</li></ul>
           </div>
         </div>
         <div class="q-top">
@@ -877,9 +877,9 @@ var Q = [
     options:[{v:"np",label:"Not consistently profitable yet"},{v:"u5",label:"Under $5K"},{v:"5to10",label:"$5K to $10K"},{v:"10p",label:"$10K+"}]},
   /* QUIZBELIEFS A (belief 2: current path won't get there). Unscored, data only. Andy t6913u wording. */
   {id:"email", seg:"you", type:"text", eyebrow:"Your score", eyebrowDim:"Saved as you go",
-    title:function(){ return "What’s your best email?"; },
+    title:function(){ return "What’s your business email?"; },
     sub:"We’ll save your progress. Your Leak Score is about 2 minutes away. Free.",
-    field:{id:"f-email", label:"Email", type:"email", autocomplete:"email", placeholder:"you@example.com", inputmode:"email"}, cta:"Continue"},
+    field:{id:"f-email", label:"Business email", type:"email", autocomplete:"email", placeholder:"you@yourbusiness.com", inputmode:"email"}, cta:"Continue"},
   {id:"audience", seg:"you", type:"choice",
     title:function(){ return "How many people follow you across all your platforms?"; },
     sub:"Add up Instagram, YouTube, TikTok and X.",
@@ -1425,7 +1425,7 @@ function fieldHTML(f, value, cta, extra){
 function goQ(id, dir){
   var q = byId[id]; if (!q) return;
   state.step = {kind:"q", id:id};
-  try { var bk = $("#v-quiz [data-action=back]"); if (bk) bk.style.visibility = ""; } catch(e){} /* V2: Back on Q1 returns to the intro */
+  try { var bk = $("#v-quiz [data-action=back]"); if (bk) bk.style.visibility = id === Q[0].id ? "hidden" : ""; } catch(e){} /* QUIZSTEP v3.1pq: no Back on question 1 */
   var vis = visibleQs(), i = vis.indexOf(q);
   if (i < 0) { vis = Q; i = Q.indexOf(q); }
   var segQs = Q.filter(function(x){ return x.seg === q.seg; }), pos = segQs.indexOf(q);
@@ -1510,7 +1510,7 @@ function bannerUpdate(){
     $("#bgx-b-count").textContent = (function(){ try { var sg = (s.kind === "q" || s.kind === "presell") && byId[s.id] ? byId[s.id].seg : "next"; return ({you:"About you", traffic:"Traffic", conversion:"Conversion", monetisation:"Monetisation", next:"Next step"})[sg] || ""; } catch(e){ return ""; } })(); /* V2-NOCOUNT */
     $("#bgx-b-fill").style.width = "0%"; $("#bgx-b-bar").style.display = "none"; /* V2-NOCOUNT: no percentage bar */
     var q1 = s.kind === "q" && s.id === Q[0].id;
-    b.classList.toggle("is-full", false); /* V2: intro replaces the Q1 hero banner */
+    b.classList.toggle("is-full", q1);
     var v = $("#v-quiz"); if (v) v.classList.toggle("bgx-q1", q1);
   } catch(e){}
 }
@@ -1627,7 +1627,7 @@ function goContact(i, dir){
 }
 
 /* QUIZSTEP v3.1pq (2026-11-10): there is no sales screen any more. Anything that used to open it (logo, Back on question 1) goes to question 1. */
-function showStart(){ state.step = null; show("start"); } /* V2-INTRO 2026-11-13 (Jeremy spec): intro sells the score before question 1 */
+function showStart(){ if (state.view === "quiz" && state.step && state.step.kind === "q" && state.step.id === Q[0].id) return; goQ(Q[0].id, -1); }
 
 function showPropExit(){
   try { postPartial("answer", {q:"who", v:state.a.who}); } catch(e){}
@@ -1796,7 +1796,7 @@ document.addEventListener("keydown", function(e){
 /* QUIZSTEP v3.1pq (2026-11-10, Andy t7031u "Make /scorecard open on question 1"): on load, log a landing step,
    fire quiz_start (same call the Start button made), then show question 1. UTMs, ad ids and fbclid are read at load as before. */
 try { track("quiz_step_view", {step_number:0, step_id:"landing", question:"page view"}); } catch(e){}
-try { state.example = null; showStart(); } catch(e){ try { show("start"); } catch(e2){} }
+try { state.example = null; try { track("quiz_start", {}); } catch(e){} goQ(Q[0].id, 1); } catch(e){ try { show("start"); } catch(e2){} }
 
 })();
 </script>
