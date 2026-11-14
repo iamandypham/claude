@@ -581,6 +581,15 @@ img,svg,video,iframe{max-width:100%}
 .leak-title{margin-top:var(--s3)}
 .score-text{line-height:1.6}
 @media (min-width:1024px){.res-grid{gap:var(--s6)}}
+/* V2-Q1MATCH: on Q1 the hero is a plain white headline, so Q1 + 4 options sit above the fold on a phone */
+#v-quiz.bgx-q1 .bgx-banner{background:none;box-shadow:none;padding:0;margin:0 0 12px;border-radius:0;color:var(--navy)}
+#v-quiz.bgx-q1 .bgx-b-head,#v-quiz.bgx-q1 .bgx-b-bar,#v-quiz.bgx-q1 .bgx-b-count,#v-quiz.bgx-q1 .bgx-b-list{display:none}
+#v-quiz.bgx-q1 .bgx-b-more{display:block;margin:0}
+#v-quiz.bgx-q1 .bgx-b-line{color:var(--navy);font:700 21px/1.25 var(--f-display);letter-spacing:-.015em}
+#v-quiz.bgx-q1 .bgx-b-get{color:var(--muted);margin-top:4px;font-size:14px}
+#v-quiz.bgx-q1 .h-q{font-size:22px;line-height:1.2;margin-top:6px}
+@media (max-width:599px){#v-quiz.bgx-q1 .opts{margin-top:12px}#v-quiz.bgx-q1 .opt{padding-top:10px;padding-bottom:10px}}
+@media (min-width:720px){#v-quiz.bgx-q1 .bgx-b-line{font-size:28px}}
 </style>
 
 <header class="top">
@@ -690,8 +699,8 @@ img,svg,video,iframe{max-width:100%}
           <div class="bgx-b-bar" id="bgx-b-bar" role="progressbar" aria-label="Scorecard progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="bgx-b-fill"></i></div>
           <p class="bgx-b-count" id="bgx-b-count"></p>
           <div class="bgx-b-more">
-            <p class="bgx-b-line">Find where your trading business is leaking money.</p>
-            <p class="bgx-b-get">Free scorecard for trading educators. About 3 minutes.</p>
+            <p class="bgx-b-line" id="bgx-hook">Trading Discord owners: find your biggest funnel leak in about 3 minutes. Free.</p>
+            <p class="bgx-b-get" id="bgx-hook-sub">Free scorecard for trading educators.</p>
             <ul class="bgx-b-list"><li>Your Leak Score out of 100 and the part to fix first</li><li>Free. Just tap your answers</li></ul>
           </div>
         </div>
@@ -860,7 +869,7 @@ var BANDS = [
 var Q = [
   /* QUIZNAMELAST v3.1pqn (2026-11-10, Andy t7035u): the name question moved to the contact part (name, email, phone). Question 1 is now "who". */
   {id:"who", seg:"you", type:"choice", eyebrow:"Before we start", eyebrowDim:"About you",
-    title:function(){ return "What best describes you?"; },
+    title:function(){ return "First, what do you run?"; },
     /* QUIZQ1SHORT v3.1pqnbsq (2026-11-10, Andy 2:20 PM ET): long helper line cut, 3 short answers first. Values, routing and DQ unchanged. */
     options:[
       {v:"owner", label:"I run a paid trading community", note:"Discord, Whop, Skool or similar"},
@@ -877,7 +886,7 @@ var Q = [
     options:[{v:"np",label:"Not consistently profitable yet"},{v:"u5",label:"Under $5K"},{v:"5to10",label:"$5K to $10K"},{v:"10p",label:"$10K+"}]},
   /* QUIZBELIEFS A (belief 2: current path won't get there). Unscored, data only. Andy t6913u wording. */
   {id:"email", seg:"you", type:"text", eyebrow:"Your score", eyebrowDim:"Saved as you go",
-    title:function(){ return "What’s your business email?"; },
+    title:function(){ return "Where should we send your Leak Score?"; },
     sub:"We’ll save your progress. Your Leak Score is about 2 minutes away. Free.",
     field:{id:"f-email", label:"Business email", type:"email", autocomplete:"email", placeholder:"you@yourbusiness.com", inputmode:"email"}, cta:"Continue"},
   {id:"audience", seg:"you", type:"choice",
@@ -1044,12 +1053,8 @@ function calAsk(a){ return routeOf(a) === "qualified" && (a.tiedown === "yes" ||
 
 var CONTACT = [
   {id:"name", title:function(){ return "What’s your first name?"; },
-    sub:"We’ll put it on your scorecard.",
-    field:{id:"f-name", label:"First name", type:"text", autocomplete:"given-name", placeholder:"First name", inputmode:"text"}, cta:"Continue"},
-  {id:"phone", title:function(){ return "And what’s the best number to reach you?"; },
-    sub:"Your score shows on the next screen.",
-    field:{id:"f-phone", label:"Mobile number", type:"tel", autocomplete:"tel", placeholder:"+1 555 123 4567", inputmode:"tel"}, cta:"See my score",
-    consent:"By tapping See my score, you agree that BusinessGrowR can call and text you at this number about your results and our services, including with automated tools. This isn’t a condition of buying anything. Message and data rates may apply. Reply STOP to opt out.", consentLinks:' See our <a href="https://businessgrowr.com/privacy" target="_blank" rel="noopener">Privacy Policy</a> and <a href="https://businessgrowr.com/terms" target="_blank" rel="noopener">Terms</a>.'}
+    sub:"We’ll put it on your scorecard. Your score shows on the next screen.",
+    field:{id:"f-name", label:"First name", type:"text", autocomplete:"given-name", placeholder:"First name", inputmode:"text"}, cta:"See my score"}
 ];
 
 var EXAMPLES = {
@@ -1104,7 +1109,7 @@ function labelOf(qid, v){
 
 /* ---------- live: attribution + lead send ---------- */
 var WEBHOOK = "https://businessgrowr.app.n8n.cloud/webhook/bg-scorecard-v2-ghl"; /* V2-WEBHOOK */
-var CONSENT_VERSION = "scorecard-2026-11-08";
+var CONSENT_VERSION = ""; /* V2: no consent line (Andy 13 Nov) */
 function qp(k){ try { return new URLSearchParams(location.search).get(k) || ""; } catch(e){ return ""; } }
 /* TESTFLAG v3.1 (2026-11-10): ?bgtest=1 marks the whole session as test from the first event, and it sticks for the tab
    (sessionStorage). An @example.com email turns it on from the email step onward. Lead, partial and drop-off events all use isTest(). */
@@ -1116,7 +1121,13 @@ function cookie(n){ var m = document.cookie.match(new RegExp("(?:^|; )" + n.repl
 function setCookie(n, v){ try { document.cookie = n + "=" + encodeURIComponent(v) + ";path=/;max-age=7776000;SameSite=Lax"; } catch(e){} }
 var CLICK_KEYS = ["utm_source","utm_medium","utm_campaign","utm_content","utm_term","ad_id","adset_id","ad_group_id","campaign_id","gclid","gbraid","wbraid","ttclid","twclid","wacid","waid","wasid","bg_ch","utm_whop","callix_sid"];
 var ATTR = {};
+/* V2-Q1MATCH: each ad lands on its own hook, word for word (Jeremy). Default = N2, the ad that drove 64 of 110 sessions. */
+var HOOKS = [
+  {m:/N1|journal/i, h:"You journal every trade. Who’s journaling your business?", sub:"Find your biggest funnel leak in about 3 minutes. Free."}
+];
+function applyHook(){ try { var c = ATTR.utm_content || ""; for (var i = 0; i < HOOKS.length; i++) if (HOOKS[i].m.test(c)) { $("#bgx-hook").textContent = HOOKS[i].h; $("#bgx-hook-sub").textContent = HOOKS[i].sub; return; } } catch(e){} }
 CLICK_KEYS.forEach(function(k){ ATTR[k] = keep(k); });
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", applyHook); else applyHook();
 if (!ATTR.adset_id) ATTR.adset_id = ATTR.ad_group_id;
 function fbclidFromFbc(f){ var p = String(f || "").split("."); return p.length >= 4 ? p.slice(3).join(".") : ""; }
 function readFbclid(){
@@ -1149,7 +1160,7 @@ var LEAD_ID = "";
       var a = state.a || {};
       var body = { email: ev, lead_id: LEAD_ID || SESSION_ID, session_id: SESSION_ID, page_url: location.href, ua: navigator.userAgent || "",
         fbclid: (typeof FBCLID !== "undefined" ? FBCLID : ""), fbc: (typeof pickFbc === "function" ? pickFbc(FBCLID) : ""), fbp: (typeof ensureFbp === "function" ? ensureFbp() : ""),
-        attribution: (typeof ATTR !== "undefined" ? ATTR : {}),
+        attribution: (typeof ATTR !== "undefined" ? ATTR : {}), phone: a.phone || "",
         test: (typeof isTest === "function" ? isTest(a) : false) || /\?.*bgtest=1|example\.com/i.test(location.href + " " + ev) };
       var txt = JSON.stringify(body);
       if (navigator.sendBeacon) { try { if (navigator.sendBeacon(V2_EMAIL_URL, new Blob([txt], {type: "text/plain;charset=UTF-8"}))) return; } catch(e){} }
@@ -1440,7 +1451,7 @@ function goQ(id, dir){
   var sub = q.sub && (first || q.type === "text" || q.id === "revenue" || q.id === "audience") ? '<p class="q-sub">' + esc(q.sub) + '</p>' : "";
   var html = eb + '<h2 class="h-q" id="q-title" tabindex="-1">' + esc(q.title(state.a)) + '</h2>' + sub;
   if (q.type === "text") {
-    html += fieldHTML(q.field, q.id === "email" ? state.a.email : state.a.name, q.cta || "Continue");
+    html += fieldHTML(q.field, q.id === "email" ? state.a.email : state.a.name, q.cta || "Continue", q.id === "email" ? ('<label class="field-label" for="f-phone2" style="margin-top:14px">Mobile number</label><input class="field" id="f-phone2" name="f-phone2" type="tel" inputmode="tel" autocomplete="tel" placeholder="+1 555 123 4567" value="' + esc(state.a.phone || "") + '">') : ""); /* V2-PHONE-EARLY */
   } else {
     var multi = q.type === "multi", picked = state.a[q.id + "_items"] || [];
     html += '<div class="opts' + (multi ? ' is-multi' : '') + '" role="' + (multi ? 'group' : 'radiogroup') + '" aria-labelledby="q-title">' + q.options.map(function(o, k){
@@ -1461,7 +1472,9 @@ function goQ(id, dir){
     if (q.id === "email") { /* V2-EMAIL-EARLY 2026-11-13 (Jeremy spec): email-only capture after the first questions -> partial lead */
       var ev = val.trim();
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(ev)) return "Enter an email like name@example.com.";
-      state.a.email = ev; postPartial("answer", {q:"email", v:ev}); postEmailCapture(ev);
+      var pv = (($("#f-phone2") || {}).value || "").trim(), pd = pv.replace(/\D/g, "");
+      if (pd.length < 7 || pd.length > 15) return "Enter your mobile number, with the country code if you’re outside the US.";
+      state.a.email = ev; state.a.phone = pv; postPartial("answer", {q:"email", v:ev}); postPartial("contact", {q:"phone", v:pv}); postEmailCapture(ev);
       try { track("quiz_answer", {step_number:visibleQs().indexOf(q) + 1, step_id:"email", question:qText(q), answer:""}); } catch(e){}
       return advanceFrom(q);
     }
@@ -1608,7 +1621,10 @@ function goContact(i, dir){
       state.a.name = v.split(" ")[0].slice(0, 40);
       postPartial("answer", {q:"name", v:state.a.name});
       try { track("quiz_answer", {step_number:visibleQs().length + i + 1, step_id:"name", answer:""}); } catch(e){}
-      return goContact(i + 1, 1);
+      if (i + 1 < CONTACT.length) return goContact(i + 1, 1);
+      sendLead(); /* V2-PHONE-EARLY: phone came at Q3, name finishes */
+      try { track("quiz_complete", {step_number:visibleQs().length + CONTACT.length, step_id:"name"}); } catch(e){}
+      return runAnalyzing();
     }
     if (c.id === "email") {
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)) return "Enter an email like name@example.com.";

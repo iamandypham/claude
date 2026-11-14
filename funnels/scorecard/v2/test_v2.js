@@ -14,15 +14,15 @@ const [,, file, out, liqIdx] = process.argv;
     if (/fonts\.(googleapis|gstatic)\.com/.test(u)) return r.continue();
     return r.fulfill({ status: 204, body: '' });
   });
-  await p.goto('https://scorecard.test/scorecard?bgtest=1&utm_source=facebook&utm_campaign=SC01-test'); await p.waitForTimeout(800);
+  await p.goto('https://scorecard.test/scorecard?bgtest=1&utm_source=facebook&utm_campaign=SC01-test&utm_content=' + (process.env.UC || 'SC01-05 N2 plain leak')); await p.waitForTimeout(800);
   await p.screenshot({ path: out + '/01-intro.png' });
   const vis = async () => (await p.evaluate(() => [...document.querySelectorAll('.view')].filter(v => !v.hidden).map(v => v.dataset.view).join(',')));
   const log = [];
-  log.push('view on load: ' + await vis());
+  log.push('view on load: ' + await vis()); log.push('hook: ' + await p.textContent('#bgx-hook').catch(()=>'none'));
   if ((await vis()) !== 'quiz') { await p.click('[data-action=begin]'); await p.waitForTimeout(500); }
   const choose = (t) => /paid trading community/.test('') ? 0 : 0;
   const want = (t) => {
-    if (/describes you/i.test(t)) return 'paid trading community';
+    if (/describes you|what do you run/i.test(t)) return 'paid trading community';
     if (/bring in a month/i.test(t)) return 'Under $5K';
     if (/follow you/i.test(t)) return process.env.MODE === 'nurture' ? 'No following' : '1,000 to 50,000';
     if (/liquid/i.test(t)) return Number(liqIdx);
@@ -36,9 +36,10 @@ const [,, file, out, liqIdx] = process.argv;
     if (same > 4) { log.push('STUCK at ' + t); break; }
     const cnt = (await p.textContent('#q-count').catch(()=>'')).trim();
     if (await p.locator('#q-card input').count()) {
-      const val = /email/i.test(t) || /send it/i.test(await p.textContent('#q-card')) ? 'zztest.v2@example.com' : /name/i.test(t) ? 'Zztest' : '+1 555 010 0199';
+      const val = /email|send your Leak Score/i.test(t) || /send it/i.test(await p.textContent('#q-card')) ? 'zztest.v2@example.com' : /name/i.test(t) ? 'Zztest' : '+1 555 010 0199';
       log.push('FIELD: ' + t + ' = ' + val + ' | counter="' + cnt + '"');
       if (/score is almost ready/i.test(t)) await p.screenshot({ path: out + '/02-email.png' });
+      if (await p.locator('#f-phone2').count()) { await p.fill('#f-email', val); await p.fill('#f-phone2', '+1 555 010 0199'); await p.screenshot({ path: out + '/02-email-phone.png' }); await p.press('#f-email', 'Enter'); await p.waitForTimeout(600); continue; }
       await p.fill('#q-card input', val); await p.press('#q-card input', 'Enter'); await p.waitForTimeout(600); continue;
     }
     const opts = p.locator('#q-card .opt'); const n = await opts.count();
@@ -56,12 +57,13 @@ const [,, file, out, liqIdx] = process.argv;
   log.push('final view: ' + await vis());
   log.push('calendar present: ' + (await p.locator('#cal-live').count()));
   await p.screenshot({ path: out + '/03-result.png', fullPage: true });
-  const lead = posts.find(x => /bg-scorecard-ghl/.test(x.url));
+  const lead = posts.find(x => /bg-scorecard(-v2)?-ghl/.test(x.url));
   log.push('posts: ' + posts.map(x => x.url).join(', '));
   if (lead) { const j = JSON.parse(lead.body); log.push('lead route=' + j.route + ' test=' + j.test + ' liquid=' + JSON.stringify((j.answers||{}).liquid || j.liquid) ); fs.writeFileSync(out + '/lead-payload.json', JSON.stringify(j, null, 2)); }
   const partialEmail = posts.filter(x => /partial/.test(x.url)).map(x => JSON.parse(x.body)).find(x => x.q === 'email');
   log.push('partial email post: ' + (partialEmail ? 'yes, test=' + partialEmail.test : 'no'));
   log.push('page errors: ' + JSON.stringify(errors));
+  { const em = posts.find(x => /v2-email/.test(x.url)); if (em) log.push('email capture body: ' + (/"phone":"\+1 555/.test(em.body) ? 'HAS PHONE ' : 'NO PHONE ') + em.body.slice(0, 60)); }
   fs.writeFileSync(out + '/log.txt', log.join('\n')); console.log(log.join('\n'));
   await b.close();
 })();

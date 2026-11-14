@@ -116,6 +116,68 @@ rep('''  var PARTIAL_URL = "https://businessgrowr.app.n8n.cloud/webhook/bg-score
 rep('''      state.a.email = ev; postPartial("answer", {q:"email", v:ev});''',
     '''      state.a.email = ev; postPartial("answer", {q:"email", v:ev}); postEmailCapture(ev);''')
 
+# 13. no consent line on the phone screen (Andy 13 Nov 7:10 PM ET: "We don't need phone consent remove that"). consent_version blank so records don't claim consent.
+i = s.find(',\n    consent:"By tapping See my score'); j = s.find("Terms</a>.'}", i)
+assert 0 < i < j
+s = s[:i] + '}' + s[j + len("Terms</a>.'}"):]
+rep('''var CONSENT_VERSION = "scorecard-2026-11-08";''', '''var CONSENT_VERSION = ""; /* V2: no consent line (Andy 13 Nov) */''')
+
+# 14. phone + business email on one screen at Q3 (Jeremy 13 Nov 7:11 PM ET pick (b); Andy asked phone first). Contact part at the end = first name only.
+rep('''    title:function(){ return "What’s your business email?"; },''', '''    title:function(){ return "Where should we send your Leak Score?"; },''')
+rep('''    html += fieldHTML(q.field, q.id === "email" ? state.a.email : state.a.name, q.cta || "Continue");''',
+    '''    html += fieldHTML(q.field, q.id === "email" ? state.a.email : state.a.name, q.cta || "Continue", q.id === "email" ? ('<label class="field-label" for="f-phone2" style="margin-top:14px">Mobile number</label><input class="field" id="f-phone2" name="f-phone2" type="tel" inputmode="tel" autocomplete="tel" placeholder="+1 555 123 4567" value="' + esc(state.a.phone || "") + '">') : ""); /* V2-PHONE-EARLY */''')
+rep('''      if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$/.test(ev)) return "Enter an email like name@example.com.";
+      state.a.email = ev; postPartial("answer", {q:"email", v:ev}); postEmailCapture(ev);''',
+    '''      if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$/.test(ev)) return "Enter an email like name@example.com.";
+      var pv = (($("#f-phone2") || {}).value || "").trim(), pd = pv.replace(/\\D/g, "");
+      if (pd.length < 7 || pd.length > 15) return "Enter your mobile number, with the country code if you’re outside the US.";
+      state.a.email = ev; state.a.phone = pv; postPartial("answer", {q:"email", v:ev}); postPartial("contact", {q:"phone", v:pv}); postEmailCapture(ev);''')
+rep('''attribution: (typeof ATTR !== "undefined" ? ATTR : {}),
+        test:''', '''attribution: (typeof ATTR !== "undefined" ? ATTR : {}), phone: a.phone || "",
+        test:''')
+# drop the phone screen from CONTACT; name becomes the last step and finishes the lead
+i = s.find('var CONTACT'); j = s.find(',\n  {id:"phone"', i); k = s.find('\n];', j)
+assert 0 < i < j < k
+s = s[:j] + s[k:]
+rep('''      try { track("quiz_answer", {step_number:visibleQs().length + i + 1, step_id:"name", answer:""}); } catch(e){}
+      return goContact(i + 1, 1);''',
+    '''      try { track("quiz_answer", {step_number:visibleQs().length + i + 1, step_id:"name", answer:""}); } catch(e){}
+      if (i + 1 < CONTACT.length) return goContact(i + 1, 1);
+      sendLead(); /* V2-PHONE-EARLY: phone came at Q3, name finishes */
+      try { track("quiz_complete", {step_number:visibleQs().length + CONTACT.length, step_id:"name"}); } catch(e){}
+      return runAnalyzing();''')
+
+# 14b. first name is now the last screen
+rep('''    sub:"We’ll put it on your scorecard.",
+    field:{id:"f-name", label:"First name", type:"text", autocomplete:"given-name", placeholder:"First name", inputmode:"text"}, cta:"Continue"}''',
+    '''    sub:"We’ll put it on your scorecard. Your score shows on the next screen.",
+    field:{id:"f-name", label:"First name", type:"text", autocomplete:"given-name", placeholder:"First name", inputmode:"text"}, cta:"See my score"}''')
+
+# 15. Q1 message match (Jeremy 13 Nov ~7:15 PM ET, Andy "work with him to fix Q1 drop off"):
+#     hero = the ad's own words (N2 default; per-ad by utm_content), thin white hero on Q1 (no dark card), Q1 = "First, what do you run?"
+rep('''<p class="bgx-b-line">Find where your trading business is leaking money.</p>''',
+    '''<p class="bgx-b-line" id="bgx-hook">Trading Discord owners: find your biggest funnel leak in about 3 minutes. Free.</p>''')
+rep('''<p class="bgx-b-get">Free scorecard for trading educators. About 3 minutes.</p>''', '''<p class="bgx-b-get" id="bgx-hook-sub">Free scorecard for trading educators.</p>''')
+rep('''    title:function(){ return "What best describes you?"; },''', '''    title:function(){ return "First, what do you run?"; },''')
+rep('''</style>''', '''/* V2-Q1MATCH: on Q1 the hero is a plain white headline, so Q1 + 4 options sit above the fold on a phone */
+#v-quiz.bgx-q1 .bgx-banner{background:none;box-shadow:none;padding:0;margin:0 0 12px;border-radius:0;color:var(--navy)}
+#v-quiz.bgx-q1 .bgx-b-head,#v-quiz.bgx-q1 .bgx-b-bar,#v-quiz.bgx-q1 .bgx-b-count,#v-quiz.bgx-q1 .bgx-b-list{display:none}
+#v-quiz.bgx-q1 .bgx-b-more{display:block;margin:0}
+#v-quiz.bgx-q1 .bgx-b-line{color:var(--navy);font:700 21px/1.25 var(--f-display);letter-spacing:-.015em}
+#v-quiz.bgx-q1 .bgx-b-get{color:var(--muted);margin-top:4px;font-size:14px}
+#v-quiz.bgx-q1 .h-q{font-size:22px;line-height:1.2;margin-top:6px}
+@media (max-width:599px){#v-quiz.bgx-q1 .opts{margin-top:12px}#v-quiz.bgx-q1 .opt{padding-top:10px;padding-bottom:10px}}
+@media (min-width:720px){#v-quiz.bgx-q1 .bgx-b-line{font-size:28px}}
+</style>''', )
+rep('''var ATTR = {};''', '''var ATTR = {};
+/* V2-Q1MATCH: each ad lands on its own hook, word for word (Jeremy). Default = N2, the ad that drove 64 of 110 sessions. */
+var HOOKS = [
+  {m:/N1|journal/i, h:"You journal every trade. Who’s journaling your business?", sub:"Find your biggest funnel leak in about 3 minutes. Free."}
+];
+function applyHook(){ try { var c = ATTR.utm_content || ""; for (var i = 0; i < HOOKS.length; i++) if (HOOKS[i].m.test(c)) { $("#bgx-hook").textContent = HOOKS[i].h; $("#bgx-hook-sub").textContent = HOOKS[i].sub; return; } } catch(e){} }''')
+rep('''CLICK_KEYS.forEach(function(k){ ATTR[k] = keep(k); });''', '''CLICK_KEYS.forEach(function(k){ ATTR[k] = keep(k); });
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", applyHook); else applyHook();''')
+
 # 8. mark the build
 s = s.replace('<title>Revenue Leak Scorecard</title>', '<title>Revenue Leak Scorecard</title>\n<!-- SCORECARD V2 2026-11-13 (rev 2): opens on Q1, 12 questions, early email, no cash gate, no counter. Built from live element; Jeremy conv a31b5255. -->', 1)
 open('scorecard-v2-element.html', 'w').write(s)

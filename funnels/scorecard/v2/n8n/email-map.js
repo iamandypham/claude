@@ -1,4 +1,4 @@
-// Scorecard v2 email screen -> GHL (built 13 Nov 2026). Email-only partial. No phone, so no texts or calls.
+// Scorecard v2 Q3 screen (business email + mobile) -> GHL partial (built 13 Nov 2026; phone added 13 Nov ~7:30 PM ET, Jeremy pick (b)). Test leads keep no phone + dialer-off.
 const j = $input.first().json || {};
 let b = j.body;
 if (typeof b === 'string') { try { b = JSON.parse(b); } catch (e) { b = {}; } }
@@ -7,6 +7,8 @@ if (!b.email && Object.keys(b).length === 1) { try { b = JSON.parse(Object.keys(
 const email = String(b.email || '').trim().toLowerCase();
 const ok = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
 const test = b.test === true || /@example\.com$/i.test(email) || /^zz/i.test(email) || /[?&]bgtest=1/.test(String(b.page_url || ''));
+const digits = String(b.phone || '').replace(/\D/g, '');
+const phone = digits.length === 10 ? '+1' + digits : (digits.length >= 7 && digits.length <= 15 ? '+' + digits : '');
 const hdr = j.headers || {};
 const ip = String(hdr['x-forwarded-for'] || hdr['x-real-ip'] || '').split(',')[0].trim();
 const at = b.attribution || {};
@@ -18,4 +20,5 @@ for (const k of ['ad_id', 'adset_id', 'campaign_id', 'utm_source', 'utm_campaign
 const tags = ['scorecard-v2', 'scorecard-partial'];
 if (test) tags.push('scorecard-test', 'dialer-off');
 return [{ json: { ok, test, email, lead_id: String(b.lead_id || ''), page_url: String(b.page_url || 'https://businessgrowr.com/scorecard').split('?')[0], fbp: String(b.fbp || ''), fbc: String(b.fbc || ''), fbclid: String(b.fbclid || ''), ip, ua: String(b.ua || ''), tags,
-  upsertBody: { locationId: 'F8y82aHd3V0Y4Y2ccET6', email, source: 'Scorecard v2 partial', customFields } } }];
+  phone: test ? '' : phone,
+  upsertBody: Object.assign({ locationId: 'F8y82aHd3V0Y4Y2ccET6', email, source: 'Scorecard v2 partial', customFields }, (!test && phone) ? { phone } : {}) } }];
