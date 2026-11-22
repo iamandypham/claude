@@ -23,6 +23,7 @@ Write checks.md before doing any work:
 
 - Verdict is pass, fail or open.
 - Evidence is an execution id, record id, version id, file path or read-back. Never just "done".
+- Before the first version of anything Andy will see (site, page, automation), write 3 to 6 rows from his exact words: who it is for, what must stay, what must run by itself. Check each before showing it.
 - Never loosen a requirement to get a pass. Missing evidence stays visible as open.
 - "Verified means tested" still applies: a publish or save is not evidence.
 
