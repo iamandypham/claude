@@ -1,0 +1,17 @@
+My trades used to look like this, and now they look like this because I realized that
+the market does the same three things every morning.
+So the first thing you want to do is mark out your key levels.
+These are going to be recent swing highs and swing lows.
+As you can see here, we have this swing high and this swing low.
+Once market opens, you're going to want to wait for price to hit one of these levels.
+And as you can see, in this case, we hit this high.
+This is what we call liquidity sweep, so we're now looking to take a short position.
+But wait, before you enter here, we need to see some confirmation.
+Find a bullish fair value gap, which looks like a gap between two of the candle licks.
+In this case, the highest timeframe for a value gap we have is on the two-minute
+chart. So all we need to do now is wait for a candle to close below.
+And as you can see on the next candle, that's exactly what we get.
+Now that we confirmed we're going down, all you need to do is mark out the key swing
+low that we marked out earlier.
+If you want a full breakdown of this setup, so you never have to guess
+while trading again, just comment, guide, and I'll send you it for free.

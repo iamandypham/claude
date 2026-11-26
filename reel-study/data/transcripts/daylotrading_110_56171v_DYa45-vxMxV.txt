@@ -1,0 +1,33 @@
+That's fucking easy!
+I'm probably getting banned from like every prop firm
+for posting this because this model's stupid simple
+and it's gotten me over a 90% win rate
+over the past two months.
+First, we want to scale up to the four hour timeframe
+to see what direction we're trading within.
+As we can see, we are currently ripping up,
+perfectly respecting this four hour fair value gap.
+Next, we want to scale down to the lower timeframe
+to find some sort of liquidity sweep.
+And as we can see here,
+we clearly sweep out this low.
+Now that we found our overall direction
+and the opposite side liquidity sweep,
+all we need to do is find an entry.
+And to do this, we look for the highest timeframe
+fair value gap of the current trading leg.
+In this case, we have this nice two minute gap
+which gets perfectly closed through.
+So now that we know where to enter,
+the last step is just finding our targets
+and be careful because most traders overlook this step.
+In this case, we have my favorite drawn liquidity
+which I call trendline liquidity or stacked highs,
+meaning that there's liquidity pools
+above each one of these highs.
+So all we do is target the top of this trendline,
+putting our stop loss safely below the slow.
+So now we just wash the play out
+and if you want a guide to learn exactly
+how I find trades like this every single day,
+just comment, model and I'll send it to you for free.

@@ -1,0 +1,34 @@
+So, we're looking at gold here, and we are presented with yet another 1, 2, 3 touchpoint
+trendline break.
+We know that signifies an entry, we're thinking long positions here, but any time I enter
+a trade, I always make sure I have an opposing trendline drawn.
+Now, how do I draw those?
+When drawing my opposing trendlines, I'm looking for the lowest point I see on the
+screen as my point A, and then I want the most recent touchpoint of that trendline
+without price intersecting as point B.
+Boom.
+So, this is my point A, point B here.
+This right here is my safety line.
+So, now that we have our opposing trendline drawn, let's place our trade.
+We're in a long position here, I'm going to drag my stop loss to the other side of my
+safety line.
+Now, as price moves aggressively in our favor, you're going to get these pullbacks,
+these dip downs, these higher lows.
+I want to capitalize on this movement here.
+Instead of allowing the price to come all the way down and give up this profit,
+I'm going to come in with a steeper trendline.
+When drawing steeper trendlines, you're always going to use your most previous
+touchpoint as your new point A, and then you're going to come in and capitalize
+on that same exact movement here.
+So, we're going to use this most recent higher low here, or this most recent
+pullback, or dip down, for a point B of our steeper trendline.
+Now, I'm going to take my stop loss and drag it in profit.
+So, now worst case scenario, this trade gets closed out in profit.
+As price progresses, or moves in our favor, just like I showed you guys
+in the drawing before, price will ebb and flow.
+It will create new pullbacks, create higher lows.
+We want to drag this stop loss along our safety line here.
+Prices just crossed our safety line.
+This is our indication to exit.
+This right here is my exit criteria.
+I can close this trade in profit and be done with it.

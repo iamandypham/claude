@@ -1,0 +1,6 @@
+If I'm looking to trade a reversal at the 930 open, there is a particular sequence I want to see.
+I want to see the higher timeframe candle have a small wick and then 930 create a change in
+the state of delivery on the lower timeframe. This can be formed as a closure right at 930 open
+or it can make an opposing run and then close over. Following this change in the state of
+delivery on the lower timeframe, I'm then going to be looking for 930 to tend to expand
+higher to fill out this expansion candle on the hourly or 30 minute chart.

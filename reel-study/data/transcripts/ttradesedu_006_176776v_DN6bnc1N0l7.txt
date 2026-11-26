@@ -1,0 +1,12 @@
+An order block is a single or series of up close candles into an important level before price
+displaces and closes below the opening price of that single or series of up close candles,
+validating it as an order block. Then when retested, I'm looking for price to trade away
+from that order block. Similarly, with a bullish order block, we have a series or
+single down close candle into an important level, which then gets displaced and closed
+over validating it as an order block. Then when price retests this area, I want to see it
+trade away. A propulsion block is an order block off of another order block. So for this example here,
+we have a down close candle into an important level, which is then closed over validating it as an
+order block, then price retraces and reaches into this order block, then closing over this down
+close or series of down close candles into this order block that then creates a propulsion block.
+Now with a propulsion block, I anticipate the opening price to be very sensitive. I do not
+want to see price break the mean threshold of a propulsion block.
