@@ -1,0 +1,7 @@
+With defining a reversal, I focus on price taking out its previous candles high or low
+and then closing back into the range. This allows me to anticipate the following candle
+to have a continuation. So if price has a bearish reversal here, there is a bearish
+continuation following or a bullish reversal here, a bullish continuation following that.
+Now with a continuation, I am anticipating price not to reverse as it took out its previous
+candles low and closed outside. So if I'm anticipating price to continue, then we would just continue
+lower. So you can see here we close over our previous candles high and then we continue in the following candle.

@@ -1,0 +1,6 @@
+Tap into a rejection block, wait for an inverse fair value gap,
+enter a short position, and target your key level.
+Tap into a rejection block, wait for an inverse fair value gap to the downside,
+enter a short position, and target your key level.
+If you want a full breakdown of the exact model I use to find trades like this every single day,
+just comment, guide, and I'll send it to you for free.

@@ -1,0 +1,7 @@
+liquidity sweep, inverse fair value gap,
+target external rejection block,
+liquidity sweep, inverse fair value gap,
+target external rejection block.
+If you want a full breakdown
+of exactly how I find trades like this every day,
+just comment, guide, and I'll send it to you for free.

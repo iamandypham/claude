@@ -1,0 +1,7 @@
+To understand the fractal model you have to understand what swing points are and how to
+number them. So let's go over that. When we have a swing low, candle two is always going to be the
+low. Candle three will always follow candle two, candle four will follow candle three, and candle one
+will always be the candle prior to the low or candle two. Now in a bearish swing point,
+candle two will always be the high candle three will follow as well as candle four,
+and candle one will always be the candle prior to candle two. Now that you understand the foundation
+of my model, you can better understand what the numbers mean when labeling them.

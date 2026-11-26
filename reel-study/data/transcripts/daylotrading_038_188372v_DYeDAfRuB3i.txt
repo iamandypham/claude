@@ -1,0 +1,31 @@
+90% of traders are unprofitable because 90% don't know this one rule about IFVGs.
+And it's the one reason I'm able to catch insane trades like this almost every single
+day.
+What you need to understand is that inverse fair value gaps are simply confirmation for
+the analysis you should have already made.
+IFVGs without proper context are what I refer to as coincidental inversions.
+And if you consistently use them, you're definitely going to become one of the
+90% of traders whose trades consistently look like this.
+So how do you know which inverse fair value gaps are actually going to play out?
+Well, it's simple.
+Going to the day, the first thing you want to do is mark out two key levels.
+The nearest swing high above price and the nearest swing low below price.
+Now that you have those marked out, you're going to want to wait for price to hit one
+of those key levels.
+And as you can see in this case, we perfectly hit the swing low.
+Next, you want to zoom in and find some sort of bearish trend line.
+In this case, I see this super obvious internal trend line.
+Now that we have all these marked out, you can go ahead and finally look for your
+inverse fair value gap.
+But wait, there's one more step to confirm that this is true confirmation.
+To confirm that this is a valid inverse fair value gap and price is actually going
+to move up.
+We want to see the inversion candle close above the bearish trend line that we have
+marked out.
+And as you can see in this case, it perfectly does.
+This gives us all the confirmation we need to enter a long position, making sure our
+stop loss is protected by the trend line and targeting the key swing high that we
+had marked out earlier.
+Now all we do is watch this trade play out and if you want a full guide explaining
+exactly how I find trades like this every day, just comment model and I'll send
+it to you for free.

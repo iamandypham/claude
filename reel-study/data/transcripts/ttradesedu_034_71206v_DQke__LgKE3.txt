@@ -1,0 +1,13 @@
+the gold daily chart is currently in an uptrend. So looking at previous day low, let's drop down to
+the one hour timeframe. So here we are on the one hour timeframe. And what do we notice? Well,
+we have previous day low here. And so let's see when that gets taken out. So here we reach into
+previous day low. And what do we see? Do we have a fair value gap or a bearish fair value
+gap above us. But now the first two parts of the model have been met previous day low,
+looking to target a bearish fair value gap on the hourly timeframe. Now let's drop down
+to the 15 minute timeframe. You can see we have that bearish fair value gap. Here's our purge of
+previous day low. And here we actually create an SMT with silver. And now I'm looking for a market
+structure shift or some sort of change in the state of delivery. We have an inversion right here,
+as well as a change in the state of delivery with closing over this down close candle. So looking
+to take an entry on this fair value gap, I stop on the fair value gap candles low and looking
+to target that fair value gap. Now is this below midnight? It is right. So let's see how this
+works out. And there we go. We hit our TP.
